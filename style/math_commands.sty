@@ -1,0 +1,255 @@
+\ProvidesPackage{math_commands}[2017/02/26 v1.0]
+
+\usepackage{amsmath}  % miscellaneous enhancements over latex equations
+\usepackage{amsthm} % theorem environments
+\usepackage{amsfonts}  % blackboard math symbols
+\usepackage{amssymb}  % lots of additional math symbols
+
+\usepackage{nicefrac}  % compact symbols for 1/2, etc.
+\usepackage{exscale}  % scale math (cmex) fonts to \Huge etc...
+\usepackage{bm}  % bold math fonts
+\usepackage{bbm}  % bold doublestruck math fonts
+\usepackage{mathrsfs}  % RSFS (caligraphic) fonts in maths
+\usepackage{relsize} % change the size of a symbol inside a formula
+
+
+\newcommand{\aligns}[1]{\begin{align*}#1\end{align*}}
+\newcommand{\alignn}[1]{\begin{align}#1\end{align}}
+
+% General shortcuts
+\def\eps{{\varepsilon}}
+\DeclareMathOperator{\Tr}{Tr} % trace
+\newcommand{\diag}{\mathop{\mathrm{diag}}\nolimits}  % diagonal of a matrix or diagonal matrix of a vector
+\DeclareMathOperator{\cst}{cst} % constant
+\DeclareMathOperator{\E}{\mathbb{E}}  % Expectation
+\newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % Expectation operator
+\newcommand*{\expecti}[2][]{\ensuremath{\mathbb{E}_{#1} [ #2 ] }}  % Expectation with small brackets to respect interline size
+\DeclareMathOperator{\Prob}{\mathbb{P}}  % Probability
+\newcommand{\cond}{\,\vert\,} % for conditional probabilities
+\DeclareMathOperator{\Std}{\mathrm{Std}}  % standard deviation
+\DeclareMathOperator{\Var}{\mathrm{Var}}  % variance
+\DeclareMathOperator{\Cov}{\mathrm{Cov}}  % covariance
+\DeclareMathOperator{\dom}{\mathrm{Dom}}  % domain
+\newcommand{\KL}{D_{\mathrm{KL}}}  % Kullback Leibler
+\newcommand{\simplex}{\bm{\Delta}}  % probability simplex
+\DeclareMathOperator{\parents}{\mathrm{Pa}}  % parents in a graph
+\DeclareMathOperator{\ones}{\mathbf{1}} % indicator function, or all one vector
+\DeclareMathOperator{\assign}{\leftarrow} %algorithmic assignment
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\newcommand{\inv}[1]{\frac{1}{#1}} % inverse
+\newcommand{\iinv}{^{-1}} % inverse
+\newcommand{\minv}[1]{#1^{-1}} % matrix inverse operator
+\newcommand{\half}[1][1]{\frac{#1}{2}}
+\newcommand{\indep}{\raisebox{0.05em}{\rotatebox[origin=c]{90}{$\models$}}} % independence of random variables
+\DeclareMathOperator{\Do}{\mathrm{do}}  % do-calculus
+\newcommand{\Id}{\mathrm{Id}} % identity function
+\newcommand{\smallsum}{\textstyle \sum} % small sum
+\newcommand{\quadtext}[1]{\quad \text{#1} \quad} % write text between equations
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+
+% Algebra
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\complex}{\mathbb{C}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\naturalnumbers}{\mathbb{N}}
+\newcommand{\NN}{\mathbb{N}}
+
+% weird symbols
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}} % define a check symbol
+\newcommand{\xmark}{\ding{55}} % define a cross (nope) symbol
+
+% Nice norms with adjustable size
+\usepackage{mathtools}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\lin{\langle}{\rangle}
+\DeclarePairedDelimiter\paren{(}{)}
+
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the 
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+
+% deep learning book commands
+\def\ceil#1{\lceil #1 \rceil}
+\def\floor#1{\lfloor #1 \rfloor}
+\def\1{\bm{1}} % all 1 vector
+\newcommand{\train}{\mathcal{D}}
+\newcommand{\valid}{\mathcal{D_{\mathrm{valid}}}}
+\newcommand{\test}{\mathcal{D_{\mathrm{test}}}}
+
+
+% Calligraphic letters
+\newcommand{\cA}{{\mathcal A}}
+\newcommand{\cB}{{\mathcal B}}
+\newcommand{\cC}{{\mathcal C}}
+\newcommand{\cD}{{\mathcal D}}
+\newcommand{\cF}{{\mathcal F}}
+\newcommand{\cG}{{\mathcal G}}
+\newcommand{\cH}{{\mathcal H}}
+\newcommand{\cI}{{\mathcal I}}
+\newcommand{\cJ}{{\mathcal J}}
+\newcommand{\cK}{{\mathcal K}}
+\newcommand{\cL}{{\mathcal L}}
+\newcommand{\cM}{{\mathcal M}}
+\newcommand{\cN}{{\mathcal N}}
+\newcommand{\cO}{{\mathcal O}}
+\newcommand{\cP}{{\mathcal P}}
+\newcommand{\cQ}{{\mathcal Q}}
+\newcommand{\cR}{{\mathcal R}}
+\newcommand{\cS}{{\mathcal S}}
+\newcommand{\cT}{{\mathcal T}}
+\newcommand{\cU}{{\mathcal U}}
+\newcommand{\cV}{{\mathcal V}}
+\newcommand{\cW}{{\mathcal W}}
+\newcommand{\cX}{{\mathcal X}}
+\newcommand{\cY}{{\mathcal Y}}
+\newcommand{\cZ}{{\mathcal Z}}
+
+% Vectors
+\def\vzero{{\bm{0}}}
+\def\vone{{\bm{1}}}
+\def\vmu{{\bm{\mu}}}
+\def\vtheta{{\bm{\theta}}}
+\def\va{{\bm{a}}}
+\def\vb{{\bm{b}}}
+\def\vc{{\bm{c}}}
+\def\vd{{\bm{d}}}
+\def\ve{{\bm{e}}}
+\def\vf{{\bm{f}}}
+\def\vg{{\bm{g}}}
+\def\vh{{\bm{h}}}
+\def\vi{{\bm{i}}}
+\def\vj{{\bm{j}}}
+\def\vk{{\bm{k}}}
+\def\vl{{\bm{l}}}
+\def\vm{{\bm{m}}}
+\def\vn{{\bm{n}}}
+\def\vo{{\bm{o}}}
+\def\vp{{\bm{p}}}
+\def\vq{{\bm{q}}}
+\def\vr{{\bm{r}}}
+\def\vs{{\bm{s}}}
+\def\vt{{\bm{t}}}
+\def\vu{{\bm{u}}}
+\def\vv{{\bm{v}}}
+\def\vw{{\bm{w}}}
+\def\vx{{\bm{x}}}
+\def\vy{{\bm{y}}}
+\def\vz{{\bm{z}}}
+
+% Elements of vectors
+\def\evalpha{{\alpha}}
+\def\evbeta{{\beta}}
+\def\evepsilon{{\epsilon}}
+\def\evlambda{{\lambda}}
+\def\evomega{{\omega}}
+\def\evmu{{\mu}}
+\def\evpsi{{\psi}}
+\def\evsigma{{\sigma}}
+\def\evtheta{{\theta}}
+\def\eva{{a}}
+\def\evb{{b}}
+\def\evc{{c}}
+\def\evd{{d}}
+\def\eve{{e}}
+\def\evf{{f}}
+\def\evg{{g}}
+\def\evh{{h}}
+\def\evi{{i}}
+\def\evj{{j}}
+\def\evk{{k}}
+\def\evl{{l}}
+\def\evm{{m}}
+\def\evn{{n}}
+\def\evo{{o}}
+\def\evp{{p}}
+\def\evq{{q}}
+\def\evr{{r}}
+\def\evs{{s}}
+\def\evt{{t}}
+\def\evu{{u}}
+\def\evv{{v}}
+\def\evw{{w}}
+\def\evx{{x}}
+\def\evy{{y}}
+\def\evz{{z}}
+
+% Matrix
+\def\mA{{\bm{A}}}
+\def\mB{{\bm{B}}}
+\def\mC{{\bm{C}}}
+\def\mD{{\bm{D}}}
+\def\mE{{\bm{E}}}
+\def\mF{{\bm{F}}}
+\def\mG{{\bm{G}}}
+\def\mH{{\bm{H}}}
+\def\mI{{\bm{I}}}
+\def\mJ{{\bm{J}}}
+\def\mK{{\bm{K}}}
+\def\mL{{\bm{L}}}
+\def\mM{{\bm{M}}}
+\def\mN{{\bm{N}}}
+\def\mO{{\bm{O}}}
+\def\mP{{\bm{P}}}
+\def\mQ{{\bm{Q}}}
+\def\mR{{\bm{R}}}
+\def\mS{{\bm{S}}}
+\def\mT{{\bm{T}}}
+\def\mU{{\bm{U}}}
+\def\mV{{\bm{V}}}
+\def\mW{{\bm{W}}}
+\def\mX{{\bm{X}}}
+\def\mY{{\bm{Y}}}
+\def\mZ{{\bm{Z}}}
+\def\mBeta{{\bm{\beta}}}
+\def\mPhi{{\bm{\Phi}}}
+\def\mLambda{{\bm{\Lambda}}}
+\def\mSigma{{\bm{\Sigma}}}
+
+% Entries of a matrix
+\def\emLambda{{\Lambda}}
+\def\emA{{A}}
+\def\emB{{B}}
+\def\emC{{C}}
+\def\emD{{D}}
+\def\emE{{E}}
+\def\emF{{F}}
+\def\emG{{G}}
+\def\emH{{H}}
+\def\emI{{I}}
+\def\emJ{{J}}
+\def\emK{{K}}
+\def\emL{{L}}
+\def\emM{{M}}
+\def\emN{{N}}
+\def\emO{{O}}
+\def\emP{{P}}
+\def\emQ{{Q}}
+\def\emR{{R}}
+\def\emS{{S}}
+\def\emT{{T}}
+\def\emU{{U}}
+\def\emV{{V}}
+\def\emW{{W}}
+\def\emX{{X}}
+\def\emY{{Y}}
+\def\emZ{{Z}}
+\def\emSigma{{\Sigma}}

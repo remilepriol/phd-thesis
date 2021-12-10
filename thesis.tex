@@ -1,0 +1,384 @@
+\documentclass[12pt]{report} % nottoc,numbib
+\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{lmodern}
+\usepackage[french,english]{babel}
+\selectlanguage{english}
+
+\usepackage{silence}
+% Disable all warnings issued by latex starting with "You have..."
+\WarningFilter{latex}{You have requested package}
+\WarningFilter{latex}{No positions in optional float specifier.}
+\WarningFilter{latexfont}{}
+
+\usepackage{style/math_commands}
+
+\usepackage{style/thesis_style}
+\renewcommand{\sidebarname}{Sidebar}
+
+\usepackage[]{setspace} % should use option onehalfspacing but ugly
+\usepackage{style/coverpage}
+
+\usepackage[round]{natbib} % option sectionbib for biblio in each chapter
+%\usepackage{chapterbib}  
+
+% Speed up compilation by focusing on one part at a time
+\includeonly{
+	contrib3
+}
+
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{microtype}      % microtypography
+\usepackage{graphicx}
+\graphicspath{{figs/causal-optimization/}{figs/MAP-convergence/}}
+\usepackage{wrapfig}
+%\usepackage{subfigure}
+%\usepackage{subcaption}
+%\usepackage{placeins}
+\usepackage{tikz}           % define for loops
+
+
+
+
+
+%% <lmodern> incorpore les fontes en T1, pour
+%% faciliter le dépôt final. Ceci n'est pas la
+%% seule option :
+%%  1. Si cm-super est installé, vous pouvez enlever <lmodern>
+%%     (à ce moment, la police est un peu plus fidèle
+%%      au Computer Modern orginal);
+%%  2. Si vous avez une police préférée, par exemple,
+%%     <times> ou <euler> ou <mathpazo> (et bien d'autres),
+%%     alors vous pouvez remplacer <lmodern> ci-bas.
+%% Par contre, si vous faîtes face à un problème d'encapsulation
+%% lors dépôt final, il se peut que la solution soit d'utiliser <lmodern>.
+%% (Parfois le problème est au niveau de l'installation, donc
+%%  essayez de compiler sur un autre ordinateur sur lequel vous êtes
+%%  certain·e que l'installation est bonne.)
+\usepackage{lmodern}
+
+%% Il n'est pas nécessaire d'utiliser <babel>, car
+%% les commandes intégrées par la classe <dms>
+%% \francais et \anglais font le travail. Néanmoins,
+%% certains autres packages nécessitent <babel> (comme
+%% <natbib>), donc simplement enlever les % devant <babel>
+%% dans ce cas. Attention! Certains packages sont sensibles
+%% à l'ordre dans lequel ils sont chargés.
+% \francais % or
+% \anglais
+%% La commande \sloppy peut avoir des effets étranges sur les
+%% lignes de certains paragraphes.  Dans ce cas, essayez \fussy
+%% qui suppresse les effets de \sloppy.
+%% (\fussy est normalement le comportement par défaut.)
+%% On redéfinit \sloppy, pour tenter de réduire les comportements
+%% étranges. Le seul changement apporté à la version originale
+%% est la valeur de \tolerance.
+\def\sloppy{%
+  \tolerance 500%  %9999 dans LaTeX ordinaire, mauvaise idée.
+  \emergencystretch 3em%
+  \hfuzz .5pt
+  \vfuzz\hfuzz}
+\sloppy   %appel de \sloppy pour le document
+%%\fussy  %ou \fussy
+
+
+%% pour que la largeur de la légende des figures soit = \textwidth
+\usepackage[labelfont=bf, width=\linewidth]{caption}
+
+%\usepackage[dvipsnames]{xcolor} % already loaded in thesis_style
+\definecolor{blue}{rgb}{0,0.08,0.45}
+%% <hyperref> et <bookmark> devraient être les dernier package a être chargé,
+%% donc chargez vos packages avant.
+\usepackage{hyperref}       % hyperlinks
+\hypersetup{ % SLJ: my standard paper setup...
+  	pdftitle = {Optimization tools for non-asymptotic statistics in the exponential family},
+  	pdfauthor = {Rémi Le Priol},
+  	pdfsubject = {machine learning, exponential family, Bregman divergence, non-asymptotic statistics, sample complexity, duality, stochastic optimization, variance reduction, structured prediction, causality.},
+  	pdfkeywords = {Machine learning, exponential family, Bregman divergence, non-asymptotic statistics, sample complexity, duality, stochastic optimization, variance reduction, structured prediction, causality.},
+	pdfborder=0 0 0,
+	pdfpagemode=UseNone,
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	filecolor=blue,
+	urlcolor=blue,
+	pdfview=FitH
+	draft,
+%	final,
+}
+\usepackage{hypcap}   % Corrige la position du lien pour les images
+\usepackage{bookmark} % Remédie à des petits de <hyperref> 
+			%(important qu'il apparaisse APRÈS <hyperref>)
+
+\usepackage[capitalise]{cleveref}
+\newcommand{\rlp}[1]{\textcolor{BrickRed}{(RLP:#1)}}
+\newcommand{\TODO}[1]{\textcolor{cyan}{(TODO #1)}}
+\newcommand{\tocite}{\textcolor{purple}{(add citation)}}
+
+%% Définition des environnements utiles pour un mémoire scientifique.
+%% La numérotation est laissée à la discrétion de l'auteur·e. L'exemple
+%% illustré ici produit « Définition x.y.z » à l'extérieur d'un article
+%%   x = no. chapitre
+%%   y = no. section
+%%   z = no. définition
+%% et « Définition x » à l'intérieur d'un article
+%%   x = no. définition
+%% Les numérotations des corollaires, définitions, etc.
+%% se font de façon successive.
+%%
+%% Les macros \<type>name sont telles qu'ils suivent
+%% la langue actuelle. (P.ex. si \francais est utilisé,
+%% alors \begin{theo} va faire un Théorème et si \anglais
+%% est utilisé, \begin{theorem} fera un Theorem.)
+%%
+  % Environnement à utiliser à l'extérieur des articles
+\newtheorem{cor}{\corollaryname}[section]
+\newtheorem{deff}[cor]{\definitionname}
+\newtheorem{ex}[cor]{\examplename}
+\newtheorem{lem}[cor]{\lemmaname}
+\newtheorem{prop}[cor]{Proposition}
+\newtheorem{rem}[cor]{\remarkname}
+\newtheorem{theo}[cor]{\theoremname}
+
+  % Environnement à utiliser à l'intérieur des articles
+\newtheorem{corA}{\corollaryname}
+\newtheorem{deffA}[corA]{\definitionname}
+\newtheorem{exA}  [corA]{\examplename}
+\newtheorem{lemA} [corA]{\lemmaname}
+\newtheorem{propA}[corA]{Proposition}
+\newtheorem{remA} [corA]{\remarkname}
+\newtheorem{theoA}[corA]{\theoremname}
+%% IMPORTANT : Il faut faire \setcounter{corA}{0}
+%% au début d'un article pour recommancer à compter à 1.
+%%
+%% NOTE : Il peut être commode de redéfinir \the<type> pour
+%% obtenir la numérotation désirée. Par exemple, pour
+%% que les corollaires soit numérotés #article.#section.#sous-section,
+%% on fait
+%% \renewcommand\thecorA{\thepart.\thesubsection.\arabic{corA}}
+
+%%%
+%%% Si vous préférez que les corollaires, définitions, théorèmes,
+%%% etc. soient numérotés séparément, utilisez plutôt un bloc de
+%%% commandes de la forme :
+%%%
+
+%%\newtheorem{cor}{\corollaryname}[section]
+%%\newtheorem{deff}{\definitionname}[section]
+%%\newtheorem{ex}{\examplename}[section]
+%%\newtheorem{lem}{\lemmaname}[section]
+%%\newtheorem{prop}{Proposition}[section]
+%%\newtheorem{rem}{\remarkname}[section]
+%%\newtheorem{theo}{\theoremname}[section]
+
+%%
+%% Numérotation des équations par section
+%% et des  tableaux et figures par chapitre.
+%% Ceci peut être modifié selon les préférences de l'utilisateur.
+\numberwithin{equation}{section}
+\numberwithin{table}{chapter}
+\numberwithin{figure}{chapter}
+\usepackage{thm-restate}
+
+%%
+%% Si on veut faire un index, il faut décommenter la ligne
+%% suivante. Ajouter des mots à l'index avec la commande \index{mot cle} au
+%% fur et à mesure dans le texte.  Compiler, puis taper la commande
+%% makeindex pour creer les indexs.  Après une nouvelle compilation,
+%% vous aurez votre index.
+%%\makeindex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%                                     %%%%%%%%%%%%%
+%%%%%%%%%% D é b u t    d u    d o c u m e n t %%%%%%%%%%%%%
+%%%%%%%%%%                                     %%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%------------------------------------------------- %
+%%              pages i et ii                       %
+%%------------------------------------------------- %
+
+%%% Front matter is typeset using roman page numbers
+\pagenumbering{roman}
+
+
+\Auteur{Rémi}{Le Priol}
+\President{}{Ioannis}{Mitliagkas}{}
+\Directeur{}{Simon}{Lacoste-Julien}{}
+\CoDirecteur{}{Yoshua}{Bengio}{}         % s'il y a lieu
+%%\codirecteurs{Nom du 2e codirecteur}         % s'il y a lieu
+\Membres{2}{}{Haha}{Hoho}{}  
+
+%titre: 15 mots, max. 175 caracteres
+\PhD{Optimization tools for non-asymptotic statistics in the exponential family}
+    {}
+    {d'informatique et de recherche op\'{e}rationnelle}
+    {informatique}
+    {Décembre}
+    {2021}
+
+\PagesCouverture
+\newpage
+%%------------------------------------------------- %
+%%              pages iii                           %
+%%------------------------------------------------- %
+% \begin{flushright} \emph{À toi qui lis ces lignes, et à la beauté qui te guide.}\\
+%\rule{4cm}{0.4pt} \\
+% \emph{To you who read these lines, and to the beauty guiding you.}
+% \end{flushright}
+
+% \francais
+
+\chapter*{Résumé}
+
+\subsection*{Mots-clés}
+%%------------------------------------------------- %
+%%              pages iv                            %
+%%------------------------------------------------- %
+
+% \anglais
+\chapter*{Abstract}
+
+The exponential family is a ubiquitous class of models in statistics. On the one hand, it  covers most data types via common distributions, such as Gaussians, categorical, Poisson, Gamma, Wishart, or Dirichlet. On the other hand, it sits at the core of generalized linear models (GLM), a foundational class of models in machine learning. In this thesis, we make three contributions at the intersection of optimization and statistics, all revolving around the exponential family. 
+
+The first contribution adapts and improves a variance reduction optimization algorithm called stochastic dual coordinate ascent (SDCA) to train a particular class of GLM called conditional random fields (CRF). CRF were notoriously hard to train until the advent of variance reduction techniques, and our improved version of SDCA performs favorably compared to previous state-of-the-art.  
+
+The second contribution focuses on causal discovery. 
+Exponential families are widely used in graphical models, and in particular causal graphical models. 
+This contribution investigates a specific conjecture that gained some traction in previous work : causal models adapt faster to perturbations of the environment. Using results from optimization, we find strong support for this assumption in some settings and support against this assumption in other settings, thus calling for a refinement of its definition.
+
+The third contribution addresses a fundamental property of exponential families. 
+One of the most appealing properties of the exponential family is its closed form maximum likelihood estimate (MLE) and maximum a posteriori (MAP) for a natural choice of conjugate prior. These two estimators are used almost everywhere, often unknowingly. Yet literature to date is lacking results on the finite sample convergence property of the Kulback-Leibler divergence between these estimators and the true distribution. Drawing on a parallel with optimization, we take some steps towards such a result, and we highlight directions for progress both in statistics and optimization. 
+
+\subsection*{Keywords}
+Machine learning, exponential family, Bregman divergence, non-asymptotic statistics, sample complexity, duality, stochastic optimization, variance reduction, structured prediction, causality.
+
+
+%%------------------------------------------------- %
+%%        page v --- Table de matieres              %
+%%------------------------------------------------- %
+
+ % \cleardoublepage termine la page actuel et force TeX
+ % a poussé les éléments flottant (fig., tables, etc.) sur
+ % la page (normalement TeX les garde en suspend jusqu'à ce
+ % qu'il trouve un endroit approprié).
+%% TABLE DES MATIÈRES
+\cleardoublepage
+\pdfbookmark[chapter]{\contentsname}{toc}  % Crée un bouton sur
+                                           % la bar de navigation
+\tableofcontents
+ % LISTE DES TABLES
+\cleardoublepage
+\phantomsection  % Crée une section invisible (utile pour les hyperliens)
+\listoftables
+ % LISTE DES FIGURES
+\cleardoublepage
+\phantomsection
+\listoffigures
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LISTE DES SIGLES ET ABRÉVIATION %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{List of acronyms and abbreviations}
+\begin{tabular}{lll}
+  e.g. & \emph{exempli gratia} [for instance]\\
+  ERM & Empirical Risk Minimization     \\
+  i.e.& \emph{ide est} [that is]\\
+  ML & Machine Learning \\
+  resp. & respectively \\
+  SGD & Stocastic Gradient Descent \\ 
+\end{tabular}
+
+%%------------------------------------------------- %
+%%              pages vi                            %
+%%------------------------------------------------- %
+
+\chapter*{Acknowledgements}
+% \begin{minipage}{.7\linewidth}
+
+\subsubsection*{Contribution 2}
+We thank S\'ebastien Lachapelle and Tristan Deleu for insightful discussions and useful feedback that led to the main results of this paper. 
+We thank Waïss Azizian for his help in debugging proofs.
+
+
+We express our gratitude to Reza Babanezhad, Radu Dragomir and Hadrien Hendrikx for their insights on stochastic mirror descent. 
+
+\emph{
+Merci a toi que j'ai peut-être apprécié, respecté, aimé, idolatré ou detesté; avec qui j'ai parlé, échangé, fait de la recherche, souri, rêvé, ri, ou pleuré. Ma thèse fut un long voyage dont tu as fait partie. Nos chemin se sont croisé, et se recroiserons peut-être.}\\
+% avec qui j'ai fait un bout de ce chemin
+\rule{4cm}{0.4pt} \\
+\emph{Thanks to you who I may have appreciated, respected, loved, idolized or hated; with whom I spoke, interacted, did research, smiled, dreamt, laughed, or cried. My thesis was a long journey you were part of. Our paths crossed and may cross again.}\\
+% \end{minipage}
+
+
+
+ %
+ % Fin des pages liminaires.  À partir d'ici, les
+ % premières pages des chapitres ne doivent pas
+ % être numérotées
+ %
+% \NoChapterPageNumber
+\cleardoublepage
+
+\chapter*{Notation}
+
+\begin{tabular}{lll}
+  The set of real numbers \dotfill & $\real$ \\
+  Scalars are lower-case letters \dotfill & $\lambda$       \\
+  Vectors are lower-case bold letters  \dotfill & $\vtheta$\\
+  Matrices are upper-case bold letters\dotfill &  $\mA$ \\
+ \end{tabular} 
+\newpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%                           %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%  I N T R O D U C T I O N  %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%                           %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\include{introduction}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%                   %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%  A R T I C L E 1  %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%                   %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%                   %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%  A R T I C L E 2  %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%                   %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{contrib2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%                   %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%  A R T I C L E 3  %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%                   %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{contrib3}
+
+
+
+%\include{Discussion}
+
+ % S'il y a une bibliographie pour tout le document, on peut
+ % utiliser les commandes suivantes. À noter que le style est
+ % laisser au choix de l'auteur·e. (Il est même possible
+ % d'utiliser <natbib>).
+ % Il est possible d'avoir une bibliographie pour chaque
+ % chapitre. Consulter l'article en exemple pour voir
+ % comment faire.
+%  \chapter*{References}
+\bibliographystyle{abbrvnat}
+%\bibliography{references}
+\bibliography{references2,references3}
+
+\end{document}
