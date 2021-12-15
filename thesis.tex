@@ -5,6 +5,12 @@
 \usepackage[french,english]{babel}
 \selectlanguage{english}
 
+% Speed up compilation by focusing on one part at a time
+\includeonly{contrib1}
+%force-texpad-dependency: contrib1.tex
+%force-texpad-dependency: contrib2.tex
+%force-texpad-dependency: contrib3.tex
+
 \usepackage{silence}
 % Disable all warnings issued by latex starting with "You have..."
 \WarningFilter{latex}{You have requested package}
@@ -21,12 +27,6 @@
 
 \usepackage[round]{natbib} % option sectionbib for biblio in each chapter
 %\usepackage{chapterbib}  
-
-% Speed up compilation by focusing on one part at a time
-%\includeonly{contrib1}
-%force-texpad-dependency: contrib1.tex
-%force-texpad-dependency: contrib2.tex
-%force-texpad-dependency: contrib3.tex
 
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables

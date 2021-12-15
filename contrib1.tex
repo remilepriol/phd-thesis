@@ -84,8 +84,8 @@ A CRF models the conditional probability of a structured output $y \in \cY$ (e.g
 
 
 \begin{figure}
-	\centering \includegraphics[width=.4\textwidth]{crf}
-	\caption{
+	\centering \includegraphics[width=.5\textwidth]{crf}
+	\caption[Example of graphical model for the optical character recognition (OCR) task]{
 		Example of graphical model for the optical character recognition (OCR) task.
 		We want to exploit the structure of the word to predict that $y_{i,5}$ is an "e" and not a "c".
 		This can be done by working on the pairs $y_{i,\{t, t+1\} } = (y_{i, t}, y_{i, t+1})$, the cliques of that model.
@@ -97,7 +97,7 @@ A CRF models the conditional probability of a structured output $y \in \cY$ (e.g
 We have a data set $(x_i, y_i)_{i \in [1,n]}$ of $n$ i.i.d. input and structured output pairs.
 The parameter is learned by minimizing the $\ell_2$-regularized negative log-likelihood:
 \beq\label{negative log-likelihood}
-	\min_{\bw \in \real^d} \frac{\lambda}{2}\| \bm w\|_2^2 + \frac{1}{n} \sum_{i=1}^{n} -\log\left(p(y_i | x_i ; \bw) \right) \, .
+	\min_{\bw \in \real^d} \: \frac{\lambda}{2}\| \bm w\|_2^2 + \frac{1}{n} \sum_{i=1}^{n} -\log\left(p(y_i | x_i ; \bw) \right) \, .
 \eeq
 We now rewrite it using the notation for the SDCA setup for multi-class classification from~\citet{shalev2016accelerated}.
 Denote $M_i = |\cY_i|$ the number of labelings for sequence~$i$.
@@ -124,17 +124,17 @@ where $H(\alpha_i) := - \sum_{y \in \cY_i} \alpha_i(y) \log(\alpha_i(y))$ is the
 
 \subsection{Optimality Conditions}
 We define the \emph{conjugate weight} function $\hat{w}$ as follows:
-\begin{multline*}
+\alignn{
 		\hat{w}(\balpha)
-		:= \frac{1}{n \lambda} \sum_i A_i \alpha_i
+		&:= \frac{1}{n \lambda} \sum_i A_i \alpha_i
 		= \frac{1}{\lambda n} \sum_{i=1}^n \mathbb{E}_{y \sim \alpha_i} [\psi_i(y)] \\
-		= \frac{1}{\lambda } \left( \frac{1}{ n} \sum_{i=1}^n F(x_i, y_i)
+		&= \frac{1}{\lambda } \left( \frac{1}{ n} \sum_{i=1}^n F(x_i, y_i)
 		-  \frac{1}{n} \sum_{i=1}^n \mathbb{E}_{y \sim \alpha_i} [F(x_i, y)] \right) \, .
-\end{multline*}
+}
 It is the difference between the average of the ground truth features, and the average of the expected features for the dual variable, up to a factor $\frac{1}{\lambda}$.
-We can show that $\hat{w}(\balpha^{\star}) = \bm w^{\star}$ where $\bm w^{\star}$ and $\balpha^{\star}$ are respectively the optimal primal parameters and the optimal dual parameters.
+One can show that $\hat{w}(\balpha^{\star}) = \bm w^{\star}$ where $\bm w^{\star}$ and $\balpha^{\star}$ are respectively the optimal primal parameters and the optimal dual parameters.
 
-We can also  define the \emph{conjugate} probabilities $\hat{\alpha}_i$ as follows:
+We  also  define  \emph{conjugate} probabilities $\hat{\alpha}_i$ as follows:
 \begin{equation}
 	\forall i, \quad \hat{\alpha}_i(\bm w) := \nabla_s\phi_i(-A_i^{\top} \bm w) = p(.|x_i; \bm w).
 	\label{primal to dual}
@@ -342,12 +342,12 @@ Equation~\eqref{joint from marginals} in turn allows us to compute the entropy a
 	= \sum_C H(\mu_{i, C}) - \sum_S H(\mu_{i, S})
 \end{equation}
 and
-\begin{multline}
+\alignn{
 	\label{divergence marginal}
  	\tilde D (\mu_i || \nu_i)
- 	:=D_{KL}(\alpha_i|| \beta_i) \\
+ 	:=D_{KL}(\alpha_i|| \beta_i)
  	= \sum_C D_{KL}(\mu_{i, C}||\nu_{i,C}) - \sum_S D_{KL}(\mu_{i, S}||\nu_{i, S}). 
-\end{multline}
+}
 
 With this expression of the entropy~\eqref{entropy marginal}, we can compute the dual objective, and thus perform the line search:
 \begin{equation}\label{crf line search}
@@ -387,11 +387,10 @@ This lemma inspires and supports all the strategies.
 At iteration $t$, if we sample $i$ and take a step of size  $\gamma_i \in [0,1]$, we can lower bound the resulting dual improvement:
 \begin{align}
 	\label{one point descent}
-    \hspace{-3mm}
     & n (\cD(\balpha^+) - \cD(\balpha)) \notag \\
     & \geq \gamma_i \underbrace{ \big [ \phi(-A_i^T \bw) + \phi^*(\alpha_i) + \bw^T A_i \alpha_i \big ] }
-    _{ \textrm{Fenchel gap} =: g_i} \notag \\
-    & \quad + \gamma_i \bigg ( \frac{(1-\gamma_i)}{2} - \frac{\gamma_i R_i}{2 \lambda n} \bigg )\| \beta_i - \alpha_i \|^2_1
+    _{ \textrm{Fenchel gap} =: g_i} 
+    + \gamma_i \bigg ( \frac{(1-\gamma_i)}{2} - \frac{\gamma_i R_i}{2 \lambda n} \bigg )\| \beta_i - \alpha_i \|^2_1
 \end{align}
 where  $R_i := \|A_i\|^2_{1\rightarrow 2}  = \max_{y\in\cY_i} \| \psi_i(y) \|_2^2 $ is the squared radius of the corrected features for sample $i$.
 
@@ -490,7 +489,9 @@ In most plots we report the logarithm base 10 of the primal sub-optimality.
 We got the optimum by running L-BFGS a large number of iterations.
 
 \begin{table}[t]
-	\caption{Dataset summary.
+	\centering
+	\caption[Summary of the datasets we used in our experiments]{
+	Dataset summary.
 	$d$ is the dimension of $\bw$.
 	$n$ is the number of data points (sequences).
 	$N$ is the number of nodes (e.g. sum of sequences length).
@@ -498,7 +499,8 @@ We got the optimum by running L-BFGS a large number of iterations.
 	$A$ is the number of attributes (see Appendix~\ref{app:feature}).
 	$a$ is the maximum number of attributes extracted from one node.
 	Mem. is the memory required by the pairwise marginals stored as float 64.
-	The pairwise marginals dominate the memory cost.}
+	The pairwise marginals dominate the memory cost.
+	}
 	\label{datasets summary}
 	{\small
 		\begin{tabular}{lllll}
@@ -515,7 +517,7 @@ We got the optimum by running L-BFGS a large number of iterations.
 			\bottomrule
 		\end{tabular}
 	}
-	\end{table}
+\end{table}
 
 
 \subsection{Influence of the Line Search}\label{experiment line search}
@@ -552,8 +554,12 @@ We compare the performance of four sampling strategies with 20\% of uniform samp
   \item \textit{Max:} sample deterministically the variable with the largest recorded gap \citep{dunner2017efficient}.
 \end{itemize}
 \begin{figure}[t]
-\centering \includegraphics[width=.33\textwidth]{sampling_ocr}
-\caption{Performance of competing sampling schemes on the OCR dataset with 80\% of non-uniformity. Sampling proportionally to the gap gives the best performance.}
+\centering \includegraphics[width=.5\textwidth]{sampling_ocr}
+\caption[
+	Performance of competing sampling schemes on the OCR dataset 
+]{
+	Performance of competing sampling schemes on the OCR dataset with 80\% of non-uniformity. Sampling proportionally to the gap gives the best performance.
+}
 \label{fig:comparison sampling schemes}
 \end{figure}
 
@@ -568,8 +574,8 @@ Another strategy used by~\citet{osokin2016minding} is to update all the duality 
 Our experiments indicate that these strategies are not needed for SDCA-GAP.
 Increasing the ratio of non-uniformity up to 1 only improves the performance on all datasets, though after 0.8 the improvements are marginal, as illustrated by Figure~\ref{fig:non-uniformity} for the NER dataset.
 \begin{figure}[t]
-\centering \includegraphics[width=.33\textwidth]{nus_ner}
-\caption{SDCA with Gap sampling applied on NER with various fractions of non-uniform sampling, as indicated by the number in the legend.
+\centering \includegraphics[width=.5\textwidth]{nus_ner}
+\caption[SDCA with Gap sampling applied on NER]{SDCA with Gap sampling applied on NER with various fractions of non-uniform sampling, as indicated by the number in the legend.
 Increasing the fraction only improves the performance, up to a certain point.}
 \label{fig:non-uniformity}
 \end{figure}
@@ -588,7 +594,7 @@ We downloaded the code for OEG and SAG-NUS as implemented by~\citet{schmidt2015n
 We used our own implementation of SDCA with a line search sub-precision of $0.001$.
 We provide the comparison in Figure~\ref{fig:comparison with SAG and OEG} according to two different measures of complexity which are implementation independent.
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
 \begin{subfigure}{0.33\linewidth}
 \centering
@@ -620,7 +626,7 @@ We provide the comparison in Figure~\ref{fig:comparison with SAG and OEG} accord
 \includegraphics[width=\linewidth]{pos/primal_iter}
 \caption{POS}\label{fig:POS}
 \end{subfigure}%
-\caption{Primal sub-optimality as a function of the number of oracle calls (left) or parameters updates (center and right).
+\caption[Comparison of SDCA, SAG and OEG on 4 datasets]{Primal sub-optimality as a function of the number of oracle calls (left) or parameters updates (center and right).
 	SDCA refers to uniform sampling.
 	SDCA-GAP refers to sampling Gap sampling 80\% of the time.
 	SAG-NUS performs a line search at every iteration.
@@ -628,7 +634,7 @@ We provide the comparison in Figure~\ref{fig:comparison with SAG and OEG} accord
 	It appears worse than SAG-NUS when we look at the number of updates, which hides the cost of the line search.
 }
 \label{fig:comparison with SAG and OEG}
-\end{figure*}
+\end{figure}
 
 \paragraph{Oracle calls.}
 \citet{schmidt2015non} compared the algorithms on the basis of the number of oracle calls.
@@ -756,11 +762,10 @@ We report an empirical study of the line search performance in section \ref{expe
 
 \section{Description of the Feature Map $F$}
 \label{app:feature}
-
-\begin{wrapfigure}{r}{3.5cm}
+\begin{wrapfigure}[20]{R}{.25\textwidth}
 \centering
-    \includegraphics[height=7cm]{CRF_features.pdf}
-    \caption{Sketch of the feature map. K is the number of different labels for one node. A is the number of attributes.}
+    \includegraphics[width=.2\textwidth]{CRF_features.pdf}
+    \caption[Sketch of sequence feature maps]{Sketch of the feature map. K is the number of different labels for one node. A is the number of attributes.}
     \label{fig:sketch feature map}
 \end{wrapfigure}
 
@@ -864,7 +869,7 @@ We provide additional figures on the primal sub-optimality as a function of orac
 \includegraphics[width=\linewidth]{pos/primal_calls}
 \caption{POS}
 \end{subfigure}%
-\caption{Primal sub-optimality as a function of the number of oracle calls. SDCA-GAP performs much better than the competing methods for this metric partly because its line search does not require oracle calls.}\label{fig:oracle_calls}
+\caption[Primal sub-optimality as a function of the number of oracle calls]{Primal sub-optimality as a function of the number of oracle calls. SDCA-GAP performs much better than the competing methods for this metric partly because its line search does not require oracle calls.}\label{fig:oracle_calls}
 \end{figure}
 
 \begin{figure}[H]
@@ -889,7 +894,7 @@ We provide additional figures on the primal sub-optimality as a function of orac
 \includegraphics[width=\linewidth]{pos/test_iter}
 \caption{POS}
 \end{subfigure}%
-\caption{Test error against number of epochs. Every methods reach the same test error. SDCA and SAG have the same convergence speed.}\label{fig:test_err}
+\caption[Test error against number of epochs]{Test error against number of epochs. Every methods reach the same test error. SDCA and SAG have the same convergence speed.}\label{fig:test_err}
 
 \end{figure}
 
@@ -905,7 +910,7 @@ We provide additional figures on the primal sub-optimality as a function of orac
         \includegraphics[width=\linewidth]{step_size_pos}
         \caption{POS}
     \end{subfigure}
-	\caption{
+	\caption[Influence of the line search precision]{
 		Performance of SDCA on NER and POS with a Newton line-search.
 		The number after the name of the dataset indicates the sub-precision we asked.
 		A sub-precision of 0.5 effectively means that Newton stops after 1 step.
@@ -926,7 +931,7 @@ We provide additional figures on the primal sub-optimality as a function of orac
 \includegraphics[width=\linewidth]{gap_ratio_ocr}
 \caption{OCR}
 \end{subfigure}
-\caption{The ratio between the estimate of the duality gap and the ground truth as a function of the proportion of non uniform sampling. The gap sampling tends to underestimate this value, whereas the uniform sampling tends to over-estimate it.}\label{fig:ratio}
+\caption[Duality gap estimation]{The ratio between the estimate of the duality gap and the ground truth as a function of the proportion of non uniform sampling. The gap sampling tends to underestimate this value, whereas the uniform sampling tends to over-estimate it.}\label{fig:ratio}
 
 \end{figure}
 
@@ -1281,13 +1286,13 @@ This statement is similar to a weighted combination of Equation~(25) from~\citet
 
     We first bound the data fidelity term.
     We use the the fact that $r^*$ is 1-smooth with respect to $\|.\|_{D'}$ to upper-bound its variation:
-    \begin{equation}
+\alignn{
         r^* \left( \frac{A \balpha^+}{\lambda n} \right)
-        = r^* \left( \frac{A \balpha}{\lambda n} + s_i \frac{A_i \delta_i}{\lambda n} \right)
-        \leq r^* \left( \frac{A \balpha}{\lambda n} \right)
+        &= r^* \left( \frac{A \balpha}{\lambda n} + s_i \frac{A_i \delta_i}{\lambda n} \right) \\
+        &\leq r^* \left( \frac{A \balpha}{\lambda n} \right)
         + s_i \left \langle \nabla  r^* \left( \frac{A \balpha}{\lambda n} \right), \frac{A_i \delta_i}{\lambda n} \right \rangle
         + \frac{s_i^2}{2} \norm{ \frac{A_i \delta_i}{\lambda n} }_{D'}^2
-    \end{equation}
+}
     The linear coeficient of this lower boudn is $\hat w( \balpha) = \nabla  r^* \left( \frac{A \balpha}{\lambda n} \right)$.
     The quadratic term can be further upper-bounded:
     \begin{equation}
@@ -1321,13 +1326,13 @@ This statement is similar to a weighted combination of Equation~(25) from~\citet
     \end{equation}
 
     Plugging the bounds~\eqref{app:eq:bound_loss} and~\eqref{app:eq:bound_regularization} into Equation~\eqref{app:eq:dual_improvement}, we get:
-    \begin{equation}
-        n (D(\balpha^+) - D(\balpha))
-        \geq s_i \left (\phi^*(\alpha_i)
+\alignn{
+        & n (D(\balpha^+) - D(\balpha)) \notag \\
+        & \geq s_i \left (\phi^*(\alpha_i)
         + \left \langle \hat w( \balpha) , A_i (\alpha_i - \beta_i) \right \rangle
          -  \phi^*(\beta_i) \right )
          + \frac{s_i}{2} \left ( (1 - s_i ) \strgconvex - s_i \frac{R_i}{\lambda n } \right ) d_i^2 \, .
-    \end{equation}
+}
     Recall that $\beta_i := \nabla \phi (-A_i^T \hat w (\balpha))$. Thus,
     \begin{equation}
         \left \langle - A_i^T \hat w( \balpha) , \beta_i \right \rangle - \phi^*(\beta_i)
@@ -1336,13 +1341,13 @@ This statement is similar to a weighted combination of Equation~(25) from~\citet
     by definition of the convex conjugate $\phi^*$.
     To sum up, at iteration t, if we sample the block i, and update it with step size $s_i$,
     we can lower bound the resulting dual improvement with:
-    \begin{equation}
+\alignn{
         \label{app:one point descent}
-        n (D(\balpha^+) - D(\balpha))
-        \geq s_i \underbrace{ \big [ \phi(-A_i^T \hat w(\balpha)) + \phi^*(\alpha_i) + \hat w(\balpha)^T A_i \alpha_i \big ]
+        & n (D(\balpha^+) - D(\balpha)) \notag \\
+        & \geq s_i \underbrace{ \big [ \phi(-A_i^T \hat w(\balpha)) + \phi^*(\alpha_i) + \hat w(\balpha)^T A_i \alpha_i \big ]
         }_{ \textrm{Fenchel gap} =: g_i}
         + \frac{s_i \strgconvex}{2} \left ( 1 - s_i\left (1 + \frac{R_i}{\strgconvex \lambda n } \right )  \right )  d_i^2 \, .
-    \end{equation}
+ }
     To conclude the proof, take a weighted average of the inequalities~\eqref{app:one point descent} with the weights $p_i$.
 \end{proof}
 
