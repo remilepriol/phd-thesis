@@ -25,8 +25,18 @@
 \emph{R\'emi Le Priol, Frederik Kunstner, Damien Scieur, and Simon Lacoste-Julien.} 
 This paper is under review at AISTATS 2022~\citep{lepriol2021convergence}.
 
-\section{Contributions of the authors}
+\section{History of the Paper}
+R\'emi and Simon started looking for MAP convergence rates when he was involved in \citet{lepriol2021analysis}, as such rates may have been helpful to characterize the speed of adaptation of categorical of Gaussian models (see the \nth{2} contribution).
+About the same time, Frederik independently got interested in this problem while working on \citet{kunstner2020homeomorphic}, a beautiful paper proving that expectation-maximization (EM) in exponential families is an instance of mirror descent. They were then able to leverage recent results on relative smoothness \citep{lu2018relatively} to get the first global convergence rate applicable to EM for gaussian mixture models. This result naturally raised the question : can we get similar results for stochastic EM via a convergence rate on stochastic mirror descent ? 
+Meanwhile, Remi and Simon sent calls to the community, looking for answers to this seemingly simple question. That is when the trajectories of R\'emi and Frederik collided, thanks to the mediation of Mark Schmidt. 
+Damien finally hopped in on the project, bringing his optimization expertise. 
+All of them finally created this paper, gathering all the takes they could find on this problem.
 
+\section{Contributions of the authors}
+R\'emi Le Priol came up with the equivalence between MAP and SMD, wrote most of the paper, and made the figures.
+Frederik Kunstner contributed to the literature review, and in particular the comparison between analysis of SMD.
+Damien Scieur contributed to the general writing and the results on self-concordance.
+Damien Scieur and Simon Lacoste-Julien provided supervision.
 
 \chapter{Convergence Rates for the MAP of an Exponential Family and Stochastic Mirror Descent -- an Open Problem}
 
@@ -799,10 +809,10 @@ This means that the primal and dual Bregman divergences have the same form as we
 	&=  \alpha \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right)
 	= \alpha \phi\paren{\frac{ \nat_n}{\nat_*}},
 \end{align}
-\begin{wrapfigure}[14]{r}{0.4\textwidth}
+\begin{wrapfigure}[12]{l}{0.3\textwidth}
 	\centering
-	\includegraphics[width=.38\textwidth]{phi.pdf}
-	\caption[Illustration of $\phi(z)$] and its upper bound.]{
+	\includegraphics[width=.28\textwidth]{phi.pdf}
+	\caption[Illustration of $\phi(z)$ and its upper bound.]{
 	Illustration of $\phi(z)$ (orange) and its upper bound $\phi(z) + \phi\paren{z^{-1}}$ (grey).
 	They both are barriers near $0$.
 	}
@@ -815,13 +825,14 @@ where these 2 lines are equal, and $\phi$ measures the discrepancy between the r
 illustrated in orange in Figure~\ref{fig:phi}.
 To derive the upper bound for the MAP, due to the difficulty of finding a closed form for the expectation of the logarithm, we focus on the symmetrized Bregman instead
 \alignn{
-	\bregmanconj( \mu_*; \mu_n) 
-	\leq \cS_{\conj} (\mu_*, \mu_n )
-	&:= \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) \nonumber\\
-	&=  \alpha \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 },
-	\label{eq:symmetrized_bregman} \\
-	&= \alpha\phi\paren{\frac{\mu_*}{\mu_n}} + \alpha\phi\paren{\frac{\mu_n}{\mu_*}}
+	\cS_{\conj} (\mu_*, \mu_n )
+	&:= \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) \\
+	&= \alpha\phi\paren{\frac{\mu_*}{\mu_n}} + \alpha\phi\paren{\frac{\mu_n}{\mu_*}} \\
+		&=  \alpha \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 } \; ,
+	\label{eq:symmetrized_bregman}
 }
+
+which verifies $\bregmanconj( \mu_*; \mu_n) \leq \cS_{\conj} (\mu_*, \mu_n )$.
 Writing $z=\frac{\mu_*}{\mu_n}$ this is equivalent to
 \aligns{
 	\label{eq:log_bound}
