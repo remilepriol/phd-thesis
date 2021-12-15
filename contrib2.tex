@@ -1,4 +1,3 @@
-\setcounter{corA}{0} % Pour recommancer à compter les defs, theorems, etc. à partir de 1
 \setcounter{theorem}{0}
 %\setcounter{definition}{0}
 %\setcounter{proposition}{0}
@@ -45,7 +44,7 @@
 \emph{R\'emi Le Priol, Reza Babanezhad Harikandeh, Yoshua Bengio, Simon Lacoste-Julien.} 
 This paper was published at AISTATS 2021~\citep{lepriol2021analysis}.
 
-\section{Contributions of the authors}
+\section{Contributions of the Authors}
 Rémi Le Priol derived the comparison between distances for all models, wrote the code, ran the experiments and contributed to the general writing of the paper.
 Reza Babenezhad contributed to the general writing and found the optimization method and the convergence rate for normal variables.
 Simon Lacoste-Julien came up with the idea of using convergence rates to quantify the adaptation speed, while Yoshua Bengio came up with the idea of measuring the adaptation speed in the first place. 
@@ -118,7 +117,7 @@ We theoretically and empirically answer this question for cause-effect SCMs with
     \label{fig:geometry}
 \end{figure*}
 
-\section{Related work}
+\section{Related Work}
 
 Causal relationships are asymmetric.
 These asymmetries are often visible in observations, so that one can identify which is cause and which is effect under relevant assumptions \citep{mooij2016distinguishing}. 
@@ -197,7 +196,7 @@ These families are interesting because the direction is not identifiable from ob
 -- e.g. $\pmodel$ and $\panti$ can model the same set of distributions -- 
 which makes them challenging for causal discovery.
 
-\section{An optimization perspective}
+\section{An Optimization Perspective}
 \label{sec:opt_alg}
 One way to formalize adaptation speed is to characterize it via the convergence speed of the stochastic optimization procedure. An appealing aspect of stochastic optimization algorithms such as SGD (when only using fresh samples and running it on the true loss we care about) is that they come with convergence rate guarantees on the \emph{population risk} in machine learning, thus giving us direct sample complexity results to obtain a specific generalization error.
 The convergence rate is an \emph{upper bound} on the expected suboptimality after a given number of iterations.
@@ -249,7 +248,7 @@ Overall both bounds~\eqref{eq:sgd_rate} and~\eqref{eq:mirror_prox_rate} carry th
 \citet[Theorem 1]{yang2016unified} provides a unified convergence rate for stochastic heavy ball and Nesterov methods that is similar to~\eqref{eq:sgd_rate}, where the initial distance is the main difference between causal and anticausal models.
 Consequently, our theoretical analysis holds for a larger class of algorithms than ASGD. More generally, it applies to any stochastic optimization method whose sample complexity depends on parameter distance.
  
-\section{{Categorical variables}}
+\section{{Categorical Variables}}
 \label{sec:categorical}
 
 In this section, both cause and effect come from categorical distribution. 
@@ -460,7 +459,7 @@ This KL explosion drowns the signal coming from the cause intervention, calling 
 % | | \   || |   | || (\ (   | |   | || (   ) || |      
 % | )  \  || (___) || ) \ \__| )   ( || )   ( || (____/\
 % |/    )_)(_______)|/   \__/|/     \||/     \|(_______/
-\section{{Multivariate normal variables}}
+\section{{Multivariate Normal Variables}}
 In this section, we analyze the case of two multivariate normal variables with a linear relationship.
 Cause $X$ and effect $Y$ are sampled from the causal model
 \begin{align}
@@ -619,7 +618,7 @@ On a more theoretical note, is it possible to characterize the adaptation speed 
 
 \onecolumn
 
-\section{{Categorical optimization}}
+\section{{Categorical Optimization}}
 
 In this section we prove a convergence rate of ASGD that applies to the categorical loss, and we show that the constants involved in this rate are the same for both causal and anticausal models.
 
@@ -743,7 +742,7 @@ The difference in adaptation speed between causal and anticausal models is chara
 % \end{align*}
 % which is exactly equal to the upper bound for the gradient norm in~\eqref{eq:cat_grd_uppr_bnd}. With similar argument, the upper bound for the gradient magnitude of the conditional in both models is 2.  
 
-\section{{Categorical analysis}}
+\section{{Categorical Analysis}}
 \label{apdx:categorical_analysis}
 
 In this section, we prove relationships between parameter distances induced by interventions between the causal and anticausal models. 
@@ -1222,7 +1221,7 @@ For this kind of intervention to be detectable, we need to intervene on $x_0$ su
 To ensure this in our experiments, we pick $x_0 = \argmax_x \ptrue(x)$. We report results on dense and sparse priors in Figure~\ref{fig:single_mechanism_intervention}. 
 We observe no significant advantage for the causal model, in spite of the parameter counting prediction.
 
-\section{{Categorical priors}}
+\section{{Categorical Priors}}
 In this section we study the dense and sparse prior described in the main paper.
 
 \subsection{Causal Direction is Identifiable under the  Dense Prior}
@@ -1345,7 +1344,7 @@ As we increase $K$, the sparse prior $\Dir(\ones_{K^2}/ K)$ becomes more sparse.
 Conceptually, the value of $\eps$ decreases, and the value of $\KL(\uniform || \vp)$ explodes.
 This is why we observe high KL values for sparse prior and effect intervention. Empirically, these values also increase with $K$.
 
-\section{{Normal optimization}}
+\section{{Normal Optimization}}
 \label{apdx:normal_optimization}
 In this Section we adapt the stochastic composite mirror-prox algorithm to our setting of unbounded multivariate normal optimization. 
 First we describe the algorithm and prove a novel convergence rate that applies to our setting. 
@@ -1801,7 +1800,7 @@ So the distances are written
 
 We did not find any meaningful simplification of these formulas. 
  
-\section{{Normal prior}}
+\section{{Normal Prior}}
 \label{apdx:normal_experiments}
  
 Exactly like in the categorical setting, the distributions we sample are going to impact the speed of adaptation and the distances we measure. Let $K$ be the dimension of $X$ and $Y$, and $n_0=2K+2$ an arbitrary number of prior observations. 

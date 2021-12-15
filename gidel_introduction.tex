@@ -1,0 +1,1313 @@
+ % Utilisez la macro de langue appropriée.
+% Noter que toutes les parties du document,
+
+% à part les articles, doivent être en français.
+
+% Pour rédiger une thèse en anglais, il faut
+
+% une permission. Consulter le guide de présentation
+
+% des mémoires et des thèses pour de l'information
+
+% plus détaillé et à jour.
+
+% \francais %ou
+
+\renewcommand*\thesection{\arabic{section}}
+
+
+
+\chapter{Introduction}
+
+\begin{center}
+\begin{minipage}{.9 \textwidth}
+\centering
+\emph{<<On a pas les mêmes règles pourtant c'est le même jeu>>}\\
+$[$We do not have the same rules yet it’s the same game$]$--~\citet{lomepal2019mome}
+% \emph{``I thought there was nothing worth publishing until the Minimax Theorem was proved''--~\citet{von1953communication}
+% }
+\end{minipage}
+\end{center} 
+
+\vspace{5mm}
+
+
+
+
+What is the game mentioned by~\citet{lomepal2019mome}? For some, it could be the game of life~\citep{gardner1970mathematical}, while for others, it remains a mystery. However, what is certain is that we live in a world full of games. From the simplest ones, such as rock-paper-scissor, to the most challenging ones such as chess, go, or StarCraft II, games are so complex and interesting that there exist a professional league of players and dense theoretical literature for each of them~\citep{simon1988skill,bozulich1992go,vinyals2017starcraft}. 
+
+% some people dedicated their own lives to some of these games~\citep{shotwell1994game}. 
+
+That is why a long-standing goal in artificial intelligence~\citep{samuel1959some,tesauro1995temporal,schaeffer2000games} has been to achieve superhuman performance---with a computer program---at such games of skills. 
+
+
+
+
+Among all the historical board games played by humans, the game of go was considered one of the most difficult to master by a computer program~\citep{van2002games}; Until it was not~\citep{silver2016mastering}. This odds-breaking breakthrough~\citep{muller2002computer,van2002games} came from a sophisticated combination of Monte Carlo tree search and machine learning techniques to evaluate positions, shedding light upon the high potential of machine learning to solve games. 
+
+% Such method eventually led to the creation a computer program mastering the game of go~\citep{silver2017mastering} without using an human knowledge.
+
+% have been recently solved using
+
+
+
+
+Machine learning, the science of learning mathematical models from data,
+
+has expanded significantly in the last two decades. It has had a noticeable impact in diverse areas such as computer vision~\citep{krizhevsky2012imagenet}, speech recognition~\citep{hinton2012deep}, natural language processing~\citep{sutskever2014sequence}, computational biology~\citep{libbrecht2015machine}, and medicine~\citep{esteva2017dermatologist}. 
+
+
+
+
+Interestingly, while regarding such different domains, these success stories have a common ground: they all correspond to the estimation of a prediction function based on empirical data~\citep{vapnik2006estimation}. This learning paradigm, based on empirical risk minimization (ERM), is known as supervised learning. At a high level, estimating the correct dependence through ERM requires three main ingredients: 1) a sufficient amount of data, 2) a hypothesis class on the actual dependence function, 3) a sufficient amount of computing to find an approximate solution to the corresponding minimization problem. These three steps are subject to interdependent tradeoffs~\citep{bottou2008tradeoffs}---for instance, for a given computational budget, more data would improve our ability to generalize but would make the optimization procedure harder---are at the heart of the challenges of supervised learning. 
+
+
+
+
+The notable success of the applications of supervised learning mentioned above can be attributed to many factors. Among them, one can arguably say that the building of high-quality datasets~\citep{russakovsky2015imagenet}, the improved access to computational resources, and the design of scalable training methods for large models~\citep{lecun1998gradient} played a significant role.
+
+However, yet powerful, supervised learning is a restrictive setting where a single learner is in a fixed environment, i.e., it has access to a large number of input-output pairs at training time that come from an independent and identically distributed process. This assumption does not consider that some other agents, i.e., computer programs or humans, maybe part of the environment and thus impact the task. 
+
+
+
+
+% Many problems cannot be realistically framed as supervised learning tasks. Labeling data is a process that is very costly and sometimes incorrect (cite), moreover some task such as Go, poker or chess are intrinsically composed of two players. 
+
+Real-world games such as Go, poker, or chess are composed of multiple players, thus not fitting into the i.i.d. ERM framework that is composed of a single learner in a fixed environment. From the players’ viewpoint, the environment that conditions the way they should play depends on their opponent and thus is not fixed. From a machine learning perspective, the task in those games is to learn how to play to beat any opponent. 
+
+% Mastering a complex game is considered challenging even for a human. That is why the community have used games as benchmarks in
+
+% artificial intelligence for decades \citep{samuel1959some,tesauro1995temporal} with 
+
+Recently, machine learning techniques have led to significant progress on increasingly complex domains such as classical board games (e.g., chess~\citep{silver2018general} or go~\citep{silver2017mastering}), card games (e.g., poker~\citep{brown2017safe,brown2019superhuman} or Hanabi~\citep{foerster2019bayesian}), as well as video games (e.g., StarCraft II~\citep{vinyals2019grandmaster} or Dota 2~\citep{berner2019dota}). However, chess, go, and more generally, all the zero-sum games of skills mentioned in this introduction are just ``a \emph{Drosophilia} of reasoning''~\citep{kasparov2018chess}. We are just scratching the surface, the combination of multi-player games and machine learning can offer. 
+
+
+
+
+% What makes training and evaluation challenging 
+
+
+
+
+
+
+
+\section{Multiplayer games and Machine Learning}
+
+
+
+
+Adversarial formulations, or more generally multi-player games, are frameworks that aim at casting tasks into which several agents (a.k.a players) compete (or collaborate) to solve a problem. At a high level, each agent is given a set of parameters and a loss that they try to minimize. The key difference between standard supervised learning and multi-player games is that each agent’s loss depends on all the players' parameters, thus entangling the minimization problem of each player. 
+
+
+
+
+
+
+
+Such frameworks include real-world games such as Backgammon, poker, or Starcraft II, but also market mechanisms~\citep{nisan2007introduction}, auctions~\citep{vickrey1961counterspeculation}, as well as games specifically designed for a machine learning purpose such as Generative Adversarial Networks (GANs)~\citep{goodfellow2014generative} that enabled a significant breakthrough in generative modeling, the domain of representing data distributions.
+
+
+
+
+
+
+
+\subsection{Motivation: defining ’good’ task losses through games}
+
+
+
+
+Designing computer programs that learn from games' first principles has been a well-established challenge of artificial intelligence~\citep{samuel1959some,tesauro1995temporal}.
+
+Until recently, state-of-the-art performances were only achieved by injecting domain-specific human knowledge~\citep{campbell2002deep,genesereth2005general,silver2016mastering} such as specific heuristics or openings discovered by humans or data of games played by professional players. 
+
+
+
+
+A recent breakthrough~\citep{silver2018general} permitted to master chess, shogi, and go by using a general algorithm that learns by playing against itself without having access to any data or knowledge of other players. 
+
+
+
+
+It demonstrates the powerful potential of game formulation long-ago noticed by the community~\citep{genesereth2005general}: the goal of ``winning'' the game is simple yet challenging to achieve. The complexity arises from the competition between the two players that usually start from a quite even state, and try to eventually take the lead by taking advantage of the subtlety of some rules. To win, the best-performing players must learn to incorporate knowledge representation, reasoning, and rational decision-making.
+
+
+
+
+% Such learning tasks where several agents--in the case of GANs a discriminator, i.e., a classifier, and a generator, i.e., a generative model--are interacting through a game is very appealing from a learning perspective. They allow to implicitly define losses for tasks that are challenging to formalize, e.g., to what extent a generated image is ``realistic''. 
+
+The framework of GANs defines a game between two neural networks, a generator that aims at creating realistic images and a discriminator that tries to distinguish real images from the generated ones. The discriminator implicitly defines a divergence between two distributions through the classification task: the data distribution and the generated one. \citet{huang2017parametric} argue that such divergences, implicitly defined by a class of discriminators, are ``good'' task losses for generative modeling: they are differentiable, have a better sample efficiency than standard divergences, are easier to learn from, and can encode high-level concepts such as ``paying attention to the texture in the image.''
+
+ 
+
+
+The impact of such new differentiable game formulations for learning is compelling and promising, but they currently lack theoretical foundations.
+
+
+
+
+\subsection{Foundations of Games for Machine Learning}
+
+
+
+
+
+
+
+Compared to supervised learning, a loss minimization problem, multi-player games are a multi-objective minimization (or maximization) problem. For example, in a Texas hold’em poker game, each player tries to maximize its own gains. However, since the game is zero-sum, the maximization of each player' gain conflict with each other and thus cannot be considered individually. Thus, in a game, the optimization of each player must be considered \emph{jointly}.
+
+In that case, the standard notion of optimality is called \emph{Nash equilibrium}~\citep{nash1950equilibrium}. A Nash equilibrium is achieved when no player can decrease its loss by unilaterally changing its strategy. 
+
+
+
+
+In general, the existence of an equilibrium is not guaranteed~\citep{von1944theory}. This fact is problematic since the Nash equilibrium is a natural and intuitive notion of target for the players of a game. Ensuring that we have a well-defined notion of equilibrium is a necessary first step to eventually build-up an understanding of multi-player games. The minimax theorem~\citep{neumann1928theorie} was among the first existence results of equilibria in games and is considered to be at the heart of game theory.\\ 
+
+\begin{center}
+\begin{minipage}{.7 \textwidth}
+\emph{``As far as I can see, there could be no theory of games [without] the Minimax Theorem.''--~\citet{von1953communication}\\
+}
+% \emph{``I thought there was nothing worth publishing until the Minimax Theorem was proved''--~\citet{von1953communication}
+% }
+\end{minipage}
+\end{center} 
+While this quote may appear slightly dismissive at first, it has to be put in context. \citet{von1953communication} and~\citet{frechet1953commentary} is an exchange between Maurice Fréchet and John von Neumann regarding the relative contribution of~\citet{borel1921theorie} and~\citet{neumann1928theorie} in the foundation of the field that is now called game theory. Beyond the controversy, the quote mentioned above underlines that when building a new field, it is fundamental to show that the object of interest---in that case, a Nash equilibrium---exists to eventually build a theory on top of it. For instance, the question of the computational complexity of a Nash equilibrium is closely entangled with such an existence result: since a Nash always exists its computational complexity cannot belong to the class of NP problems~\citep{papadimitriou2007complexity}.
+
+% ========== CONTINUE HERE ============
+
+% Beyond the original debate---to which the reader can make its oppinion by reading \citet{von1953communication} and~\citet{frechet1953commentary}--- 
+
+In the context of machine learning, the considerations regarding games are different. Each player's payoff functions correspond to the performance of the machine learning models that represent that player. Often their models are parametrized by finite-dimensional variables. Consequently, the payoffs are (potentially non-convex) functions of these parameters, raising the question of the existence of an equilibrium for such a game played with machine learning models.
+
+Overall, this thesis revolves around two main questions regarding machine learning in games: what is the target, and how can it be reached in a reasonable amount of time?
+
+
+\section{Overview of the Thesis Structure}
+
+Besides the introduction and conclusion, this thesis includes a background section followed by four contributions that correspond to four research papers that the author of this thesis wrote during his Ph.D.
+
+The story of the contribution develops as follows: the first contribution explores the notion of equilibrium in the context of a game played by deep machine learning models by proving a minimax theorem for a particular class of nonconvex-nonconcave zero-sum two-player game where the players are neural networks. We then get interested in game optimization in the second and third contributions, and we finally provide an empirical study of some practical games' optimization landscape. 
+
+Before jumping into the background section, we provide a more detailed summary of each section.
+
+\subsection{Defining a target for learning in games}
+
+In his seminal work,~\citet{neumann1928theorie} considered zero-sum two-player games. In that case, both players are competing for the same payoff function, but while one tries to maximize it, the other aims at minimizing it. The minimax theorem ensures that under mild assumptions, such a game has a \emph{value} and an \emph{equilibrium}: there exists an optimal strategy for each player that induces a given value for the payoff function.
+
+Such games are convenient to build up intuition because the notion of winning, losing, and tying can be related to the value of the payoff function, i.e., if the payoff of the first player is above (resp. below, equal) the value of the game it means that the first player is currently winning (resp. losing, tying) the game. 
+
+In that setting, a general minimax theorem has been proved by~\citet{sion1958general} under the assumption that each player’s strategy set is convex and that the payoff function is a convex-concave function. 
+
+In the context of machine learning, the payoff function often depends on the parameters of each player. For instance, in chess, the reinforcement learning policy that would pick each move may be parametrized by a neural network, and in GANs, the discriminator and the generator are usually neural networks. 
+
+Because of this neural network parameterization, one cannot expect the payoff function to be convex-concave in general (the same way one cannot expect the loss of a regression problem to be convex in supervised learning with a deep neural network)~\citep{choromanska2015loss}.
+
+In our first contribution, we propose an approximate minimax theorem certain class of problems, including Wasserstein GAN formulations wherein both the generator and the discriminator are one hidden layer RELU network. Our result relies on the fact that for many practical games, e.g., GANs or Starcraft II, the nonconvex-nonconcavity of the payoff function comes from the neural network parametrization. 
+
+Roughly, we show that a pair of larger-width one-hidden-layer ReLU networks attain the min-max value of the game attainable by distributions over smaller-width one-hidden-layer RELU networks. The underlying intuition is as follows: neural nets have a particular structure that interleaves matrix multiplications and simple non-linearities (often based on the $\max$ operator like ReLU). The matrix multiplications in one layer of a neural net compute linear combinations of functions encoded by the other layers. In other words, neural nets are (non-)linear mixtures of their sub-networks. 
+
+\subsection{Building our theoretical understanding of game optimization}
+
+The learning dynamics of differentiable games ,such as GANs, may exhibit a \emph{cyclic behavior}. For instance, consider a game such as rock-paper-scissors. Intuitively, it makes sense that each of the agents, trying to beat their opponent using gradient information, will slowly change their strategies to the best response that currently beats their opponent, continuously switching from rock to paper and then scissors. One can show that this intuition is accurate: naively implementing the gradient method to train the agents will lead to cycles where the players will alternatively play each different actions without even converging to a Nash equilibrium of the game. 
+
+In the second contribution, we show the failure of standard gradient methods to find an equilibrium of such simple examples inspired by rock-paper-scissors. 
+Such a failure of the gradient method on simple games leads to an immediate question: are there principled methods that address this cycling problem? We answered this question affirmatively and proposed to tap into the variational inequality literature to leverage the concept of averaging and extrapolation to design new optimization methods that address the cycling problem and tackle the current constraints of modern machine learning, such as stochastic optimization in high dimension. 
+Our main theoretical contributions are two-fold: we first consider the convergence of averaging and extrapolation for the optimization of bilinear examples. Our second theoretical contribution is the study a variant of extragradient that we call \emph{extrapolation from the past} originally introduced by~\citet{popov1980modification} and prove novel \emph{convergence rates} in the context VIP with Lipschitz and strongly monotone operators, and stochastic VIP with Lipschitz operator. 
+We \emph{prove its convergence} for strongly monotone operators and in the stochastic VIP setting. Our empirical contribution is the introduction of a novel algorithm leveraging extrapolation, that we called ExtraAdam for the training of GANs. Our experiments show substantial improvements over Adam and OptimisticAdam~\citep{daskalakis2017training} leading to state-of-the-art performance for GANs at the time of publication. 
+
+In the third contribution, we investigate the impact of Polyak’s momentum~\citep{polyak1964some} in the optimization dynamics of such games. Momentum is known to have a detrimental role in deep learning~\citep{sutskever2013importance}, but its effect in games was an unexplored topic. 
+We prove that a negative value for the momentum hyper-parameter may improve the gradient method’s convergence properties for a large class of adversarial games. 
+Notably, for games similar to the rock-paper-scissor example described above, negative momentum is a way to fix the gradient method where each player update alternatively their state (as opposed to simultaneously). This fact is quite surprising since, in standard minimization, the momentum's optimal value is positive. It is an excellent example of counter-intuitive phenomena occurring in games with differentiable payoffs. 
+We also propose to build new intuition on the game dynamics by using a notion of rotation.
+In standard minimization, the iterates are ’attracted’ to the solution and thus adding momentum will use the past gradient to enhance this attraction to the solution, and thus converge faster.
+In games, rotations around the optimum may occur. To picture a simple dynamic, one can think of a planet orbiting around the sun. Adding positive momentum will push the planet away from the sun (the equilibrium point), while negative momentum will use past information to correct the trajectory toward the sun. 
+This balance between accelerating the attraction and correcting the rotation explains why in games, unlike in minimization, the optimal value for the momentum can be negative.
+
+
+
+
+
+
+
+
+
+
+\subsection{Studying the practical vector field of games}
+
+
+
+
+In the second and third contribution, we theoretically study  the vector field of games, i.e., the concatenation of each player's payoff gradient, and build simple examples where the gradient method fails to converge.
+However, going beyond simple counter-examples, one question remains: does this cycling behavior that breaks standard gradient methods happen in practice? Such a phenomenon is due to the phenomenon of rotation that only occurs in differentiable games (compared to standard minimization): due to their potential adversarial component.
+
+
+
+
+Our fourth and final contribution is an empirical study aiming to bridge the gap between the simple theoretical examples previously proposed and the practice. We formalize the notions of rotation and attraction in games by relating it to the imaginary part in the eigenvalues of the Jacobian of the game’s vector field. 
+We eventually develop a technique to visualize these rotations in differentiable games and apply it to GANs. We show empirical evidence of significant rotations on several GAN formulations and datasets.
+Moreover, we also study the nature of the gradient method's potential equilibrium and provide empirical evidence that standard training methods for GANs converge to an equilibrium point that is not a Nash equilibrium of the game.
+
+% We also show that in practice 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% %## Objective and methodology
+
+% \subsection*{Need for new optimization procedures} % (fold)
+
+% \label{par:need_for_new_optimization_procedures}
+
+% % paragraph need_for_new_optimization_procedures_ (end)g
+
+
+
+
+
+
+
+
+
+
+% Thus, we save the current state and perform a gradient step the new state, called extrapolated state. correspond to an update with no notion of anticipation from the players. We then compute the gradient at this extrapolated state and use it 
+
+
+
+
+\section{Excluded research}
+
+
+
+
+In order to keep this manuscript consistent and succinct, the author has decided to exclude a significant part of the publication produced during his Ph.D. Some of the excluded research constitute relevant related follow-ups to the work discussed in thesis~\citep{huang2017parametric,chavdarova2019reducing,azizian2020tight,azizian2020accelerating,bailey2019finite,ibrahim2020linear}. The author of this Ph.D. thesis also worked on:
+
+\begin{itemize}
+
+\item Line-search for non-convex minimization~\citep{vaswani2019painless}.
+
+\item Dynamics of Recurrent Neural Networks~\citep{kerg2019non}.
+
+\item Implicit regularization for linear neural networks~\citep{gidel2019implicit}.
+
+\item Adaptive Three Operator Splitting~\citep{pedregosa2018adaptive}.
+
+\item Variants of the Frank-Wolfe algorithm~\citep{gidel2017frank,gidel2018frank}. 
+
+\end{itemize}
+
+
+
+
+% \begin{enumerate}
+
+% \item Machine learnin. 
+
+% "Importantly, in the ML paradigm the designer no longer needs to specify
+
+% a set of rules for recognising a dog. Instead, it is sufficient to specify a set of learning
+
+% rules which in conjunction with a labeled dataset of examples allow the algorithm to
+
+% extract decision rules" (Foerster)
+
+% \item loss minimization 
+
+% \item Supervised learning
+
+% \item Intricate connection with optimization
+
+% \item too rigid task
+
+% \item Unsupervised learning
+
+% \item more high level task 
+
+% \item different optimization framework
+
+% \item ill-defined objective
+
+% \item no convergence guarantees 
+
+% \item Need for solid foundation
+
+% \end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\chapter{Background}
+
+%%%%%%%% TO BE USED MAYBE LATER %%%%%%%%
+
+
+% Extragradient, the standard method using the extrapolation idea, is a very interesting idea to tackle the cycling problem. Its main intuition can be summarized as follow: in order to avoid oscillation due to their opponent, we want to give the players a sense of what is going to happen next. We thus update each player step with a gradient that implicitly contains information from the future state. In that sense, extragradient is a method very close to the implicit method, a.k.a, proximal method. I formalized that intuition in that have later been leveraged to prove new convergence results for the extragradient method~\citep{mokhtari2019proximal}.
+
+
+
+
+% One thing that set aside in the previous projects described above was the impact of stochasticity onto these methods to solve the equilibrium problem such as the extragradient method. Actually, in a machine learning context, one cannot afford to compute the full gradient of the losses because of the latter are written as expectation over large datasets. Thus one can only afford to compute the gradient on a mini-batch of data that is a stochastic (noisy) estimate of the full-batch gradient. In~\citep*{chavdarova2019reducing}, I showed that, in that context, noise in the gradient estimation may completely break the standard stochastic extragradient method analyzed by~\citep{nemirovski_prox-method_2004}. This very surprising result does not contradict the standard convergence results~\citep{juditsky2011solving} on stochastic extragradient that proved the ergodic convergence with a bounded domain. Thus, this counter example highlighted that the algorithm does something completely counter-intuitive: spiralling out to the boundary of the domain, that may significantly hurt the convergence speed.
+
+% I then proposed to combine standard variance reduction techniques for finite sum and extragradient to optimize differentiable games. 
+
+
+
+
+% I also supervised two projects~\citep{azizian2020tight,azizian2020accelerating} investigating how to improve the current convergence rates of extragradient and other gradient based methods that address the cycling problem such as optimistic method described in~\citep{daskalakis2017training} and a variant of consensus optimization~\citep{mescheder_numerics_2017}. In these two works, we provide new tools and perspectives based on spectral analysis to analyze these methods.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
+
+
+
+
+
+
+
+In this chapter we present the frameworks considered in our four contributions. First we will introduce the standard single-objective minimization, then we will talk about multi-objective minimization and Nash equilibrium and finally we will present a generalization of the these frameworks based on the necessary first order stationary conditions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Single Objective Optimization}
+
+
+
+
+Despite the contributions of this thesis regarding the optimization of multi-player games, it seemed essential to the author to give an overview of the current knowledge on single objective optimization to contrast it with the numerous open questions remaining in multi-player games optimization. 
+
+
+
+
+
+
+
+\subsection{Convex Optimization}
+
+
+
+
+
+
+
+Recent advances in machine learning are largely driven by the success of gradient-based optimization methods for the training process.
+
+A common learning paradigm is empirical risk minimization, where a (potentially non-convex) objective, that depends on the data, is minimized. In this section we introduce the standard notions present in single-objective minimization.
+
+
+
+
+
+
+
+Let $f$ a function and $\gX$ a convex set. A set $\gX$ is said to be convex if,
+
+\begin{equation}
+\vx, \vy \in \gX \Rightarrow \gamma \vx + (1- \gamma) \vy \in \gX \, , \; \forall \gamma \in [0,1]\,.
+\end{equation}
+
+For simplicity, we will assume that $\gX$ is a subset of $\sR^d$, but most of the results provided in this work can be generalized to infinite-dimensional spaces.
+
+Single-objective minimization is the problem of finding a solution to the following minimization problem:
+
+\begin{equation}
+\text{find} \; \vx^* \; \text{such that} \; \vx^* \in \gX^* := \argmin_{\vx \in \gX} f(\vx) \,. \label{eq:minimization} \tag{MIN}
+\end{equation}
+
+The way to estimate the quality of an approximate minimizer $\vx$ is to use a \emph{merit function}. Formally, a function $g: \gX \to \sR\,$ is called a \emph{merit function} if $g$ is non-negative such that $g(\vx) = 0 \Leftrightarrow \vx \in \gX^*$~\citep{larsson1994class}. For minimization, a natural merit function is the \emph{suboptimality}: $f(\vx) - f^*$ where $f^*$ is the minimum of $f$. We will see in Section~\ref{sec:multi_objective} that there exists different way to extend the notion of suboptimality to zero-sum two-player games. Some of these extensions are not a merit function. 
+
+
+
+
+A standard assumption on the function $f$ is convexity. Such assumption is standard because it is a sufficient condition for the local minimal to also be global minima. It is also a convenient assumption to obtain \emph{global} convergence rates. Such an assumption can be weakened using for instance the Polyak-Lojasiewicz condition or the quadratic growth condition (see~\citep{karimi2016linear} for an extensive study of the relations between these conditions). 
+
+A function $f$ is said to be \emph{convex} if its value at a convex combination of point is smaller than the convex combination of its values:
+
+\begin{equation}
+f(\gamma \vx + (1-\gamma) \vy) \leq \gamma f(\vx) + (1-\gamma) f(\vy)
+\,, \quad \forall \vx, \vy \in \gX \,, \; \forall \gamma \in [0,1] \,.
+\end{equation}
+
+From this property, it follows that the function $f$ is \emph{sub-differentiable}, i.e., there exist a linear lower-bound for $f$ at any point. Moreover, the set of the sub-differential $\partial f(\vx)$ at point $\vx$ is defined as,
+
+\begin{equation}
+\partial f(\vx) := \{\vd \in \sR^d \;:\: f(\vy) \geq f(\vx) + (\vy- \vx)^\top \vd \, , \; \forall \vy \in \sR^d\} \,.
+\end{equation}
+
+If $f$ is convex then this set is convex and non-empty for any $\vx \in \gX$.
+
+In this work we are mostly interested in first-order optimization and we will assume that the function $f$ is \emph{differentiable}. A stronger assumption on the regularity of $f$ is the \emph{smoothness} assumption. A function $f$ is said to be \emph{$L$-smooth} if its gradient is $L$-Lipschitz, i.e.,
+
+\begin{equation}
+\|\nabla f(\vx) - \nabla f(\vy) \|_2 \leq L \|\vx- \vy\|_2 \, , \; \forall \vx , \,\vy \in \gX \,.
+\end{equation}
+
+This assumption is very common but may be weakened with the \emph{Hölder continuity} condition:
+
+\begin{equation}
+\|\nabla f(\vx) - \nabla f(\vy) \|_2 \leq L_{\nu} \|\vx- \vy\|_2^{\nu} \, , \; \forall \vx , \,\vy \in \gX \,,
+\end{equation}
+
+where $L_{\nu}$ is a constant defined for any $\nu \in (0,1]$. Note that $L_{\nu}$ may be infinite for some $\nu$ and that Hölder continuity implies that,
+
+\begin{equation}
+f(\vy) \leq f(\vx) + \nabla f(\vx)^\top (\vy - \vx) + \frac{L_{\nu}}{1+\nu}\|\vy - \vx\|_2^{1+\nu} \,, \quad \forall \vx,\,\vy \in \gX \,.
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
+
+One last common assumption that can be made on $f$ is \emph{strong convexity}. A function $f$ is said to be \emph{$\mu$-strongly convex} if $f - \mu \|\cdot\|_2^2$ is convex, which is equivalent to say that,
+
+\begin{equation} 
+f(\gamma \vx + (1-\gamma) \vy) \leq \gamma f(\vx) + (1-\gamma) f(\vy) - \mu \gamma(1- \gamma)\|\vx-\vy\|_2^2
+\,, \; \forall \vx, \vy \in \gX \,, \; \forall \gamma \in [0,1] \,.
+\end{equation}
+
+Note that being convex is equivalent to being $0$-strongly convex.
+
+
+
+
+\subsubsection{Unconstrained Minimization Methods}
+
+
+
+
+If the constraint set $\gX$ is equal to $\sR^d$ then~\eqref{eq:minimization} is an \emph{unconstrained} minimization problem. In that case the \emph{necessary stationary condition} for differentiable functions is,
+
+\begin{equation}
+\vx^* \in \gX^* \quad \Rightarrow \quad \nabla f(\vx^*) = \bm{0}
+\end{equation}
+
+When the function $f$ is convex this condition is a sufficient condition for optimality. 
+
+
+
+
+When the function $f$ is differentiable, a standard method to solve~\eqref{eq:minimization} is the \emph{gradient descent} method (GD)~which dates back to~\citet{cauchy1847methode}. At time $t \geq 0$, this method requires the computation of the gradient at the current iterate $\vx_t$ to get the next iterate $\vx_{t+1}$ with the following update rule,
+
+\begin{equation}
+\text{Gradient Descent:} \quad \vx_{t+1} = \vx_t - \eta_t \nabla f(\vx_t) \,,
+\end{equation}
+
+where $\eta_t > 0$ is called the \emph{step-size}.\footnote{In machine learning this quantity is also known as \emph{learning-rate}.} This method is called a \emph{descent} method because at point $\vx_t$ the direction $\nabla f(\vx_t)$ is a \emph{descent direction},\footnote{Actually, it can be shown that any direction $\vd$ such that $\vd^\top \nabla f(\vx)>0$ is a descent direction from $\vx$.} meaning that for $\eta_t$ small enough $f(\vx_{t+1}) \leq f(\vx_t)$. Moreover if the function $f$ is smooth, \emph{gradient descent} benefits from the following descent lemma:
+
+\begin{lemma}[(1.2.13)~\citep{nesterov2004introductory}]\label{lemma:GDdescent_lemma}
+
+If $f$ is a $L$-smooth function then for $\eta_t \leq 1/L$ we have that,
+\begin{equation}
+f(\vx_{t+1}) \leq f(\vx_t) - \frac{\eta_t}{2} \|\nabla f(\vx_t)\|_2^2 \, , \; \forall \vx_t \in \sR^d \,.
+\end{equation}
+\end{lemma}
+
+This property is key in the convergence proof of \emph{gradient descent}. Note this property does \emph{not} require the convexity of $f$, actually this lemma is also heavily used in order to show properties on the iterates when the objective function $f$ is non-convex (see \S\ref{sec:non-convex})
+
+
+
+
+\subsubsection{Constrained Optimization}
+
+
+
+
+When the constrained set $\gX$ is a strict subset of $\sR^d$, then~\eqref{eq:minimization} is a \emph{constrained optimization problem} and $\gX$ is called the \emph{constraint set}. In that case the standard \emph{gradient descent} method cannot be longer used because the direction given by the gradient may not be \emph{feasible}, i.e., $\exists \vx \in \gX \text{ s.t. } \vx - \eta \nabla f(\vx) \notin \gX\,\forall \eta >0 $. In that case, the standard method to solve such problem is the \emph{projected gradient method}. This method requires an additional \emph{projection} step in order to get a feasible iterate
+
+\begin{equation}\label{eq:gradient_descent}
+\text{Projected Gradient Descent:} \quad \vx_{t+1} = P_\gX[\vx_t - \eta_t \nabla f(\vx_t)] \,,
+\end{equation}
+\noindent where $P_{\gX}[\cdot]$ is the projection onto the set $\gX$ defined as $P_{\gX}[\vx] = \argmin_{\vy \in \gX} \| \vx-\vy\|_2^2 $.
+
+
+If the set $\gX$ is convex, the projection is a \emph{quadratic} minimization problem that has a unique solution. Otherwise, this projection sub-problem might be very challenging to solve. However, considering non-convex constraint sets goes way beyond the scope of this work. That is why, in the following we will always assume that the constraint set $\gX$ is convex.
+
+
+
+
+% Sometimes, even if the constraint set $\gX$ is convex, the projection $P_\gX[\cdot]$ may be difficult to compute. In that case it might be more practical to use \emph{projection-free} methods. A popular projection-free is the \emph{Frank-Wolfe} algorithm~\citep{Frank:1956vp}, a.k.a \emph{conditional gradient method}. This algorithm only require to solve a linear minimization over the constraint set (instead of a projection which is a quadratic minimization). Once the minimizer of the linearization of the function is found, the algorithm computes a convex combination between this minimizer and the current iterates:
+
+% \begin{equation}
+
+% \text{Frank-Wolfe Algorithm:} \quad 
+
+% \left\{
+
+% \begin{aligned}
+
+% &\text{Find: } \vs_{t} \in \argmin_{\vs \in \gX} \nabla f(\vx_t)^\top (\vs - \vx_t) \\
+
+% &\text{Compute: }\vx_{t+1} = \vx_t + \gamma_t \vd_t \quad \text{where } \vd_t := \vs_t-\vx_t
+
+% \end{aligned}
+
+% \right.
+
+% \end{equation}
+
+% Note that $\vd_t$ is a \emph{descent direction}, i.e, $\nabla f(\vx_t)^\top \vd_t > 0$. Consequently, as gradient descent, the Frank-Wolfe algorithm benefits from a \emph{descent lemma}:
+
+% \begin{lemma}[\citep{jaggi2013revisiting}]\label{lemma:FW_descent_lemma}
+
+% If $f$ is a $L$-Lipschitz function and that $\gamma_t := \argmin_{\gamma \in [0,1]} f(\vx_t + \gamma \vd_t)$, then, 
+
+% \begin{equation}
+
+% f(\vx_{t+1}) \leq f(\vx_t) - \frac{g_t^2}{2L} \, , \; \forall \vx_t \in \sR^d 
+
+% \end{equation}
+
+% where $g_t := \nabla f(\vx_t)^\top (\vx_t - \vs) \geq 0$.
+
+% \end{lemma}
+
+% Note that if $f$ is a convex function, $g_t$ is an upper-bound on the suboptimality. If the function $f$ is non-convex $g_t$ is still a convergence criterion to a local stationary point. Note that Lemma~\ref{lemma:FW_descent_lemma} is key in the proof of convergence of Frank-Wolfe for non-convex objectives (see~\citep{lacoste2016convergence}).
+
+
+
+
+
+
+
+\subsection{Non-Convex Single-objective Optimization}
+
+\label{sec:non-convex}
+
+
+
+
+When the function $f$ is non-convex, gradient descent may converge to a \emph{stationary point} that is not the \emph{global minimum} of the function. For simplicity of the discussion, in this section, we only consider the \emph{unconstrained setting}. In that case, a \emph{stationary point} is a point where the gradient is equal to zero. Since the gradient at a stationary point is by definition always null, we have that if $\vx_t$ is a stationary point, then the following iterate $\vx_{t+1}$ computed by gradient descent~\eqref{eq:gradient_descent} is equal to $\vx_t$. There are three kinds of \emph{stationary points}: local minima, local maxima and saddle points. Let $\vx \in \sR^d$,
+
+\begin{enumerate}
+\item A stationary point such that there exists a neighbourhood $U$ of $\vx$ such that $f(\vy) \leq f(\vx) \,, \; \forall \vy \in U$, is a local maximum.
+\item A stationary point such that there exists a neighbourhood $U$ of $\vx$ such that $f(\vy) \geq f(\vx) \,, \; \forall \vy \in U$, is a local minimum.
+\item A stationary point such that for any neighbourhood $U$ of $\vx$, there exist $\vy,\vy' \in U$ such that $f(\vy) \leq f(\vx) \leq f(\vy')$, is a saddle point.
+\end{enumerate}
+
+It can be shown that with random initialization gradient descent almost surely converges to a local minimizer~\citep{lee2016gradient}. From an optimization perspective, this property is appealing since we aim to converge to the global minimizer of $f$. However, standard gradient descent can take an exponential time (exponential in the dimension $d$) to escape saddle~\citep{du2017gradient}. Fortunately, adding noise at some key moments can get rid of this exponential constant~\citep{jin2017escape}.
+
+
+
+
+
+
+
+
+
+
+\section{Multi-objective Optimization}
+
+\label{sec:multi_objective}
+
+As argued previously, single-objective minimization plays a major role in current machine learning. However, some recently introduced models require the joint minimization of several objectives.
+
+For example, actor-critic methods can be written as a bi-level optimization problem~\citep{pfau2016connecting} and generative adversarial networks (GANs)~\citep{goodfellow2014generative} use a two-player game formulation. 
+
+
+
+
+In that case, the goal of the learning procedure is to find an \emph{equilibrium} of this multi-objective optimization problem (a.k.a. multi-player game). The notion of equilibrium points date back to~\citet{cournot1838recherches}. It was later formalized by~\citet{nash1950equilibrium} who pioneered the field of game theory. 
+
+
+
+
+\subsection{Minimax Problems and Two-player Games}
+
+
+
+
+
+
+
+The \emph{two-player game problem}~\citep{von1944theory,nash1950equilibrium} consists in finding the following \emph{Nash equilibrium}:
+
+% $(\vtheta^*,\vphi^*)$ 
+
+% \in \Theta\times \Phi$ so that
+
+\begin{equation} \label{eq:back_two_player_games}
+\vtheta^* \in \argmin_{\vtheta \in \Theta}\LL_1(\vtheta,\vphi^*)
+\quad \text{and} \quad
+\vphi^* \in \argmin_{\vphi \in \Phi} \LL_2(\vtheta^*,\vphi) \,.
+\end{equation}
+
+One important point to notice is that the two optimization problems (with respect to $\vtheta$ and $\vphi$) in~\eqref{eq:back_two_player_games} are \emph{coupled} and have to be considered \emph{jointly} from an optimization point of view. In game theory $\LL_i$ is also known as the \emph{payoff} of the $i^{th}$ player.
+
+
+
+
+
+
+
+When $\LL_1 = - \LL_2 := \LL$, the two-player game is called a \emph{zero-sum game} and~\eqref{eq:back_two_player_games} can be formulated as a \emph{saddle point problem}~\citep[VII.4]{hiriart1993convex}:
+
+\begin{equation}\label{eq:def_sp}
+\text{find } (\vtheta^*,\vphi^*) \quad \text{s.t.} \quad \LL(\vtheta^*,\vphi) \leq \LL(\vtheta^*,\vphi^*) \leq \LL(\vtheta,\vphi^*) \,,\quad \forall (\vtheta,\vphi) \in \Theta \times \Phi\,.
+\end{equation}
+
+If such a pair $(\vtheta^*,\vphi^*)$ exists, then we have that,
+
+\begin{equation}
+\max_{\vphi \in \Phi} \min_{\vtheta \in \Theta} \LL(\vtheta, \vphi) 
+= \min_{\vtheta \in \Theta} \max_{\vphi \in \Phi} \LL(\vtheta,\vphi) 
+= \LL(\vtheta^*,\vphi^*)
+\end{equation}
+
+Note that by weak duality~\citep{rockafellar1970convex}, it is generally true that, 
+
+\begin{equation} \label{eq:back_minimax}
+\sup_{\vphi \in \Phi} \inf_{\vtheta \in \Theta} \LL(\vtheta, \vphi) \leq \inf_{\vtheta \in \Theta} \sup_{\vphi \in \Phi} \LL(\vtheta,\vphi)\,.
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+\subsection{Extension to $n$-player Games}
+
+
+
+
+We can extend the two-player game framework to a game with an arbitrary number of players. A $n$-player game is a set of $n$ players and their respective losses $\LL^{(i)}: \sR^d \to \sR, 1\leq i \leq n$. Player $i$ controls the parameter $\vtheta_i \in \Theta_i \subset \sR^{d_i}$ where $\sum_{i=1}^n d_i = d$. The \emph{$n$-player game problem} consists in finding the Nash equilibrium: 
+
+\begin{equation}\label{eq:def_nash_equ}
+\vtheta_i^* \in \argmin_{\vtheta_i \in \Theta_i} \LL^{(i)}(\vtheta_1^*,\ldots,\vtheta_{i-1}^*,\vtheta_i,\vtheta_{i+1}^*,\ldots,\vtheta_n^*) \,, \quad 1\leq i\leq n\,.
+\end{equation} 
+
+Note that any non-zero-sum $n$-player game can be written as a $(n+1)$-player zero-sum game adding a $(n+1)$-th loss equal to minus the sum of the other losses. 
+
+
+
+
+
+
+
+
+
+
+\subsection{Existence of Equilibria}
+
+% minimax problem: 
+
+% \begin{equation} \label{eq:minimax}
+
+% \min_{\vtheta \in \Theta} \max_{\vphi \in \Phi} \LL(\vtheta,\vphi)
+
+% \end{equation}
+
+In the case of a zero-sum game, standard results~\citep{sion1958general,fan1953minimax,hiriart1993convex} show that under convexity assumptions there exists a saddle point of $\LL$. We present the result from~\citep{hiriart1993convex} that requires the following assumptions, 
+
+\begin{enumerate}
+\item[(H1)] the objective function $\LL$ is \emph{convex-concave}, i.e., $\LL(\cdot,\vphi)$ is convex for all $\vphi \in \Phi$ and $\LL(\vtheta,\cdot)$ is concave for all $\vtheta \in \Theta$.
+\item[(H2)] The sets $\Theta$ and $\Phi$ are nonempty closed convex sets.
+\item[(H3)] Either $\Theta$ is bounded or there exists $\bar\vphi \in \Phi$ such that $\LL(\vtheta,\bar \vphi) \to \infty$ when $\|\vtheta\| \to \infty$\,.
+\item[(H4)] Either $\Phi$ is bounded or there exists $\bar\vtheta \in \Theta$ such that $\LL(\bar \vtheta, \vphi) \to \infty$ when $\|\vphi\| \to \infty$\,.
+\end{enumerate}
+
+
+
+
+\begin{theorem}\citep[Theorem 4.3.1]{hiriart1993convex}
+Under the assumptions (H1)-(H4) the payoff function $\LL$ has a nonempty compact set of saddle points. 
+\end{theorem}
+
+In the first contribution of this thesis, we prove a minimax theorem where the payoff function $\LL$ is \emph{not} convex-concave. Such result is motivated by the machine learning applications where neural networks parametrizations induce nonconvex-nonconcave payoff functions. 
+
+
+
+
+Beyond the zero-sum two-player game setting, results on the existence of equilibria in multi-player games,first developed by~\citet{nash1950equilibrium}, is a rich literature~\citep{nash1951non,glicksberg1952further,nikaido1955note,dasgupta1986existence} that is outside of the scope of this thesis. 
+
+
+
+
+
+
+
+\subsection{Merit functions for games}
+
+\label{sub:merit_function_games}
+
+When dealing with optimization of games, the first question to ask is the question of which merit function to use. For simplicity, we focus on zero-sum two-player games.
+
+Some previous work~\citep{yadav2017stabilizing} considered the sum of the ``minimization suboptimality'' $\LL(\vtheta,\vphi^*) - \LL(\vtheta^*,\vphi^*)$ with the ``maximization suboptimality'' $\LL(\vtheta^*,\vphi^*) - \LL(\vtheta^*,\vphi)$:
+
+\begin{equation}
+g(\vtheta,\vphi) := \LL(\vtheta,\vphi^*) - \LL(\vtheta^*,\vphi)
+\end{equation}
+
+Unfortunately, as explained in~\citep{gidel2017frank} this function is \emph{not} a merit function for the problem~\ref{eq:def_sp} in general. For example, with $\LL(\vtheta,\vphi) = \vtheta \cdot \vphi$ and $\Theta = \Phi = [-1,1]$, then $\vtheta^* = \vphi^* = \bm{0}$, implying that $ g(\vtheta,\vphi) = 0$ for any $(\vtheta,\vphi)$. However, when $\LL$ is $\emph{strongly convex-concave}$ one can lower-bound $g$ by the distance to the optimum times a constant.
+
+
+
+
+In the general case, if the domains $\Theta$ and $\Phi$ are bounded, one can define the gap function
+
+\begin{equation}\label{eq:def_G}
+G(\vtheta,\vphi) := \max_{\vphi \in \Phi} \LL(\vtheta,\vphi) - \min_{\vtheta \in \Theta}\LL(\vtheta,\vphi) = \max_{(\vtheta',\vphi') \in \Theta\times\Phi} \LL(\vtheta,\vphi') - \LL(\vtheta',\vphi) 
+\end{equation}
+
+If, the domains are not bounded this function may be infinite except at the optimum (take for instance $\LL(\vtheta,\vphi) = \vtheta \cdot \vphi$ and $\Theta = \Phi = \R$). In order to contravene this issue~\citet{nesterov2007dual} considered the intersections $\Theta_R := \Theta \cup B(\bar \vtheta,R)$ and $\Phi_R := \Phi \cup B(\bar \vphi,R)$ where $B(a,R)$ is a ball of radius $R$ and center $a$. If there exists a Nash equilibrium, then for any given $\bar \theta$ and $\bar \vphi$ and a large enough $R$, the function 
+
+\begin{equation}
+G_R(\vtheta,\vphi) := \max_{\vphi \in \Phi_R} \LL(\vtheta,\vphi) - \min_{\vtheta \in \Theta_R}\LL(\vtheta,\vphi)\,,
+\end{equation}
+
+is a merit function.
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Other multi-objective formulation}
+
+There exist other multi-objective optimization formulations that are not multi-player games. Such formulations are outside of the scope of this thesis. 
+
+However, we provide a quick overview of the main alternatives. 
+
+\subsubsection{Bilevel Optimization}
+
+\label{subsub:bilevel}
+
+Conversely to games, where all the players have a symmetric role, bilevel optimization is a multi-objective optimization framework introducing an asymmetry between the objectives. It considers an \emph{upper-level} objective $f$ and a \emph{lower-level} objective $g$. The \emph{lower-level} objective is used to induce a constraint on some parameters of the \emph{upper-level} objective: 
+
+\begin{equation}
+\begin{aligned}
+&\min_{\vtheta \in \Theta} f(\hat{\vomega}(\vtheta),\vtheta) \\
+\text{s.t.} &\quad \hat{\vomega}(\vtheta) \in \argmin_{\vomega \in \Omega} g(\vomega,\vtheta)
+\end{aligned}
+\end{equation}
+
+Note that this formulation can be more general with more objective or with a stochastic formulation, see for instance~\citet{colson2007overview,bard2013practical} for an overview of the field and~\citet{pedregosa2016hyperparameter,gould2016differentiating,shaban2019truncated} for applications in a machine learning context.
+
+
+
+
+\subsubsection{Stackelberg Games}
+
+Such notion of hierarchy between the objective is related to the notion of Stackelberg games~\citet{von1934marktform,conitzer2006computing,fiez2020convergence} that exhibit a notion of hierarchy between the players. In its simplest form (two-player), a Stackelberg game opposes a \emph{follower} and a \emph{leader}. The latter can choose its strategy with the knowledge of the strategy of the follower. Thus, this problem can be formulated as a bilevel optimization problem where the \emph{follower} corresponds to the \emph{lower-level} objective and the \emph{leader} corresponds to the \emph{upper-level} objective.
+
+% \subsubsection{Non-convex smooth Games}
+
+% When the problem is non-convex (i.e. each cost function is non-convex), equilibria may not exist, but a \emph{mixed-equilibrium} always exist~\citep{glicksberg1952further}. A mixed-equilibrium is a set a mixed strategies which are distributions over the parameters of the players. In other word, a mixed-equilibrium is a solution of the following multi-objective minimization problem,
+
+% \begin{equation}\label{eq:def_mixed_nash_equ}
+
+% \vmu_i^* \in \argmin_{\vmu_i \in \mathcal{M}(\Theta_i)} \E_{(\vmu_1^*,\ldots,\vmu_{i-1}^*,\vmu_i,\vmu_{i+1}^*,\ldots,\vmu_n^*)}[\LL^{(i)}(\vtheta_1^*,\ldots,\vtheta_{i-1}^*,\vtheta_i,\vtheta_{i+1}^*,\ldots,\vtheta_n^*)] \,, \quad 1\leq i\leq n\,.
+
+% \end{equation}
+
+% where $\mathcal{M}(\Theta)$ is the set of all Borel probability measure on $\Theta$. Changing the problem to work with distribution is known as the lifting trick~\citep{hsieh2019finding}. 
+
+
+% However, this approach considered by~\citet{arora2017generalization,hsieh2019finding} and~\citet{domingo2020mean} suffer from the following caveats: 
+
+% \begin{enumerate*}[itemjoin = \;\,, label=(\roman*)]
+
+% %\item We propose studying the game vector field to understand training dynamics in GANs, as opposed to studying the loss surfaces of each player (ref.~\S\ref{sub:vector_field_point_fo_views}).
+
+% % \item We formalize the notion of \emph{rotation} that can appear around the optimum in games but not in minimization in Theorem~\ref{prop:continuousdynamics}.
+
+% \item This lifted formulation is, in some sense, a different problem from the initial one. For instance one may want to find a solution in $\Theta_1\times \dots \times \Theta_n$ and not a distribution ove this space. We will detail more this aspect and its links with practical machine learning in the first contribution. 
+
+% \item This optimization problem has a solution, it is an infinite dimensional problem that is challenging to solve.
+
+% \end{enumerate*}
+
+
+
+
+
+
+
+
+
+
+
+%SLJ: I AM NOT SURE ABOUT THIS: for non-convex setting where the minimax is *not* the same as the maximin, you do not necessarily have a "saddle point" nor a *simultaenous game* interpretation -- to think again when it is less late! 
+
+% where $q$ is the input distribution to sample the data from the \emph{generator} and $\bar \LL(\vtheta,\vphi) \defas \EE_{(\rvx,\rvx')\sim p\otimes {q}} \LL(\vtheta,\vphi)$.
+
+% Pascal TODO: so is it or is it not a saddle point problem in the non-convex setting? If not, may need to adjust the phrasing here...
+
+
+
+
+% We want to \emph{jointly} optimize these objectives.
+
+% {\blue discussion on existence of the equilibrium}.
+
+
+
+
+
+
+
+\subsection{Solving games with optimization}
+
+The question of algorithms to find Nash equilibrium is related to the notion of complexity of Nash equilibrium~\citep{papadimitriou2007complexity}. In general, Nash equilibria are hard to compute. For instance, simple statements such as ‘are there two Nashes?’ or ‘is there a Nash that contains the strategy s?’ are NP-hard problems for two-player games~\citep{gilboa1989nash}. 
+
+However, computing a Nash equilibrium cannot be a NP-hard problem because a Nash equilibrium always exists~\citep{papadimitriou2007complexity}. The complexity of Nash equilibria computation belongs to a class of problems called PPAD~\citep{daskalakis2009complexity}. 
+
+
+
+
+Consequently, it seems hopeless in general to design algorithms to solve games (even approximately~\citep{papadimitriou2007complexity}). However, there are some points to argue why this line of research is not futile. First, the Nash computation of zero-sum two-player games can be reformulated as a linear program. Thus, in that case, the computational challenge comes from the potentially large (or even infinite) number of strategies. For instance, in a machine learning context, the strategy spaces we may consider are finite-dimensional parameter spaces, motivating the use of gradient-based methods. Secondly, the practical instance we want to solve may not be hard. For instance, the mathematical programming literature developed a plethora of algorithms to try to find approximate solutions to NP-hard problems such as the travelling salesman problem~\citep{bellmore1968traveling}. Another example is the deep learning community that successfully minimizes non-convex objectives~\citep{zhang2016understanding} while it is NP-hard even to check if a point is a local minimizer of the objective function~\citep{murty1985some,nesterov2000squared}. 
+
+
+
+
+In the particular of minimax optimization, there exists a very rich literature that deals with problems of the form
+
+\begin{equation}\label{eq:primal-dual}
+\min_{\vtheta \in \sR^d} \max_{\vphi \in \sR^p} f(\vtheta) + \vtheta^\top \mA \vphi - g(\vphi) \,.
+\end{equation}
+
+When $f$ and $g$ are convex, such formulation is the primal-dual formulation of a convex problem (see for instance~\citep{rockafellar1970convex} for more details about convex duality). Many primal-dual algorithms have been designed to solve such particular minimax problem such as the Arrow‐Hurwicz algorithm~\citep{arrow1958studies,zhu2008efficient}, the Chambolle‐Pock Primal‐Dual algorithm~\citep{chambolle2011first,chambolle2016ergodic}, the Accelerated Primal‐Dual algorithm~\citep{ouyang2015accelerated}. However, these algorithms heavily exploit the bilinear structure of~\eqref{eq:primal-dual} and thus cannot be straightforwardly extended to general minimax games. 
+
+
+
+
+In this thesis, we focus on methods to solve games with differentiable payoffs. While recently, due to the motivations coming from the practical applications in the context of machine learning, there is a revival of specific gradient-based method optimization for games (see discussion in Chapter~\ref{chap:discussion}, there the mathematical programming literature dealt with such (differentiable) game optimization problems by casting them as variational inequalities. 
+
+
+
+
+In the following section, we present the variational inequality framework and eventually present the standard methods such problems.
+
+
+
+
+\section{Variational Inequality Problem}
+
+
+
+
+Let $\Omega \subset \sR^d$, and $F : \Omega \to \sR^d$ be a continuous mapping. In this section $\|\cdot\|$ is a norm of $\sR^d$. 
+
+The \emph{variational inequality problem}~\citep{harker1990finite} is:
+
+\begin{equation}\label{intro:eq:VI_problem_weak} \tag{VIP}
+\text{find} \; \vomega^* \in \Omega \quad \text{such that} \quad F(\vomega^*)^\top (\vomega - \vomega^*) \geq 0 \, , \; \;\forall \vomega \in \Omega\,.
+\end{equation}
+
+We call \emph{optimal set} the set $\Omega^*$ of $\vomega \in \Omega$ verifying~\eqref{intro:eq:VI_problem_weak}.
+
+A standard assumption on $F$ is \emph{monotonicity}: 
+
+\begin{equation} 
+(F(\vomega) - F(\vomega'))^\top (\vomega - \vomega') \geq 0 \quad \forall\, \vomega,\vomega' \in \Omega \,.
+\end{equation} 
+
+If $F(\vomega) = \nabla f(\vomega)$, it is equivalent to $f$ being convex. If $F$ can be written as~\eqref{eq:SP_stationnary_conditions}, it implies that the cost functions are convex.\footnote{The convexity of the cost functions in~\eqref{eq:two_player_games} is a necessary condition (not sufficient) for the operator to be monotone.}
+
+When the operator $F$ is monotone, we have that 
+
+\begin{equation}
+F(\vomega^*)^\top (\vomega - \vomega^*)\leq F(\vomega)^\top (\vomega - \vomega^*) \, , \; \forall \vomega, \vomega^* \,. 
+\end{equation}
+
+Hence, in this case,
+
+\eqref{intro:eq:VI_problem_weak} implies a stronger formulation sometimes called \emph{Minty variational inequality}~\citep{crespi2005MVI}:
+
+\begin{equation}\label{eq:VI_problem_strong} \tag{MVI}
+\text{find} \; \vomega^* \in \Omega \quad \text{such that} \quad F(\vomega)^\top (\vomega - \vomega^*) \geq 0 \, , \; \;\forall \vomega \in \Omega\,.
+\end{equation} This formulation is stronger in the sense that, under mild assumptions, if \eqref{eq:VI_problem_strong} holds for some $\vomega^* \in \Omega$, then~\eqref{intro:eq:VI_problem_weak} holds too~\citep{minty1967generalization}. A stronger assumption than monotonicity is $\mu$-\emph{strong monotonicity}, 
+
+\begin{equation} \label{eq:strong_monotonicity}
+(F(\vomega) - F(\vomega'))^\top (\vomega - \vomega') \geq \mu \|\vomega-\vomega'\|^2 \quad \forall\, \vomega,\vomega' \in \Omega \,.
+\end{equation} 
+
+Note that $0$-\emph{strong monotonicity} is equivalent to monotonicity.
+
+%\footnote{Assuming that $F$ is hemicontinuous at the point $\vomega^*$.} 
+
+% This second formulation has advantages: first it provides a global criterion for a solution which can be used even in the non-monotone setting\footnote{In the context of GANs, the cost functions being non-convex yields a non-monotone operator.} and secondly, 
+
+\subsection{Merit Functions for variational inequality problems}
+
+A \emph{merit function} useful for our analysis can be derived from this formulation. 
+
+%SLJ: but you could also use VI to get the (FW gap) merit function, right? Just that you do not know how to prove convergence for this gap in the stochastic setting I guess?
+
+Roughly, a merit function is a convergence measure.
+
+A way to derive a merit function from~\eqref{eq:VI_problem_strong} would be to use $g(\vomega^*) = \sup_{\vomega \in X} F(\vomega)^\top (\vomega^*-\vomega)$ which is zero if and only if \eqref{eq:VI_problem_strong} holds for $\vomega^*$. To deal with unbounded constraint sets (leading to a potentially infinite valued function outside of the optimal set), we use the \emph{restricted merit function}~\citep{nesterov2007dual}:
+
+\begin{equation}\label{eq:merit_VI}
+\Err_R(\vomega_t) \defas \max_{\vomega\in \Omega, \|\vomega-\vomega_0\|\leq R} F(\vomega)^\top(\vomega_t-\vomega) \,.
+\end{equation}
+
+% {\blue with enough hypothesis relates it to distance to optimum}
+
+This function acts as merit function for~\eqref{intro:eq:VI_problem_weak} on the interior of the open ball of radius $R$ around $\vomega_0$, as shown in Lemma~1 of~\citet{nesterov2007dual}. That is, let $\Omega_R := \Omega \cap \{\vomega : {\|\vomega - \vomega_0\| < R}\}$. Then for any point $\hat \vomega \in \Omega_R$, we have
+
+\begin{equation}
+\Err_R(\hat \vomega) = 0 \Leftrightarrow \hat \vomega \in \Omega^*\cap\Omega_R .
+\end{equation}
+
+The reference point $\vomega_0$ is arbitrary, but in practice it is usually the initialization point of the algorithm. $R$ has to be big enough to ensure that $\Omega_R$ contains a solution. $\Err_R$ measures how much~\eqref{eq:VI_problem_strong} is violated on the restriction $\Omega_R$.
+
+Such merit function is standard in the variational inequality literature. A similar one is used in \citep{nemirovski_prox-method_2004, juditsky2011solving}.
+
+
+
+
+\subsection{Standard algorithms to Solve Variational Inequality Problems}
+
+One very important piece in the VIP optimization is the projection $P_\Omega$ onto the set $\Omega$:
+
+\begin{equation}
+P_\Omega[\vomega] \in \argmin_{\vomega' \in \Omega} \|\omega-\omega'\|^2 \,.
+\end{equation}
+
+In the following we will assume that we can compute such a projection quite efficiently. Note that one can extend this projection framework to other geometries using Bregman divergences~\citep{bregman1967relaxation}. For simplicity and clarity, we work with projections with respect to a norm $\|\cdot\|$. 
+
+
+
+
+Among the first algorithms to solve VIP is the standard projection method~\citep{sibony1970methodes},
+
+\begin{equation}
+\text{Projection Method:} \quad x_{t+1} = P_\Omega[x_t - \eta_t F(x_t)]\,.
+\end{equation}
+
+This algorithm converges linearly for Lipschitz and strongly monotone operators. However, this method does not converge, in general, for monotone operators~\citep{korpelevich1976extragradient}. One way to contravene this issue is to solve a sequentially less regularized problem using the projection method this technique is known as the proximal-point method (PPM)~\citep{martinet1970breve,rockafellar1976monotone}
+
+\begin{equation}
+\text{PPM:} \quad x_{t+1} = \text{Solution of VIP with the operator} \; F_k(\vomega) := c_k F(\vomega) + (\vomega -\vomega_k) \,.
+\end{equation}
+
+This method converges linearly (in terms of projection calls) when $F$ is strongly monotone and sublinearly when $F$ is monotone. However, the inner-outer loop structure as well as the supplementary regularization hyperparameter of this method make it less practical than the projection method. 
+
+
+
+
+A middle ground was achieved by~\citet{korpelevich1976extragradient} with a method, called extragradient, that does not have inner loops and converges when $F$ is monotone,
+
+\begin{equation}
+\text{Extragadient Method:} \quad
+\left\{\begin{aligned}
+&y_t = P_\Omega[x_t - \eta_t F(x_t)] \\
+&x_{t+1} = P_\Omega[x_t - \eta_t F(y_t)]\,.
+\end{aligned} \right.
+\end{equation}
+
+Such a method is based on the idea of \emph{extrapolation}, where the vector field used to update $x_t$ is not computed at $x_t$ but at an extrapolated point $y_t$. The idea behind the computation of $y_t$ is that $y_t$ roughly approximate the solution the iterates of the proximal point method. This idea of comparing $y_t$ to the solution of the proximal point method is actually at the heart of the analysis of the method provided by~\citet{nemirovski_prox-method_2004}. 
+
+
+
+
+Note that, the idea of using an extrapolation step was to give ``stability'' to the gradient is prior to~\citet{korpelevich1976extragradient}'s work (see for instance~\citet[Chap. II]{polyak1963gradient}).
+
+
+
+
+\section{Neural Networks Training}
+
+In this section, we introduce the definition of (artificial) \emph{feed-forward neural networks}. A \emph{feed-forward} neural network is a composition of affine transformations $W_i \cdot + b_i: \sR^{d_i} \to \sR_{d_{i+1}}$ and non-linearities $\sigma_i : \sR^{d_{i+1}} \to \sR^{d_{i+1}}$ for $1\leq i \leq r$. The integer $r$ is called the \emph{depth} of the neural network and $\max_i d_i$ is called the width of the neural network. Formally, a neural network is a function $f: \gX \to \gY$ where $\gX$ is called the \emph{input space} and $\gY$ is called the \emph{output space} where the function $f$ is defined as,
+
+\begin{equation}
+f = f_1 \circ \ldots f_r \quad \text{where} \quad f_i (\vh_i) = \vh_{i+1} = \sigma_i( \mW_i \vh_i + \vb_i) \, , \; 1\leq i \leq r \,. 
+\end{equation}
+
+The vectors $\vh_i \in \sR^{d_i}, \, 2 \leq i \leq r-1$ are called the hidden states. Note that $\vh_1= \vx$ is the input and $\vh_r = \vy$ is the output. Two-layer feed-forward neural networks are known to be universal approximators, with a width going to infinity~\citep{hornik1989multilayer}. 
+
+% Nevertheless, fixing the width \citet{lin2018resnet}~showed that ResNet with one-neuron hidden layers is a universal approximator.
+
+
+
+
+\subsubsection{Empirical Risk Minimization for Supervised Learning}
+
+Consider the following setting, general enough to be applied to many supervised learning problems. We have a finite set of data $(\vx_i,y_i)_{1\leq i\leq n} \in (\gX\times \gY)^n$ independently sampled from a distribution $P$. Given a loss function $\ell: \gY \times \gY \to \R$ and a class $\mathcal F$ of prediction function $f: \gX \to \gY$, the goal of the learning procedure is to minimize the \emph{risk}:
+
+\begin{equation}\label{eq:generalization}
+\argmin_{f \in \mathcal F} \E_{(\vx,y)\sim P} \ell(f(\vx),y)
+\end{equation}
+
+Since, in practice, one has often only access to a \emph{finite} number of samples, the optimization procedure can only be done on the \emph{empirical risk}:
+
+\begin{equation}\label{eq:ERM}
+\argmin_{f \in \mathcal F} \frac{1}{n} \sum_{k=1}^n \ell(f(\vx_i),y_i)
+\end{equation}
+
+Here, we are not developing two issues: if $f$ is the $0-1$ loss this problem is NP-hard~\citep{feldman2012agnostic,ben2003difficulty} and that in practice one consider surrogates losses and in order to get a solution of~\eqref{eq:ERM} with good generalization properties (i.e., being close to the minimizer of~\eqref{eq:generalization}) one usually adds a regularization to~\eqref{eq:ERM}. These problems are standard issues of supervised learning and are not the direction of research of this work. That is why, in the following, we will focus on the optimization of~\eqref{eq:ERM} where $\ell$ is a differentiable function.
+
+Since in modern machine learning the dimension $d$ and the number of samples $n$ are large, second-order method (because of large $d$) and batch methods (because of large $n$) are prohibitively expensive. That is why machine learning engendered the revival of \emph{stochastic first order methods.} One of the most popular algorithms belonging to this class of method is the \emph{stochastic gradient method} (SGD)~\citep{robbins1951stochastic}.
+
+
+
+
+
+
+
+\subsubsection{Stochastic Gradient Descent}
+
+
+
+
+Let $\mathcal F_\vtheta$ be a parametrized family of function. The \emph{stochastic gradient descent} is method similar as~\eqref{eq:gradient_descent} but using an \emph{unbiased estimate} of the gradient instead of the gradient itself. Let assume that we want to solve
+
+\begin{equation}
+\min_{\vtheta} \E_{(\vx,y)\sim Q} \; \ell(f_\vtheta(\vx),y) \, .
+\end{equation}
+
+For instance, if $Q$ is the empirical distribution associated with the data $(\vx_i,y_i)_{1\leq i\leq n}$, this problem is just a rewriting of~\eqref{eq:ERM} with an expectation. The principle of SGD is to sample $(\vx,y)\sim Q$ and then to compute $\nabla_\vtheta \ell(f_\vtheta(\vx),y)$ to update $\vtheta$ with this estimate of the gradient,
+
+\begin{equation}
+\text{Stochastic Gradient Descent:} \quad 
+\left\{
+\begin{aligned}
+&\text{Sample: } (\vx,y)\sim Q \\
+&\text{Compute: } \vtheta_{t+1} = \vtheta_t - \eta_t \nabla_\vtheta \ell(f_{\vtheta_t}(\vx),y) \,,
+\end{aligned}
+\right.
+\end{equation}
+
+Note that this method is not a \emph{descent} method and thus should be called \emph{stochastic gradient method} but the acronym SGD has become standard. Under some reasonable assumption, such as the Lipschitzness of the expected gradient $\vtheta \mapsto \E_P \nabla f_{\vtheta}(\vx,y)$ and the finite variance of the estimator one can show that this method does converge at a $O(1/\sqrt{t})$ rate. 
+
+
+
+
+\subsubsection{Adaptive methods}
+
+
+
+
+Variants of SGD that scale coordinates of the gradient by some sort of averaging of the previous gradient coordinates observed during the optimization procedure have known a large success for neural networks optimization particularly because these methods provide a sort of learning rate adaptivity for each individual feature. Seminal works in this line of research proposed an algorithm called AdaGrad~\citep{duchi2011adaptive} proving significantly better convergence guarantees than SGD when the gradients are sparse or small,
+
+\begin{equation}
+\text{AdaGrad:} \quad 
+\left\{
+\begin{aligned}
+&\text{Sample: } (\vx,y)\sim Q \\
+&\text{Set: } g_t := \nabla_\vtheta \ell(f_{\vtheta_t}(\vx),y) \text{ and } V_t := \frac{\diag(\sum_{s=1}^t g_s^2)}{t} \\
+&\text{Compute: } \vtheta_{t+1} = \vtheta_t - \eta_t \frac{g_t}{\sqrt{V_t}} \,.
+\end{aligned}
+\right.
+\end{equation}
+
+If the gradient is not sparse or small (for instance in non-convex optimization, gradients may vary a lot between early and late in learning) the learning rates suffer from a too rapid decay and performances of Adagrad deteriorate. In order to fix that issue, the non-convex optimization literature considers several variants of Adagrad. The most popular variant of Adagrad for deep learning is arguably \emph{Adam}~\citep{kingma2014adam}:
+
+\begin{equation}
+\text{Adam:} \;
+\left\{
+\begin{aligned}
+&\text{Sample: } (\vx,y)\sim Q \\
+&\text{Compute: } m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t\, , \; V_t := \beta_2 V_{t-1} + (1-\beta_2)g_t^2 \\
+&\text{Set: } g_t := \nabla_\vtheta \ell(f_{\vtheta_t}(\vx),y) \\
+&\text{Compute: } \vtheta_{t+1} = \vtheta_t - \eta_t \frac{m_t}{\sqrt{V_t}} \,,
+\end{aligned}
+\right.
+\end{equation}
+
+Note that, in practice, for all the methods presented in this section, in order to avoid singularities, a small $\epsilon$ is added to the denominator. Even if Adam has been widely adopted in practice, this method suffers from a fundamental theoretical issue (mainly due to the fact that the step-size may not decrease) and may not converge~\citep{reddi2019convergence}. 
+
+
+
+
+% However, due to it's practical performance and it's reatively simple tuning Adam remains 
+
+% Fortunately, there exists a simple fix for the Adam method, called AMSGrad~\citep{reddi2018convergence} that new method simply adds a maximization step for the second moment estimate that insure that the step-size decreases,
+
+% \begin{equation}
+
+% \text{AMSGrad:} \quad
+
+% \left\{
+
+% \begin{aligned}
+
+% &\text{Sample: } (\vx,y)\sim Q \\
+
+% & g_t := \nabla_\vtheta \ell(f_{\vtheta_t}(\vx),y) \quad \text{and} \quad
+
+% m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t \\
+
+% & V_t := \beta_2 V_{t-1} + (1-\beta_2)g_t^2 \quad \text{and} \quad \tilde V_t = \max\{\tilde V_{t-1},V_t\}\\
+
+% &\text{Compute: } \vtheta_{t+1} = \vtheta_t - \eta_t \frac{m_t}{\sqrt{\tilde V_t}} \,,
+
+% \end{aligned}
+
+% \right.
+
+% \end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Generative Adversarial Networks}
+
+
+
+
+
+
+
+The purpose of generative modeling is to generate samples from a distribution $q_\vtheta$ that matches best the true distribution $p$ of the data. The generative adversarial network training strategy can be understood as a \emph{game} between two players called \emph{generator} and \emph{discriminator}. The former produces a sample that the latter has to classify between real or fake data. The final goal is to build a generator able to produce sufficiently realistic samples to fool the discriminator.
+
+
+
+
+
+
+
+From a game theory point of view, GAN training is a differentiable two-player game~\eqref{eq:back_two_player_games}: the discriminator $D_{\vphi}$ aims at minimizing its cost function $\LL^{D}$ and the generator $G_{\vtheta}$ aims at minimizing its own cost function $\LL^G$.
+
+
+
+
+\subsection{Standard GANs}
+
+
+
+
+In the original GAN paper~\citep{goodfellow2014generative}, the GAN objective is formulated as a \emph{zero-sum game} where the cost function of the discriminator $D_\vphi$ is given by the negative log-likelihood of the binary classification task between real or fake data generated from $q_\vtheta$ by the generator, 
+
+\begin{equation}\label{eq:back_minimax_gan}
+\min_{\vtheta} \max_{\vphi} \LL(\vtheta,\vphi)
+\quad \text{where} \quad
+\LL(\vtheta,\vphi) \defas - \!\!\underset{\rvx \sim p}{\mathbb E} \!\![ \log D_\vphi(\rvx)] - \!\!\underset{\rvx' \sim q_\vtheta}{\mathbb E} \!\![\log (1- D_\vphi(\rvx'))] \,. 
+\end{equation}
+
+However~\citet{goodfellow2014generative} recommend to use in practice a second formulation, called \emph{non-saturating GAN}. This formulation is a \emph{non-zero-sum game} where the aim is to jointly minimize
+
+\begin{equation}\label{eq:back_non_saturating_objective}
+\LL^{G}(\vtheta,\vphi) \defas - \!\!\underset{\rvx' \sim q_{\vtheta}}{\mathbb E} \!\! \log D_\vphi(\rvx')
+\; \text{and} \;
+\LL^{D}(\vtheta,\vphi) \defas - \!\underset{\rvx \sim p}{\mathbb E} \log D_\vphi(\rvx) \,- \!\!\underset{\rvx' \sim q_\vtheta}{\mathbb E} \!\!\log (1- D_\vphi(\rvx')) \,. 
+\end{equation}
+
+This formulation has the same \emph{stationary points} as the zero-sum one~\eqref{eq:back_minimax_gan} but are claimed to provide ``much stronger gradients early in learning''~\citep{goodfellow2014generative}.
+
+
+
+
+The distribution $q_\vtheta$ is sampled by sampling $\vz$ according to a prior distribution $\pi$ (often a multivariate Gaussian distribution) and then transforming $\vz$ with the generator function,
+
+\begin{equation}
+\vx \sim p_\vtheta \quad \Leftrightarrow \quad \vx = G_\vtheta(\vz) \,,\quad \vz \sim \pi \,.
+\end{equation}
+
+
+
+
+\subsection{Divergence minimization and Wasserstein GANs}
+
+
+
+
+An interesting point of view on GANs is that the GANs objective formulated as minimax are a divergence between the distribution $p$ of the real data and the one $q_\vtheta$ of fake data. In practice, the divergence they are minimizing are \textbf{parametric adversarial divergences}~\citep{huang2017parametric} of the form $\sup_{\vphi \in\Phi} \E_{(\vx,\vx')\sim p\otimes {q_\vtheta}}[\ell(f_\vphi(\vx), f_\vphi(\vx'))]$. In other words, the loss of a GAN between the distribution $p$ of the real data and the one $q_\vtheta$ of fake data is a parametric divergence. 
+
+
+
+
+One popular example is the $1$-Wasserstein distance~\citep{villani2009wasserstein}:
+
+\begin{equation}
+W_1(p,q) := \inf_{\gamma \in \Gamma(p,q)} \E_{(\vx,\vy)\sim \gamma} [\|\vx-\vy\|_1]
+\end{equation}
+
+where $\Gamma(p,q):= \{\gamma \;:\; \gamma|_{p} = p, \, \gamma|_q = q\}$ is the collection of all measures in the product space with marginals $p$ and $q$. The dual formulation of the $1$-Wasserstein distance is a maximum over $1$-Lipschitz functions,
+
+\begin{equation}
+W_1(p,q) := \sup_{f \,, \; 1-\text{Lip}} \E_p[f(\vx)] - \E_q[f(\vx)] \,.
+\end{equation}
+
+
+
+
+By choosing $\Delta(f_\vphi(\vx), f_\vphi(\vx')) = f_\vphi(\vx) - f_\vphi(\vx')$ and constraining $f_\vphi$ to the class of 1-Lipschitz functions, we get the (parametric) Wasserstein GAN (WGAN) proposed by~\citet{arjovsky2017wasserstein}:
+
+\begin{equation}
+\label{eq:WGANobj}
+\min_{\vtheta \in \Theta} \max_{\vphi \in \Phi, ||f_\vphi||_L \leq 1} \EE_{\vx \sim p}[f_\vphi(\vx)] - \EE_{\vx' \sim q_{\vtheta}}[f_\vphi(\vx')] . %SLJ: careful Gauthier -- you seemed a bit confused by the G_theta(z) in standard formulation -- z is *not* the same thing as x!!!
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\endinput
+
+%%
+
+%% End of file `introduction.tex'.
+
+

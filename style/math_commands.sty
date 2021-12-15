@@ -12,7 +12,15 @@
 \usepackage{mathrsfs}  % RSFS (caligraphic) fonts in maths
 \usepackage{relsize} % change the size of a symbol inside a formula
 
-
+% Environments
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\beqa}{\begin{eqnarray}}
+\newcommand{\eeqa}{\end{eqnarray}}
+\newcommand{\bean}{\begin{eqnarray*}}
+\newcommand{\eean}{\end{eqnarray*}}
 \newcommand{\aligns}[1]{\begin{align*}#1\end{align*}}
 \newcommand{\alignn}[1]{\begin{align}#1\end{align}}
 
@@ -53,6 +61,7 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{problem}{Open Problem}
 
 % Algebra
 \newcommand{\real}{\mathbb{R}}

@@ -23,23 +23,38 @@
 %\usepackage{chapterbib}  
 
 % Speed up compilation by focusing on one part at a time
-\includeonly{
-	contrib3
-}
+%\includeonly{contrib1}
+%force-texpad-dependency: contrib1.tex
+%force-texpad-dependency: contrib2.tex
+%force-texpad-dependency: contrib3.tex
 
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
-\usepackage{microtype}      % microtypography
+\usepackage{microtype}       % set of techniques to improve general appearance
 \usepackage{graphicx}
-\graphicspath{{figs/causal-optimization/}{figs/MAP-convergence/}}
+\graphicspath{
+	{figs/causal-optimization/}
+	{figs/MAP-convergence/}
+	{figs/sdca4crf/}	
+}
 \usepackage{wrapfig}
 %\usepackage{subfigure}
 %\usepackage{subcaption}
 %\usepackage{placeins}
 \usepackage{tikz}           % define for loops
 
-
-
+\usepackage{paralist} % for compact enumerate environment
+\usepackage{algorithm}  % float wrapper for algorithms
+\usepackage[noend]{algorithmic}   % algorithm typesetting environment
+\usepackage[all]{xy}  % xy diagrams
+\usepackage{graphicx}
+\usepackage{subcaption}  % write captions for subfigures
+\usepackage{adjustbox}  % scale properly boxed content
+\usepackage{multicol}
+\definecolor{mydarkblue}{rgb}{0,0.08,0.45}
+\usepackage{pgf}
+\pgfkeys{/pgf/number format/.cd ,precision=1,sci generic={exponent={\times 10^{#1}}}}
+\newcommand\convert[1]{\pgfmathprintnumber{#1}}
 
 
 %% <lmodern> incorpore les fontes en T1, pour
@@ -103,7 +118,7 @@
 	citecolor=blue,
 	filecolor=blue,
 	urlcolor=blue,
-	pdfview=FitH
+	pdfview=FitH,
 	draft,
 %	final,
 }
@@ -116,72 +131,15 @@
 \newcommand{\TODO}[1]{\textcolor{cyan}{(TODO #1)}}
 \newcommand{\tocite}{\textcolor{purple}{(add citation)}}
 
-%% Définition des environnements utiles pour un mémoire scientifique.
-%% La numérotation est laissée à la discrétion de l'auteur·e. L'exemple
-%% illustré ici produit « Définition x.y.z » à l'extérieur d'un article
-%%   x = no. chapitre
-%%   y = no. section
-%%   z = no. définition
-%% et « Définition x » à l'intérieur d'un article
-%%   x = no. définition
-%% Les numérotations des corollaires, définitions, etc.
-%% se font de façon successive.
-%%
-%% Les macros \<type>name sont telles qu'ils suivent
-%% la langue actuelle. (P.ex. si \francais est utilisé,
-%% alors \begin{theo} va faire un Théorème et si \anglais
-%% est utilisé, \begin{theorem} fera un Theorem.)
-%%
-  % Environnement à utiliser à l'extérieur des articles
-\newtheorem{cor}{\corollaryname}[section]
-\newtheorem{deff}[cor]{\definitionname}
-\newtheorem{ex}[cor]{\examplename}
-\newtheorem{lem}[cor]{\lemmaname}
-\newtheorem{prop}[cor]{Proposition}
-\newtheorem{rem}[cor]{\remarkname}
-\newtheorem{theo}[cor]{\theoremname}
 
-  % Environnement à utiliser à l'intérieur des articles
-\newtheorem{corA}{\corollaryname}
-\newtheorem{deffA}[corA]{\definitionname}
-\newtheorem{exA}  [corA]{\examplename}
-\newtheorem{lemA} [corA]{\lemmaname}
-\newtheorem{propA}[corA]{Proposition}
-\newtheorem{remA} [corA]{\remarkname}
-\newtheorem{theoA}[corA]{\theoremname}
-%% IMPORTANT : Il faut faire \setcounter{corA}{0}
-%% au début d'un article pour recommancer à compter à 1.
-%%
-%% NOTE : Il peut être commode de redéfinir \the<type> pour
-%% obtenir la numérotation désirée. Par exemple, pour
-%% que les corollaires soit numérotés #article.#section.#sous-section,
-%% on fait
-%% \renewcommand\thecorA{\thepart.\thesubsection.\arabic{corA}}
-
-%%%
-%%% Si vous préférez que les corollaires, définitions, théorèmes,
-%%% etc. soient numérotés séparément, utilisez plutôt un bloc de
-%%% commandes de la forme :
-%%%
-
-%%\newtheorem{cor}{\corollaryname}[section]
-%%\newtheorem{deff}{\definitionname}[section]
-%%\newtheorem{ex}{\examplename}[section]
-%%\newtheorem{lem}{\lemmaname}[section]
-%%\newtheorem{prop}{Proposition}[section]
-%%\newtheorem{rem}{\remarkname}[section]
-%%\newtheorem{theo}{\theoremname}[section]
-
-%%
 %% Numérotation des équations par section
 %% et des  tableaux et figures par chapitre.
 %% Ceci peut être modifié selon les préférences de l'utilisateur.
-\numberwithin{equation}{section}
+\numberwithin{equation}{chapter}
 \numberwithin{table}{chapter}
 \numberwithin{figure}{chapter}
 \usepackage{thm-restate}
 
-%%
 %% Si on veut faire un index, il faut décommenter la ligne
 %% suivante. Ajouter des mots à l'index avec la commande \index{mot cle} au
 %% fur et à mesure dans le texte.  Compiler, puis taper la commande
@@ -234,6 +192,23 @@
 % \francais
 
 \chapter*{Résumé}
+
+incorporer le premier article
+
+écrire un prologue pour chaque article avec le contexte et ma contribution
+
+écrire une introduction. Quels topics ? 
+
+ecrire une discussion et ouverture en guise de conclusion
+
+peaufiner l’abstract (en anglais, puis en français)
+
+ecrire mini-section sur les articles que je ne mentionnnent pas. 
+
+ecrire acknowledgements
+
+trouver citation pertinente pour l’intro, en lien avec mes propres résolutions de changement de vie, mais aussi ce qui m’a amené à faire cette thèse.
+
 
 \subsection*{Mots-clés}
 %%------------------------------------------------- %
@@ -300,6 +275,11 @@ Machine learning, exponential family, Bregman divergence, non-asymptotic statist
 \chapter*{Acknowledgements}
 % \begin{minipage}{.7\linewidth}
 
+We are thankful to Thomas Schweizer for his numerous software engineering advices.
+We thank Gauthier Gidel and Akram Erraqabi who started this project.
+We are indebted to Ahmed Touati for his involvement during the first phase of the project.
+
+
 \subsubsection*{Contribution 2}
 We thank S\'ebastien Lachapelle and Tristan Deleu for insightful discussions and useful feedback that led to the main results of this paper. 
 We thank Waïss Azizian for his help in debugging proofs.
@@ -349,7 +329,7 @@ Merci a toi que j'ai peut-être apprécié, respecté, aimé, idolatré ou detes
 %%%%%%%%%%%%%%%%%%%%  A R T I C L E 1  %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%                   %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\include{contrib1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%                   %%%%%%%%%%%%%%%%
@@ -379,6 +359,6 @@ Merci a toi que j'ai peut-être apprécié, respecté, aimé, idolatré ou detes
 %  \chapter*{References}
 \bibliographystyle{abbrvnat}
 %\bibliography{references}
-\bibliography{references2,references3}
+\bibliography{references1,references2,references3}
 
 \end{document}
