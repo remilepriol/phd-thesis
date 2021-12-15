@@ -689,7 +689,7 @@ We leave finding a more efficient implementation of a gap sampling scheme for OE
 
 A key feature of SDCA is to only require one marginalization oracle per line-search.
 This could become advantageous over SAG or OEG when the marginalization oracle becomes much more expensive than evaluating the entropy function from the marginals.
-Examples for this scenario include: when a parallel implementation is used for the entropy computation; or when the marginalization oracle uses an iterative approximate inference algorithms such as TRW BP whereas an approximation of the entropy is direct from the marginals~\citep{kirshnan15barrierFW}.
+Examples for this scenario include: when a parallel implementation is used for the entropy computation; or when the marginalization oracle uses an iterative approximate inference algorithms such as \emph{tree reweighted belief propagation} whereas an approximation of the entropy is direct from the marginals~\citep{kirshnan15barrierFW}.
 Investigating these scenarios with full timing comparison (which is implementation dependent) is a further interesting direction of future work.
 
 We also note that acceleration schemes have been proposed for both SAG and SDCA~\citep{lin2015catalyst, shalev2016accelerated}, though they have not been tested yet for training CRFs.
