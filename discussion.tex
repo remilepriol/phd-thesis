@@ -1,0 +1,21 @@
+\chapter{Conclusion}
+\label{chap:discussion}
+
+
+We have seen three papers dealing with three interweaved topics : optimization, causality and statistics. 
+Here is a summary of these three papers.
+1. Variance reduction allows fast training of CRF, a special class of conditional undirected graphical models that were previously hard to optimize.
+Thanks to duality, non-uniform sampling can be elegantly formalized and improves upon strong methods.
+2. In simple models, the speed of adaptation can identify the causal direction. However this does not always work. We may need more sophisticated models to verify this intuition that seems to hold for humans. After all, that may be why we make up new rules so quickly.
+3. In exponential families, MLE and MAP are instances of SMD. And the KL between the true model and the learnt model is simply a Bregman divergence. Yet we do not know any upper bound, whether from optimization or from statistics. Finding one may help non-Euclidean optimization reach new grounds.
+
+
+From these 3 examples, we deduce these 2 key messages : 
+1. The exponential family is at the core of most machine learning techniques. Yet much remains to be proved.
+2. Fields need each other to make progress. Thanks to optimization tool, we enhance the power of our statistical models. Thanks to statistical models, we are able to probe into the abilities of optimization methods.
+
+
+\section{Future Work}
+Based on our last contribution, two research directions arise, that could partially address the open problems we raise.
+The first one is finding high probability bounds for exponential family MAP thanks to the entropy being a self-concordant barrier, as proved by \citep{bubeck2015entropic}.
+The second one is finding a high-probability convergence rate for stochastic mirror descent on self-concordant (barrier) losses. This might be possible thanks to the quadratic sandwich property of such functions. 

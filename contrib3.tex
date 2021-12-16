@@ -533,9 +533,10 @@ or Weibull with known shape $k$.
 The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic} -- e.g., categorical and Dirichlet distributions.
 Precisely, categorical variables illustrate that Proposition~\ref{prop:selfConcordant} does not imply directly a bound on the \emph{expected} Bregman.
 The expected KL of the categorical MLE is always infinite, as previously mentioned in \S\ref{sec:problem}.
+However, Proposition~\ref{prop:selfConcordant} may be used to prove high-probability, many samples, convergence rates for one dimensional (and possibly multivariate) normal distributions.
 
-Overcoming this limitation,
-\citet{ostrovskii2021finite} characterize the number of samples needed to be upper bounded by a quadratic \emph{with high-probability}, for any parametric models with a self-concordant log-likelihood $f$.
+This is the spirit of
+\citet{ostrovskii2021finite}  which characterize the number of samples needed to be upper bounded by a quadratic \emph{with high-probability}, for any parametric models with a self-concordant log-likelihood $f$.
 \citet{anastasiou2017bounds} obtains a similar flavor of result under other assumptions on the third derivative of $f$.
 More closely, in the world of exponential families, \citet{kakade2010learning} prove a result similar to Proposition~\ref{prop:selfConcordant} from a local bound on all higher-order moments of $\logpart$ in $\nat^*$.
 However, these results are expressed with quadratics in $\nat$, not $\m$, and they do not directly translate to convergence rates for the MAP, but they might with some more work.

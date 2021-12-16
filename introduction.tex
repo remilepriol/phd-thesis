@@ -1,0 +1,237 @@
+\setcounter{theorem}{0}
+
+ % some custom math commands
+\newcommand*{\ptrue}{\ensuremath{\bm{p}}}
+\newcommand*{\pmodel}{\ensuremath{\bm{p}_{\theta}}}
+\newcommand*{\lr}{\gamma}
+
+
+\chapter{Background}
+
+
+
+We are going to review some elementary concepts of Machine Learning that are prerequisites to understand this thesis. 
+We want to build machines that are able to interact with the world based on the data they sense such as images or text. 
+The most straightforward approach is to code explicit rules of what the machine should do when faced with a certain input. 
+This does not scale with the complexity or the quantity of data: imagine yourself trying to code rules to identify a dog in a picture given the raw digit string. 
+Since the invention of the Perceptron \citep{rosenblatt1957perceptron}, computer scientists have tried to overcome this issue by learning these rules from examples. 
+This is the field of \textit{Machine Learning}. 
+
+A large part of machine learning aims at learning from unlabelled data. This is unsupervised learning presented in Section \ref{sec:unsupervised_learning}.
+Meanwhile a large body of work has grown around the idea of predicting the effect of an intervention in the world. This is the field of Causal Inference which we will cover in Section \ref{sec:causal_inference}. 
+Machine learning typically frames the learning procedure as the minimization of some loss. How to efficiently minimize this loss over a high dimensional parameter and a large dataset is one of the grand challenge of machine learning. Optimization algorithms such as stochastic gradient descent have become the workhorse of modern machine learning. Characterizing the convergence behavior of these algorithms is critical to ensure that systems will learn. We will review some of these elements in Section \ref{sec:optimization}.
+
+\section{Learning from Data}
+\subsection{Supervised Learning}
+The most simple thing we want to learn is a mapping from x to y. If we have a probabilistic model p(y|x), and a dataset, we can do this with ERM, which is the same as maximum likelihood.
+
+
+\subsection{Density Estimation}
+%\section{Learning from Unlabeled Data}
+\label{sec:unsupervised_learning}
+A truly intelligent system should be able to learn from data without explicit humans supervision. That is the point of \textbf{unsupervised learning}. Given a dataset $D_n = \{x_1, \dots, x_n\}$ where each point is a vector $x_i \in \real^d$, we want to learn \textit{something} that will be useful for some downstream task. This is quite ill-specified, so machine teachers have made up auxiliary tasks to achieve this. We are now going to introduce 4 members of the machine learning family that can learn from unlabeled data: the main protagonist -- maximum likelihood estimation, its son -- variational inference, its cousin -- adversarial learning, and its distant relative -- self-supervised learning.
+
+\subsubsection{Maximum Likelihood}
+A fundamental assumption is that all data points were sampled independently from some natural probability distribution $\ptrue(x)$. Then a natural goal is to estimate this distribution. Some models directly compute a density $x \mapsto \pmodel(x)$. They often do so by \textit{maximizing the likelihood} of the dataset
+\begin{align}
+    \theta^* = \argmin_\theta \inv{n} \sum_{i=1}^n - \log \pmodel(x_i) \; .
+\end{align}
+Then to assess the quality of the trained model, one can estimate the likelihood of a held-out test set. 
+This approach encompasses the simplest model : fitting an isotropic Gaussian $\cN(\mu, \sigma^2 I)$ by estimating the noise and the variance of the data
+\begin{align}
+    \hat \mu = \inv{n} \sum_{i=1}^n x_i 
+    \quad \text{and} \quad 
+    \hat \sigma^2 = \inv{n} \sum_{i=1}^n \norm{x_i - \mu}^2 \; .
+\end{align}
+If the data is categorical -- e.g.  $x_i \in \{1, \dots, K\}$ are labels -- then the simplest such model is the Categorical distribution $\pmodel = (p_1, \dots, p_K) \in \simplex_K$, which assigns a probability $p_k$ to each label $k$. We use $\simplex_K$ to denote the K-simplex -- e.g. the set of real positive vectors of dimension $K$ that sum to 1
+\begin{align}
+    \simplex_K = \left\{ \vp \in \real^K | \forall k, p_k \ge 0 ; \sum_{k=1}^K  p_k = 1 \right\} \; .
+\end{align}
+The maximum likelihood estimate of this model counts the occurrence of each label in the data and takes the empirical frequency of each label
+\begin{align}
+    \hat p_k  = \inv{n} \sum_{i=1}^n \ones\{x_i = k\}
+\end{align}
+where the indicator function $\ones\{ b\}$ is 1 if $b$ is true and 0 otherwise.
+Both the categorical and normal models are extremely simple. 
+There exist much more powerful algorithms such as Normalizing Flows \citep{rezende2015variational} that can model almost any smooth density by directly maximizing the likelihood of a dataset.
+
+\subsubsection{Variational Inference}
+A less direct approach to density modelling involves a latent --e.g. unobserved -- variable $\vz$ that should capture high level factors of variation of the data. $\vz$ is also called a representation. The simplest example of such a model is the Gaussian Mixture Model
+\begin{align}
+    \pmodel(x, z) = \sum_{k=1}^K z_k \cN(x ; \mu_k, \sigma_k^2)
+\end{align}
+where $\vz$ is a one hot vector -- e.g. a vector made of all zeros and one 1.
+Maximizing the likelihood of these models involve complex algorithms commonly known as Variational Inference. The simplest such algorithm is the Expectation-Maximization for Gaussian Mixture Models. Recent advances such as the Variational Auto-Encoder (VAE) \citep{kingma2013auto} can model extremely complex distributions such as collections of faces. 
+More generally, these methods provide an interesting formalism for the notion of representation learning: the representation is a latent variable. 
+
+\subsubsection{Adversarial Learning}
+Yet another  unsupervised task  is to sample new data points from $\ptrue(x)$. The groundbreaking work from \citet{goodfellow2014generative} devised a method to train directly such a model. Sample images from the generator model $\pmodel(x)$ and compare them with images from the true distribution  $\ptrue(x)$. Do the comparison with the help of another model called the discriminator. Train the discriminator to discriminate between the model and the true images, and train the generator to fool the discriminator. This approach allows the training of generative model that captures some structure about the data. After training, they can generate realistic images. There is no consensus yet on how to estimate the quality of the trained model. 
+
+\subsubsection{Self-Supervised Learning}
+The most desirable behavior we would like our system to get is to play with the data until it finds something interesting, a handle or a pattern that enables it to do more. This is the idea behind self-supervised learning: exploit structure in the data to make-up labels, then learn to predict these labels. 
+
+This approach has had a huge success to learn better representations from large corpus of unlabeled text in Natural Language Processing. Models such as ELMO \citep{peters2018deep} or BERT \citep{devlin2018bert} have redefined the state of the art in this field. They train a model to fill in blanks in a sequence. The maximum likelihood approach, also known as language modelling is not competitive for now. 
+
+Self-supervised learning has also become useful to learn representations for images : predict some part of an image from another, or solve a jigsaw puzzle. In the context of time sequences, such as video or speech, a natural task is to predict the next element of the sequence, or a few steps ahead in the future.
+
+
+
+\section{Optimization}
+\subsection{Convex Optimization}
+\label{sec:optimization}
+We are interested in minimizing an expected loss over a dataset. 
+\begin{align}
+    \min_\theta \inv{n} \sum_{i=1}^n f(\theta, x_i) \; .
+\end{align}
+This loss can be the negative log-likelihood for instance $f(\theta, x_i) = - \log \pmodel(x_i)$. A general approach to solve this problem is gradient descent. Start from a random point $\theta_0$ and iteratively nudge the parameters in the direction opposite to the gradient of the loss
+\begin{align}
+    \theta_{t+1} = \theta_t - \lr_t \inv{n} \sum_{i=1}^n \nabla_\theta f(\theta, x_i)
+\end{align}
+where the hyper parameter $\lr_t$ is known as the step-size. The step-size may be constant, follow a predefined schedule, be found via a line-search, or adapt to the past trajectory.
+If the loss  $f$ is convex and Lipschitz, or convex with Lipschitz gradient, then this procedure will converge to the minimizer $\theta^*$, assuming some conditions on the step-size.
+
+Modern datasets are huge. They often contain millions, if not billions, of high dimensional data points such as images. As a consequence exact minimization is no longer the bottleneck in learning \citep{bottou2008tradeoffs}. 
+One can afford to look at only one (or a few) data point at a time, and take a step of gradient to minimize their loss
+\begin{align}
+    \theta_{t+1} = \theta_t - \lr_t \nabla_\theta f(\theta, x_i)
+\end{align}
+where $i$ was sampled uniformly from $\{1, \dots, n\}$.
+This procedure known as Stochastic Gradient Descent (SGD)
+\footnote{Contrary to gradient descent, SGD is not guaranteed to decrease the objective value at every step. As such, it is not a descent algorithm. We should rigorously call it stochastic gradient method, but SGD has become the standard acronym in the community so we will stick with it.}
+was first devised by \citet{robbins1951stochastic} to find the zeros of a stochastic function.
+In fact, if we see each data point only once, then we are minimizing the true population risk 
+\begin{align}
+    \min_\theta \expect[x\sim \ptrue]{f(\theta, x)} \; .
+\end{align}
+In this work, we will use this fact by interpreting convergence rates  of SGD as a bound on the sample complexity of a model. 
+Let $g(\theta) = \expect[x\sim \ptrue]{f(\theta, x)}$. Perhaps the most classic set of assumptions to prove the convergence of SGD is that 
+\begin{itemize}
+    \item $g$ is lower bounded by $g^*$ (not necessarily convex),
+    \item $\nabla g$ is $L$-Lipschitz continuous,
+    \item $\expect[x]{\|\nabla_\theta f(\theta, x)\|^2} < \sigma^2, \forall \theta$ -- e.g. the stochastic gradients of $g$ have a bounded second moment.
+\end{itemize}
+Then if we run SGD with constant step-size step size $\lr_t = \lr$, we can guarantee that
+\begin{align}
+    \min_{t\in \{0, \dots, T\} } \expect{\|\nabla g(\theta_t)\|^2} 
+    \leq \frac{g(\theta_0) - g^*}{\lr T} + \frac{L \sigma^2}{2} \lr 
+\end{align}
+where the expectation is taken over the sampling of data points $x_1, \dots, x_T$. 
+This rate is particular: we are bounding the minimal expected gradient norm. We are bounding the gradient norm because without convexity assumptions, all we can hope for is to find a critical point of the loss, e.g. a zero of the gradient. 
+The upper bound involves two terms. The first is the difference between the loss function at the initialization and the optimum, divided by $T$. The second the product of the smoothness, the variance of the gradients and the step-size. This term is commonly known as the variance term. The interpretation of this bound is that SGD with constant step-size is going to converge at speed $O(\inv{T \lr})$ to a variance ball of size $O(\lr)$ around a critical point.
+
+To overcome this variance ball issue, we may progressively decrease the learning rate. For instance, if we take  $\lr_t = \frac{\lr}{\sqrt{t}}$, we can guarantee that
+\begin{align}
+    \min_{t\in \{0, \dots, T\} } \expect{\|\nabla g(\theta_t)\|^2} 
+    \in O \left( \frac{1}{\lr \sqrt{T}} \left ( g(\theta_0) - g^* + L \sigma^2 \lr^2 \log(T) \right ) \right )  \; .
+\end{align}
+This time, SGD is going to converge to a critical point, but at a slower rate $O \left( \frac{\log(T)}{\sqrt{T}} \right )$.
+
+In this thesis we will use more sophisticated results from  \citet{moulines2011nonasymptotic} -- that directly bound the expected suboptimality instead of the minimal expected gradient norm -- to analytically estimate the sample complexity of causal models.
+
+\subsection{Variance Reduction}
+Publication of SAG and discovery that we can optimize finite sums at a linear rate, if we use some memory. Then SVRG : we dont even need memory. Oh and SDCA is also variance reduced. This is wonderful.
+
+\subsection{Fenchel Duality}
+Given a function f from real numbers to real numbers, its Legendre-Fenchel transformation is defined by the formula
+ 
+This transformation is a ubiquitous concept throughout Science. It appears in thermodynamics and classical mechanics as the Legendre transform (a special case), in convex optimization and machine learning as the Fenchel conjugate or the convex conjugate. At first sight this definition seems arbitrary, but it admits geometrical interpretations along with many properties that make it a useful tool. Among others, it offers a generalization of Lagrangian duality.
+
+\section{Probabilistic Models}
+\subsection{Exponential Family}
+Exponential family are the linear model of probabilities. 
+Most everyday distributions belong to this family.
+They are the foundation of GLM.
+They have many nice properties, such as convex log-likelihood, and closed form MLE.
+We use them a lot in graphical models. 
+
+\subsection{Probabilistic Graphical Models}
+\subsubsection{directed} 
+Besides adversarial and self-supervised learning, most unsupervised learning algorithms build a probabilistic model of the data $\pmodel(x)$.
+One the most useful properties we can model about the natural distribution $\ptrue(x)$ is the notion of (conditional) independence between variables. For instance, in a simple video game, two stacks of frames are often independent given the stack of frames in between them. This kind of independence statements is formalized in the language of probabilistic graphical models -- see \citet{pearl1988probabilistic} for an historical reference, or  \citet{koller2009probabilistic} for a more recent review. The simplest such models are directed probabilistic graphical models, also known as Bayesian Networks since \citet{pearl1985bayesian} coined this term.
+
+Suppose you observe a random variable $X=(X_1, \dots, X_d) \in \real^d$ with probability law $\ptrue(X)$. Suppose you are also given a Directed Acyclic Graph (DAG) $G$ with vertex $V=\{1, \dots, d \}$ and edges $E$ . We denote $\parents(i)$ the parents of node $i$. This is the empty set if $i$ has no parents. We will say that $\ptrue$ factorizes with $G$ if
+\begin{align}
+    \ptrue(X) = \prod_{i=1}^d \ptrue(X_i | X_{\parents(i)}) \; .
+\end{align}
+In words, the only conditional dependencies of $\ptrue$ are indicated by the edges of the graph $G$. The less edges in $G$, the more we know about $X$. In fact if we know nothing about $\ptrue$, we still know that we can write it as 
+\begin{align}
+    \ptrue(X) = \prod_{i=1}^d \ptrue(X_i | X_{<i} )\textbf{}
+\end{align}
+by definition of conditional probability -- modulo some positivity constraints. Consequently, a useful graph should have only a few edges, or equivalently a low degree.
+
+In unsupervised learning, either we posit that the data factorizes along a graph and exploit this information to learn a density model $\pmodel$ with less data. Either we set the goal of discovering these conditional independence structures. This goal is known as structure learning. Current solutions to this problem fall into two categories
+\begin{enumerate}
+    \item Explicitly find out conditional independences with statistical testing, and build the graph from there.
+    \item Use a scoring function to explore all possible graphs and keep the one with the highest score. The scoring function is often designed as the posterior probability of the structure given the data.
+\end{enumerate}
+
+These graphs have proven useful in many modeling areas. However they alone are not able to predict what will happen if one of the variables is affected by some external stimuli. This is the topic of causal inference that we are going to discuss in the next Section.
+
+
+\subsubsection{undirected}
+\subsection{Structural Causal Models}
+{Causal Inference and Discovery}
+\label{sec:causal_inference}
+
+Causal inference use directed graphical models to predict the effect of interventions in the world. We are now going to introduce 2 key elements of this theory: do-calculus and structural causal models.
+
+\subsubsection{Do-calculus}
+Assume you have data for kidney stone treatments performed in one hospital. For each patient, you know the treatment they received $X$, the outcome $Y$ -- did they successfully heal? -- and the size of the stones they found during the surgery $Z$. A new patient arrive. You have to recommend the treatment that will maximize their chance of recovery.  How do you process the data to take this decision ?
+
+By now you may have recognised this classic story that is an instance of Simpson's paradox. In this example, the straightforward solution would be to recommend the treatment with the highest success rate. But it so happens that the treatment received by past patients was picked based on their symptoms, which were themselves a function of the stone sizes. In this example, the stone size is a \textit{confounder} that affects both the treatment and the outcome. One should first partition based on $Z$ the data before aggregating the success rates. But why is that and how to formalize that ? The answer lies in the work of Judea Pearl \citep{pearl2009causality} and other statisticians. It can be formalized with the help of graphical models such as Figure \ref{fig:simpsons_paradox}.
+
+
+%\begin{figure}
+%    \centering
+%    \begin{tikzpicture}
+%    \begin{scope}[every node/.style={circle,thick,draw}]
+%        \node (X) at (-2,0) {X};
+%        \node (Y) at (2,0) {Y};
+%        \node (Z) at (0,3) {Z};
+%    \end{scope}
+%    
+%    \begin{scope}[>={Stealth[black]},
+%                  every edge/.style={draw=black,very thick}]
+%        \path [->] (X) edge (Y);
+%        \path [->] (Z) edge (Y);
+%        \path [->] (Z) edge (X);
+%    \end{scope}
+%    \end{tikzpicture}
+%    \caption{The graph of causal relationships between treatments X, outcome Y and stone size Z.}
+%    \label{fig:simpsons_paradox}
+%\end{figure}
+
+The question you have to answer is an \textit{interventional question}: what will happen \textit{if you assign $X=x$?} This action effectively removes the observed statistical dependency between $X$ and $Z$. The outcome distribution of this action should not be computed as the simple conditional probability $P(Y|X=x)$, but as another quantity that we will denote $P(Y| \Do(x))$. The gold standard to estimate this quantity would be to perform a \textit{randomized control trial}, where we blindly and randomly assign treatments to incoming patient, then observe and report success rate. But we want to exploit the data we already observed to estimate this quantity. That is where the \textit{do-calculus} comes into play. It is a set of rules based on graphs that transforms do-statements such as $P(Y| \Do(x))$ into an equation written in terms of observed probabilities. 
+In the kidney stone example, we can estimate $P(Y| \Do(x))$ from observational data with the \textit{backdoor adjustment formula}
+\begin{align}
+    P(Y|\Do(x)) = \sum_z P(Y | x, z) P(z) 
+    \neq \sum_z P(Y | x, z) P(z|x) = P(Y | x) \; .
+    \label{eq:backdoor_adjustment}
+\end{align}
+
+What is critical here is that $Z$ is a cause of $X$. If instead $X$ caused $Z$ then causal effect and conditional would be equal $P(Y|\Do(x)) = P(Y | x)$. Yet from a Bayesian network perspective, both arrow directions make a complete graph, which encode the same absence of conditional independence. In other words, a causal graphical model encodes strictly more information than a Bayesian network.
+
+The backdoor adjustment formula is the most famous instance of do-calculus, but more complex rules exist for complex graph with both observed and unobserved variables. Quite recently, \citet{huang2012pearl} proved that these rules are complete, meaning that if a do-statement can be expressed in terms of observed probabilities, then one will be able to find the right formula by applying these rules. 
+
+
+\subsubsection{Structural Causal Models}
+
+Thanks to the rules of do-calculus, knowing the causal graph can be very useful. So far we have talked about this in a non-parametric setting, assuming we have direct access the observed conditional probabilities $P(Y|X, Z)$. In reality we need to parametrize these mechanisms. This is what a Structural Causal Model (SCM) is for. It describes a causal model by a set of unobserved independent exogenous noise variables $U_1, \dots, U_d$, and a set of functions $f_1, \dots, f_d$ such that
+\begin{align}
+    X_i = f_i(X_{\parents(i)}, U_i), \forall i \;.
+    \label{eq:scm}
+\end{align}
+Given a DAG $G$, these functions, and distributions for the exogenous noise, one can sample a vector $X$ by sampling the noises and applying these functions in a topological order of $G$.
+
+Among other things, SCMs are useful to answer \textit{counterfactual questions}: what would have happened if I had given the other treatment to this patient ?  Counterfactuals are a major topic in the causality community, but they not relevant to this thesis so we will not cover this theory.
+
+While the formalism of \eqref{eq:scm} may seem trivial at first, it becomes useful when one starts thinking about causal structure discovery. 
+If we assume a parametric form for the functions, then the graphical structure can become identifiable, meaning that only one graph could have generated the observed data. One such example is linear $f_i$ and non-Gaussian noise. 
+However the interest of these identifiability results is limited by the fact that, in general, we have no guarantee on the shape of the function that generated the data. 
+
+The SCM formalism enables us think about a much deeper hypothesis: \textbf{Independent Causal Mechanisms}. This hypothesis postulates that knowing something about one mechanism does not provide any information about the others. This can be formalized by various means. One of them is Algorithmic Information Theory: the Kolmogorov Complexity of the set $\{ f_1, \dots, f_d \}$
+\footnote{We are not including the exogenous noise distributions for simplicity.}
+is on the same order of magnitude as the sum of the Kolmogorov Complexity of each function taken independently. 
+Using this independence insight, one can devise algorithms that aims at finding the causal structure of the data. See \citet{peters2017elements} for a book on this topic and \citet{scholkopf2019causality} for a very recent review of the progress in this field. 
+
+Fitting the parameters of the functions $f_i$ is the realm of optimization. We are now going to review some of the core ideas of this field.
