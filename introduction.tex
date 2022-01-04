@@ -202,7 +202,7 @@ To analyze Newton's method applied on these objectives, a new assumption upper b
 	}
 	where we evaluated the third order tensor $\nabla^3 f(\theta)$in $u,u,u$.
 \end{definition}
-
+Under self-concordance assumption, the analysis of Newton's method became lean and elegant. A fundamental consequence of self-concordance is that the objective can be sandwiched between quadratics in a clear neighborhood around its optimum. Additionally, many exponential families have self-concordant log-likelihood. We explore this fact in our third contribution.
 
 \subsection{Stochastic Gradient Descent}
 \label{ssec:SGD}
@@ -294,11 +294,49 @@ Thus SVRG only needs $O(d)$ memory, but it needs twice more compute than plain S
 
 \subsection{Fenchel Duality}
 \label{ssec:fenchel-duality}
-As previously mentioned, SDCA operates on the dual problem of 
+As previously mentioned, and fully explained in our first contribution, SDCA operates on the dual formulation of 
+\alignn{
+	\min_\theta \inv{n} \sum_i f(y_i, \theta^\top x_i) + \frac{\lambda}{2} \norm{\theta}^2 \;.
+}
+But what is this dual formulation ?
 
-Given a function f from real numbers to real numbers, its Legendre-Fenchel transformation is defined by the formula
- 
-This transformation is a ubiquitous concept throughout Science. It appears in thermodynamics and classical mechanics as the Legendre transform (a special case), in convex optimization and machine learning as the Fenchel conjugate or the convex conjugate. At first sight this definition seems arbitrary, but it admits geometrical interpretations along with many properties that make it a useful tool. Among others, it offers a generalization of Lagrangian duality.
+\paragraph{Convex Conjugates.}
+To explain Fenchel duality properly, we need to introduce the convex conjugate of a function.
+\begin{definition}[convex conjugate]
+	The convex conjugate of a function $f:\real^d \rightarrow \real\cup{+\infty}$ is defined by the pointwise formula
+	\alignn{
+		f^*(y) := \max_x \lin{y, x} - f(x)
+	}
+\end{definition}
+This transformation is a ubiquitous concept throughout Science.
+ It appears in thermodynamics and classical mechanics as the Legendre transform (a special case), in convex optimization and machine learning as the Fenchel conjugate or the convex conjugate. 
+At first sight this definition seems arbitrary, but it admits geometrical interpretations along with many properties that make it a useful tool. 
+The author of this thesis produced several interactive tools to grasp a better understanding of convex conjugates : \href{https://remilepriol.github.io/dualityviz/}{DualityViz} and \href{https://remilepriol.github.io/dualityviz/dual_snakes.html}{Dual Snakes}.
+
+One of the most interesting properties of convex conjugation is that for convex functions, the convex conjugate of the conjugate is equal to the function itself, e.g.
+\alignn{f^{**} = f \; .}
+
+\paragraph{Fenchel Dual.}
+Assume we want to solve a composite minimization problem
+\alignn{
+	\min_x f(x) + g(\mA x)
+	\label{eq:composite-minimization}
+}
+where $f:\cX \rightarrow\real$ and $g:\cY \rightarrow \real$ are convex functions and $\mA: \cX \rightarrow \cY$ is a linear operator.
+Under mild assumptions, this problem can be equivalently expressed with the convex conjugates of $f$ and $g$
+\alignn{
+	\min_x f(x) + g(\mA x)
+	&= \min_x \max_y f(x) + \lin{Ax, y} - g^*(y) \\
+	&\geq \max_y \min_x f(x) + \lin{x, A^\top y} - g^*(y) \\
+	&= \max_y - f^*(-A^\top y) - g^*(y) \; .
+}
+This last line is known as the Fenchel dual of problem~\eqref{eq:composite-minimization}. 
+To reach it, we inverted min and max between the first and second line. 
+Fenchel's duality theorem states sufficient conditions for this inequality to be an equality, in which case we say that strong duality holds.
+Fenchel duality is equivalent to Lagrange duality, but Fenchel's is more convenient for unconstrained problems or problems where the constraints are implicitly defined in the objective, whereas Lagrange's is more convenient for explicitly defined constraints.
+
+SDCA, as well as many other optimization algorithms, directly store and update the dual variable $y$. 
+It is well defined for generalized linear models, e.g. models defined with the exponential family. 
 
 \section{Probabilistic Models}
 \subsection{Exponential Families}
