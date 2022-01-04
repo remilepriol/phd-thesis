@@ -4,46 +4,91 @@
 \newcommand*{\ptrue}{\ensuremath{\bm{p}}}
 \newcommand*{\pmodel}{\ensuremath{\bm{p}_{\theta}}}
 \newcommand*{\lr}{\gamma}
+\newcommand*{\loss}{\ell}
 
 
 \chapter{Background}
 
+This thesis contributes to the field of machine learning.
+In this section, we are going to review elementary building blocks that are pre-requisites to understand all three contributions.
+First we are going to review some fundamental principles of machine learning : empirical risk minimization and maximum likelihood estimation, for supervised learning \S\ref{ssec:supervised-learning} or for density estimation \S\ref{ssec:density-estimation}.
+How can one minimize the empirical risk ?  
+To answer this question, we will cover some parts of the vast topic that is optimization : stochastic gradient descent \S\ref{ssec:SGD}, variance reduction \S\ref{ssec:variance-reduction} and Fenchel duality \S\ref{ssec:fenchel-duality}.
+Finally, we will describe some useful probabilistic models : exponential families \S\ref{ssec:exponential-families}, which are at the core of this thesis, probabilistic graphical models \S\ref{ssec:PGM}, and  structural causal models \S\ref{ssec:SCM}.
 
+%Meanwhile a large body of work has grown around the idea of predicting the effect of an intervention in the world. This is the field of Causal Inference which we will cover in Section \ref{sec:causal_inference}. 
+%Machine learning typically frames the learning procedure as the minimization of some loss. How to efficiently minimize this loss over a high dimensional parameter and a large dataset is one of the grand challenge of machine learning. Optimization algorithms such as stochastic gradient descent have become the workhorse of modern machine learning. Characterizing the convergence behavior of these algorithms is critical to ensure that systems will learn. We will review some of these elements in Section \ref{sec:optimization}.
 
-We are going to review some elementary concepts of Machine Learning that are prerequisites to understand this thesis. 
-We want to build machines that are able to interact with the world based on the data they sense such as images or text. 
-The most straightforward approach is to code explicit rules of what the machine should do when faced with a certain input. 
-This does not scale with the complexity or the quantity of data: imagine yourself trying to code rules to identify a dog in a picture given the raw digit string. 
-Since the invention of the Perceptron \citep{rosenblatt1957perceptron}, computer scientists have tried to overcome this issue by learning these rules from examples. 
-This is the field of \textit{Machine Learning}. 
-
-A large part of machine learning aims at learning from unlabelled data. This is unsupervised learning presented in Section \ref{sec:unsupervised_learning}.
-Meanwhile a large body of work has grown around the idea of predicting the effect of an intervention in the world. This is the field of Causal Inference which we will cover in Section \ref{sec:causal_inference}. 
-Machine learning typically frames the learning procedure as the minimization of some loss. How to efficiently minimize this loss over a high dimensional parameter and a large dataset is one of the grand challenge of machine learning. Optimization algorithms such as stochastic gradient descent have become the workhorse of modern machine learning. Characterizing the convergence behavior of these algorithms is critical to ensure that systems will learn. We will review some of these elements in Section \ref{sec:optimization}.
 
 \section{Learning from Data}
-\subsection{Supervised Learning}
-The most simple thing we want to learn is a mapping from x to y. If we have a probabilistic model p(y|x), and a dataset, we can do this with ERM, which is the same as maximum likelihood.
+A primary goal of artificial intelligence is to enable computers to interact with the world based on data they may receive: images, sound, text or any arbitrary tabular data. 
+The most straightforward approach to give them this capability is to code explicit rules : if you receive this input, then you should do this. 
+Unfortunately, this approach, known as expert systems or good-old-fashioned-artificial-intelligence, does not scale with the complexity or the quantity of data:
+imagine coding rules to identify a dog in an image given the raw string of one million pixels. 
+Almost as early as the first computer was created \citep{rosenblatt1957perceptron}, computer scientists have engaged in another route to solve this problem : learning these rules from data, e.g. learning to recognize dogs from thousands or millions of dog and non-dog pictures. 
+This is the vast field of \textit{Machine Learning}. 
+Now let us first review the most common machine learning setting : supervised learning.
 
+
+\subsection{Supervised Learning}
+\label{ssec:supervised-learning}
+Let us assume we have $n$ data points $\cD = \paren{z_1, \dots , z_n }$, that decompose as $z_i = (x_i, y_i) \in \cX \times \cY$, where we call $x_i$ features, and $y_i$ labels.
+We want to learn some rules to map newly observed features $x$ to their unobserved labels $y$.  
+The most common approach as of today is to define :
+\begin{enumerate}
+	\item a model $f_\theta : \cX \rightarrow \cY$ parametrized by some vector $\theta \in \real^d$. This model will implicitly contain all the rules that we are unable to explicitly write down. For $x$ and $y$ real vectors, the simplest instance of functions are linear models : $f_\theta(x) = \theta x$.
+	\item a loss $\loss : \cY\times \cY \rightarrow \real$ that will tell use how well or how poorly we are doing. The lingua from statistical decision theory calls it \emph{risk function.} The simplest instance may be $\loss(y_1, y_2) = \norm{y_1 - y_2}^2$.
+\end{enumerate}
+Then we may learn the mapping by solving the following problem :
+\alignn{
+	\min_\theta  \sum_{i=1}^n \loss(y_i , f_\theta(x_i)) \; .
+}
+This problem simply minimizes the sum of the risk on all data points, hence the name : \emph{empirical risk minimization} or ERM to keep it short.
+
+In this thesis, we are going to focus on a variant of ERM : \emph{maximum likelihood estimation}.
+This special case happens when we assume that all data points were sampled independently  and identically from some distribution $\ptrue(x, y)$ defined on $\cX\times \cY$.
+Then $f_\theta(x_i)$ may return the log-probabilities (or the log-densities) of $y$ given $x_i$, e.g. 
+\alignn{
+	f_\theta(x) = -\log \pmodel(y=\cdot \cond x) \in \real^\cY \; ,
+}
+and the loss may return the log-likelihood of $y_i$ given $x_i$, e.g.
+\alignn{
+	\loss(y_i , f_\theta(x_i)) = -\log \pmodel(y_i \cond x_i) \; .
+}
+Then, if $\theta^*$ solves the problem
+\alignn{
+	\theta^*
+	&=\argmax_\theta \pmodel(y_1, \dots , y_n \cond x_1, \dots, x_n ) \\
+	&= \argmin_\theta  \sum_{i=1}^n - \log \pmodel(y_i \cond x_i) \; ,
+	\label{eq:supervised-MLE}
+}
+we will call it \emph{maximum likelihood estimate} or MLE for short.
+Prior to supervised learning, this framework has also been largely studied by statisticians for density estimation.
 
 \subsection{Density Estimation}
-%\section{Learning from Unlabeled Data}
-\label{sec:unsupervised_learning}
-A truly intelligent system should be able to learn from data without explicit humans supervision. That is the point of \textbf{unsupervised learning}. Given a dataset $D_n = \{x_1, \dots, x_n\}$ where each point is a vector $x_i \in \real^d$, we want to learn \textit{something} that will be useful for some downstream task. This is quite ill-specified, so machine teachers have made up auxiliary tasks to achieve this. We are now going to introduce 4 members of the machine learning family that can learn from unlabeled data: the main protagonist -- maximum likelihood estimation, its son -- variational inference, its cousin -- adversarial learning, and its distant relative -- self-supervised learning.
+\label{ssec:density-estimation}
+If we are not interested in a division of $z$ between features $x$ and labels $y$, we may still want to learn the probability distribution $\ptrue(z) = \ptrue(x, y)$. This is the realm of density estimation. 
+Now $\theta$ may parametrize a density model $z \mapsto \pmodel(z)$. 
+To solve this problem, maximizing the likelihood of the dataset is again an interesting approach :
+\alignn{
+	\theta^* = \argmin_\theta  \sum_{i=1}^n - \log \pmodel(x_i) \; .
+	\label{eq:unsupervised-MLE}
+}
+In this case as well, $\theta^*$ is the \emph{maximum likelihood estimate} (MLE).
+%Finally, to assess the quality of $\vp_{\theta^*}$, one can estimate the likelihood of a held-out test set. 
 
-\subsubsection{Maximum Likelihood}
-A fundamental assumption is that all data points were sampled independently from some natural probability distribution $\ptrue(x)$. Then a natural goal is to estimate this distribution. Some models directly compute a density $x \mapsto \pmodel(x)$. They often do so by \textit{maximizing the likelihood} of the dataset
-\begin{align}
-    \theta^* = \argmin_\theta \inv{n} \sum_{i=1}^n - \log \pmodel(x_i) \; .
-\end{align}
-Then to assess the quality of the trained model, one can estimate the likelihood of a held-out test set. 
-This approach encompasses the simplest model : fitting an isotropic Gaussian $\cN(\mu, \sigma^2 I)$ by estimating the noise and the variance of the data
+\paragraph{Example 1: Isotropic Gaussian.}
+If the data is made of floats $z\in\real^d$, 
+then we may chose to fit an isotropic Gaussian $\pmodel = \cN(\mu, \sigma^2 \mI)$.
+The MLE simply estimates the noise and the variance of the data
 \begin{align}
     \hat \mu = \inv{n} \sum_{i=1}^n x_i 
     \quad \text{and} \quad 
     \hat \sigma^2 = \inv{n} \sum_{i=1}^n \norm{x_i - \mu}^2 \; .
 \end{align}
-If the data is categorical -- e.g.  $x_i \in \{1, \dots, K\}$ are labels -- then the simplest such model is the Categorical distribution $\pmodel = (p_1, \dots, p_K) \in \simplex_K$, which assigns a probability $p_k$ to each label $k$. We use $\simplex_K$ to denote the K-simplex -- e.g. the set of real positive vectors of dimension $K$ that sum to 1
+
+\paragraph{Example 2: Categorical.}
+If the data is made of categories -- e.g.  $z \in \{1, \dots, K\}$ -- then the simplest model is the Categorical distribution $\pmodel = (p_1, \dots, p_K) \in \simplex_K$, which assigns a probability $p_k$ to each label $k$. We use $\simplex_K$ to denote the K-simplex -- e.g. the set of real positive vectors of dimension $K$ that sum to 1
 \begin{align}
     \simplex_K = \left\{ \vp \in \real^K | \forall k, p_k \ge 0 ; \sum_{k=1}^K  p_k = 1 \right\} \; .
 \end{align}
@@ -52,64 +97,108 @@ The maximum likelihood estimate of this model counts the occurrence of each labe
     \hat p_k  = \inv{n} \sum_{i=1}^n \ones\{x_i = k\}
 \end{align}
 where the indicator function $\ones\{ b\}$ is 1 if $b$ is true and 0 otherwise.
-Both the categorical and normal models are extremely simple. 
-There exist much more powerful algorithms such as Normalizing Flows \citep{rezende2015variational} that can model almost any smooth density by directly maximizing the likelihood of a dataset.
 
-\subsubsection{Variational Inference}
-A less direct approach to density modelling involves a latent --e.g. unobserved -- variable $\vz$ that should capture high level factors of variation of the data. $\vz$ is also called a representation. The simplest example of such a model is the Gaussian Mixture Model
+\paragraph{MAP.}
+In some occasions, we may take a Bayesian stance and assume the true parameter $\theta$ is itself a random variable sampled from a known \emph{prior} distribution $\ptrue(\theta)$. 
+Combining this prior with our model, we obtain a joint distribution on data and parameters 
+\alignn{
+	\ptrue (z, \theta) 
+	:= \ptrue (z \cond \theta) \ptrue(z) 
+	:= \pmodel(z) \ptrue(\theta) \; .
+}
+By Bayes rule, we also obtain a posterior distribution on parameters 
+\alignn{
+	\ptrue(\theta \cond z)
+	= \frac{\ptrue(z, \theta)}{\ptrue(z)}
+	\propto \pmodel(z) \ptrue(\theta)
+}
+The maximum a posteriori or MAP estimate is then defined as the parameter with maximal posterior density (or posterior mass for discrete parameters)
+\alignn{
+	\theta^*_\text{MAP} 
+	&:= \argmax \ptrue(\theta \cond z) \\
+	&= \argmin -\log \pmodel(z) - \log \ptrue(\theta)
+}
+Letting go of the Bayesian perspective, this last minimization problem may be seen as an instance of regularized empirical risk minimization, where the negative log-likelihood of the prior $- \log \ptrue(\theta)$ plays the role of the regularizer.
+
+\paragraph{Conjugate Priors.}
+Given some models such as exponential families, there exist families of prior distributions $\cF = \bracket{\ptrue_\eta (\theta) \cond \eta}$ 
+such that the posterior distribution also belongs to $\cF$, 
+e.g.  $\forall \eta, \exists \eta', \ptrue_\eta (\theta \cond z) = \ptrue_{\eta'}(\theta)$.
+We refer to such families $\cF$ as \emph{conjugate priors}.
+In our third contribution \S\ref{sec:background} we will cover in detail a generic instance of conjugate priors for exponential families.
+
+\paragraph{Other models.}
+Both Gaussians and categorical models belong to the general class of exponential families which we will introduce in \S\ref{ssec:exponential-families}.
+These families have a limited capacity : they cannot fit any distributions.
+There exist much more powerful algorithms such as \emph{normalizing flows} \citep{rezende2015variational}, based on neural networks, which can model almost any smooth density by directly maximizing the likelihood of a dataset.
+
+\paragraph{Beyond MLE.} 
+To learn from unlabeled data, there exist many competing approaches to MLE. 
+If we model the data with some unobserved variables, then we enter the realm of variational inference, with powerful algorithms such as variational auto-encoders \citep{kingma2013auto}. 
+If we are more interested in creating new realistic samples from $\ptrue(z)$, then adversarial training may be relevant \citep{goodfellow2014generative}.
+Finally for training large models, self-supervised learning has recently emerged as the leading set of techniques to learn powerful features, most importantly for natural languages \citep{peters2018deep,devlin2018bert}.
+
+
+\section{Convex Optimization}
+Convex optimization the field of mathematics interested in solving problems of the form
+\alignn{
+	\min_{\theta \in \Theta} f(\theta)
+}
+where $f$ is a convex real valued function $f:\Theta \rightarrow \real$ called the \emph{objective function}, and $\Theta$ is a convex set called the \emph{constraint set}.
+In the following, we will assume that the problem is unconstrained, e.g. $\Theta = \real^d$, 
+but with an objective function taking possibly infinite values, e.g. $f : \real^d \rightarrow \real U \{+\infty\}$. %TODO
+The objective is thus implicitly defining a constraint set via its domain $\dom f = \bracket{ \theta \cond f(\theta) < +\infty }$.
+If we further assume that $f$ is continuous, the $\dom f$ is open. 
+
+If we are able to compute the derivative of $f$, the most well-known algorithm to solve this problem is gradient descent. 
+Start from a random point $\theta_0$ and iteratively nudge the parameters in the direction opposite to the gradient of the loss
+\alignn{
+	\theta_{t+1}  = \theta_t - \lr_t \nabla f(\theta_t)
+}
+where the hyper parameter $\lr_t$ is known as the \emph{step-size} or the learning rate. The step-size may be constant, follow a predefined schedule, be found via a line-search, or adapt to the past trajectory.
+If the loss  $f$ is convex and Lipschitz, or convex with Lipschitz gradient, then this procedure will converge to the minimizer $\theta^*$, assuming some conditions on the step-size. When $f$ has some structure, it is possible to design more efficient algorithms.
+
+\subsection{Stochastic Gradient Descent}
+\label{ssec:SGD}
+As seen in \cref{eq:supervised-MLE,eq:unsupervised-MLE}, machine learning is generally interested in minimizing an expected loss over a dataset
 \begin{align}
-    \pmodel(x, z) = \sum_{k=1}^K z_k \cN(x ; \mu_k, \sigma_k^2)
+    \min_\theta F(\theta) := \inv{n} \sum_{i=1}^n f(\theta, z_i) \; .
 \end{align}
-where $\vz$ is a one hot vector -- e.g. a vector made of all zeros and one 1.
-Maximizing the likelihood of these models involve complex algorithms commonly known as Variational Inference. The simplest such algorithm is the Expectation-Maximization for Gaussian Mixture Models. Recent advances such as the Variational Auto-Encoder (VAE) \citep{kingma2013auto} can model extremely complex distributions such as collections of faces. 
-More generally, these methods provide an interesting formalism for the notion of representation learning: the representation is a latent variable. 
-
-\subsubsection{Adversarial Learning}
-Yet another  unsupervised task  is to sample new data points from $\ptrue(x)$. The groundbreaking work from \citet{goodfellow2014generative} devised a method to train directly such a model. Sample images from the generator model $\pmodel(x)$ and compare them with images from the true distribution  $\ptrue(x)$. Do the comparison with the help of another model called the discriminator. Train the discriminator to discriminate between the model and the true images, and train the generator to fool the discriminator. This approach allows the training of generative model that captures some structure about the data. After training, they can generate realistic images. There is no consensus yet on how to estimate the quality of the trained model. 
-
-\subsubsection{Self-Supervised Learning}
-The most desirable behavior we would like our system to get is to play with the data until it finds something interesting, a handle or a pattern that enables it to do more. This is the idea behind self-supervised learning: exploit structure in the data to make-up labels, then learn to predict these labels. 
-
-This approach has had a huge success to learn better representations from large corpus of unlabeled text in Natural Language Processing. Models such as ELMO \citep{peters2018deep} or BERT \citep{devlin2018bert} have redefined the state of the art in this field. They train a model to fill in blanks in a sequence. The maximum likelihood approach, also known as language modelling is not competitive for now. 
-
-Self-supervised learning has also become useful to learn representations for images : predict some part of an image from another, or solve a jigsaw puzzle. In the context of time sequences, such as video or speech, a natural task is to predict the next element of the sequence, or a few steps ahead in the future.
-
-
-
-\section{Optimization}
-\subsection{Convex Optimization}
-\label{sec:optimization}
-We are interested in minimizing an expected loss over a dataset. 
+For instance, this loss may be the negative log-likelihood  $f(\theta, z_i) = - \log \pmodel(z_i)$. 
+The gradient of this empirical loss is the sum of gradients on each data points
 \begin{align}
-    \min_\theta \inv{n} \sum_{i=1}^n f(\theta, x_i) \; .
+    \nabla F (\theta) = \inv{n}\sum_{i=1}^n \nabla_\theta f(\theta, x_i) \; .
 \end{align}
-This loss can be the negative log-likelihood for instance $f(\theta, x_i) = - \log \pmodel(x_i)$. A general approach to solve this problem is gradient descent. Start from a random point $\theta_0$ and iteratively nudge the parameters in the direction opposite to the gradient of the loss
-\begin{align}
-    \theta_{t+1} = \theta_t - \lr_t \inv{n} \sum_{i=1}^n \nabla_\theta f(\theta, x_i)
-\end{align}
-where the hyper parameter $\lr_t$ is known as the step-size. The step-size may be constant, follow a predefined schedule, be found via a line-search, or adapt to the past trajectory.
-If the loss  $f$ is convex and Lipschitz, or convex with Lipschitz gradient, then this procedure will converge to the minimizer $\theta^*$, assuming some conditions on the step-size.
-
-Modern datasets are huge. They often contain millions, if not billions, of high dimensional data points such as images. As a consequence exact minimization is no longer the bottleneck in learning \citep{bottou2008tradeoffs}. 
-One can afford to look at only one (or a few) data point at a time, and take a step of gradient to minimize their loss
+Modern datasets are huge. They often contain millions, if not billions, of high dimensional data points such as images. 
+As a consequence exact minimization is no longer the bottleneck in learning \citep{bottou2008tradeoffs}. 
+Computing the exact gradient, a sum with a billion terms, is no longer affordable.
+Instead, it is much more efficient to compute gradients for a few data point at a time, and take a step in their opposite direction in the hope of minimizing the loss
 \begin{align}
     \theta_{t+1} = \theta_t - \lr_t \nabla_\theta f(\theta, x_i)
 \end{align}
-where $i$ was sampled uniformly from $\{1, \dots, n\}$.
-This procedure known as Stochastic Gradient Descent (SGD)
-\footnote{Contrary to gradient descent, SGD is not guaranteed to decrease the objective value at every step. As such, it is not a descent algorithm. We should rigorously call it stochastic gradient method, but SGD has become the standard acronym in the community so we will stick with it.}
-was first devised by \citet{robbins1951stochastic} to find the zeros of a stochastic function.
-In fact, if we see each data point only once, then we are minimizing the true population risk 
+where $i$ is sampled uniformly from $\{1, \dots, n\}$.
+This is \emph{stochastic gradient descent}\footnote{
+	Contrary to gradient descent, SGD is not guaranteed to decrease the objective value at every step. 
+	As such, it is not a descent algorithm. 
+	We should rigorously call it stochastic gradient method, but SGD has become the standard acronym in the community so we will stick with it.
+}
+(SGD).
+It was first devised by \citet{robbins1951stochastic} to find the zeros of a stochastic function.
+
+
+A special case happens when we sample each data point only once.
+Then  SGD minimizes the true population risk 
 \begin{align}
     \min_\theta \expect[x\sim \ptrue]{f(\theta, x)} \; .
 \end{align}
 In this work, we will use this fact by interpreting convergence rates  of SGD as a bound on the sample complexity of a model. 
 Let $g(\theta) = \expect[x\sim \ptrue]{f(\theta, x)}$. Perhaps the most classic set of assumptions to prove the convergence of SGD is that 
 \begin{itemize}
-    \item $g$ is lower bounded by $g^*$ (not necessarily convex),
+    \item $g$ is lower bounded by $g^*$,
     \item $\nabla g$ is $L$-Lipschitz continuous,
     \item $\expect[x]{\|\nabla_\theta f(\theta, x)\|^2} < \sigma^2, \forall \theta$ -- e.g. the stochastic gradients of $g$ have a bounded second moment.
 \end{itemize}
+Note that we do not need to assume that $g$ is convex.
 Then if we run SGD with constant step-size step size $\lr_t = \lr$, we can guarantee that
 \begin{align}
     \min_{t\in \{0, \dots, T\} } \expect{\|\nabla g(\theta_t)\|^2} 
@@ -117,7 +206,8 @@ Then if we run SGD with constant step-size step size $\lr_t = \lr$, we can guara
 \end{align}
 where the expectation is taken over the sampling of data points $x_1, \dots, x_T$. 
 This rate is particular: we are bounding the minimal expected gradient norm. We are bounding the gradient norm because without convexity assumptions, all we can hope for is to find a critical point of the loss, e.g. a zero of the gradient. 
-The upper bound involves two terms. The first is the difference between the loss function at the initialization and the optimum, divided by $T$. The second the product of the smoothness, the variance of the gradients and the step-size. This term is commonly known as the variance term. The interpretation of this bound is that SGD with constant step-size is going to converge at speed $O(\inv{T \lr})$ to a variance ball of size $O(\lr)$ around a critical point.
+The upper bound involves two terms. The first is the difference between the loss function at the initialization and the optimum, divided by $T$. The second term 
+is  the product of the smoothness, the variance of the gradients and the step-size. This term is commonly known as the variance term. The interpretation of this bound is that SGD with constant step-size is going to converge at speed $O(\inv{T \lr})$ to a variance ball of size $O(\lr)$ around a critical point.
 
 To overcome this variance ball issue, we may progressively decrease the learning rate. For instance, if we take  $\lr_t = \frac{\lr}{\sqrt{t}}$, we can guarantee that
 \begin{align}
@@ -126,18 +216,20 @@ To overcome this variance ball issue, we may progressively decrease the learning
 \end{align}
 This time, SGD is going to converge to a critical point, but at a slower rate $O \left( \frac{\log(T)}{\sqrt{T}} \right )$.
 
-In this thesis we will use more sophisticated results from  \citet{moulines2011nonasymptotic} -- that directly bound the expected suboptimality instead of the minimal expected gradient norm -- to analytically estimate the sample complexity of causal models.
 
 \subsection{Variance Reduction}
+\label{ssec:variance-reduction}
 Publication of SAG and discovery that we can optimize finite sums at a linear rate, if we use some memory. Then SVRG : we dont even need memory. Oh and SDCA is also variance reduced. This is wonderful.
 
 \subsection{Fenchel Duality}
+\label{ssec:fenchel-duality}
 Given a function f from real numbers to real numbers, its Legendre-Fenchel transformation is defined by the formula
  
 This transformation is a ubiquitous concept throughout Science. It appears in thermodynamics and classical mechanics as the Legendre transform (a special case), in convex optimization and machine learning as the Fenchel conjugate or the convex conjugate. At first sight this definition seems arbitrary, but it admits geometrical interpretations along with many properties that make it a useful tool. Among others, it offers a generalization of Lagrangian duality.
 
 \section{Probabilistic Models}
-\subsection{Exponential Family}
+\subsection{Exponential Families}
+\label{ssec:exponential-families}
 Exponential family are the linear model of probabilities. 
 Most everyday distributions belong to this family.
 They are the foundation of GLM.
@@ -145,6 +237,7 @@ They have many nice properties, such as convex log-likelihood, and closed form M
 We use them a lot in graphical models. 
 
 \subsection{Probabilistic Graphical Models}
+\label{ssec:PGM}
 \subsubsection{directed} 
 Besides adversarial and self-supervised learning, most unsupervised learning algorithms build a probabilistic model of the data $\pmodel(x)$.
 One the most useful properties we can model about the natural distribution $\ptrue(x)$ is the notion of (conditional) independence between variables. For instance, in a simple video game, two stacks of frames are often independent given the stack of frames in between them. This kind of independence statements is formalized in the language of probabilistic graphical models -- see \citet{pearl1988probabilistic} for an historical reference, or  \citet{koller2009probabilistic} for a more recent review. The simplest such models are directed probabilistic graphical models, also known as Bayesian Networks since \citet{pearl1985bayesian} coined this term.
@@ -169,9 +262,12 @@ These graphs have proven useful in many modeling areas. However they alone are n
 
 
 \subsubsection{undirected}
+
+
 \subsection{Structural Causal Models}
+\label{ssec:SCM}
+
 {Causal Inference and Discovery}
-\label{sec:causal_inference}
 
 Causal inference use directed graphical models to predict the effect of interventions in the world. We are now going to introduce 2 key elements of this theory: do-calculus and structural causal models.
 
@@ -233,5 +329,3 @@ The SCM formalism enables us think about a much deeper hypothesis: \textbf{Indep
 \footnote{We are not including the exogenous noise distributions for simplicity.}
 is on the same order of magnitude as the sum of the Kolmogorov Complexity of each function taken independently. 
 Using this independence insight, one can devise algorithms that aims at finding the causal structure of the data. See \citet{peters2017elements} for a book on this topic and \citet{scholkopf2019causality} for a very recent review of the progress in this field. 
-
-Fitting the parameters of the functions $f_i$ is the realm of optimization. We are now going to review some of the core ideas of this field.
