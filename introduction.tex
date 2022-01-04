@@ -156,11 +156,12 @@ When $\Theta = \real^d$ and we are able to compute  derivatives of $f$, the most
 Starting from a random point $\theta_0$, iteratively nudge the parameters in the direction opposite to the gradient of the loss
 \alignn{
 	\theta_{t+1}  = \theta_t - \lr_t \nabla f(\theta_t)
+	\tag{GD}
 }
 where the hyper parameter $\lr_t$ is known as the \emph{step-size} or the learning rate. 
 The step-size may be constant, follow a predefined schedule, be found via a line-search, or adapt to the past trajectory.
 
-\paragraph{Smoothness.}
+\paragraph{Convergence Analysis.}
 Gradients descent does not converge all the time. 
 We need assumptions on the objective function.
 Perhaps the most common assumption is smoothness.
@@ -169,17 +170,28 @@ Perhaps the most common assumption is smoothness.
 	\alignn{
 		\forall \theta, \nu \in \Theta,
 		\norm{\nabla f(\theta) - \nabla f(\nu)} 
-		\leq L \norm{\theta- \nu}
+		\leq L \norm{\theta- \nu} \; .
 	}
 \end{definition}
-If the loss  $f$ is convex and smooth then gradient descent converges to a minimum $\theta^*$, assuming some conditions on the step-size. 
+If the loss  $f$ is convex and $L$-smooth then gradient descent with constant step-size $\lr_t = \inv{L}$ converges to a minimum $\theta^*$ at a rate $O(\inv{t})$ \citep[corollary 2.1.2]{nesterov2004Intro}. 
+Smoothness has a sibling assumption : strong-convexity.
+\begin{definition}[strong-convexity]
+	A function $f:\Theta \rightarrow\real$ is said to be $\mu$-strongly convex if its gradient verifies
+	\alignn{
+		\forall \theta, \nu \in \Theta,
+		\mu  \norm{\theta- \nu} 
+		\leq \norm{\nabla f(\theta) - \nabla f(\nu)} \; .
+	}
+\end{definition}
+If $f$ is both $\mu$-smooth and $L$-strongly convex, then gradient descent with constant step-size $\lr_t = \frac{2}{\mu + L}$ converges at a \emph{linear rate} $O(e^{-\frac{t}{\kappa}})$ where $\kappa= \frac{L}{\mu} \geq 1$ is known as the condition number of the problem \citep[theorem 2.1.15]{nesterov2004Intro}.
 
 \paragraph{Self-concordance.}
 In contributions 2 and 3, we will face the log-likelihood of a multivariate normal variable. 
-This objective includes a term $g(|Lambda) = -\log \det \Lambda$ where $\Lambda\in \S_n^+$ is the positive definite precision matrix. 
+This objective includes a term $g(\Lambda) = -\log \det \Lambda$ where $\Lambda\in \S_n^+$ is the positive definite precision matrix. 
 The objective $g$ shoots up to $+\infty$ when $\Lambda$ gets eigenvalues close from zero. 
-This means that its gradient is not Lipschitz.
-This kind of log-barrier objectives often came up in interior point methods for solving constrained convex problems.
+This means that its gradient is not a Lipschitz function.
+In fact  $g$ is neither smooth nor strongly convex.
+This kind of log-barrier objectives often comes up in interior point methods for solving constrained convex problems.
 To analyze Newton's method applied on these objectives, a new assumption upper bounding the third derivative with the second derivative was introduced \citep{nemirovski1983problem}. 
 \begin{definition}[self-concordance]
 	\citep[definition 4.1.1]{nesterov2004Intro}
@@ -197,7 +209,8 @@ To analyze Newton's method applied on these objectives, a new assumption upper b
 When $f$ has some structure, it is possible to design more efficient algorithms than gradient descent.
 As seen in \cref{eq:supervised-MLE,eq:unsupervised-MLE}, machine learning is generally interested in minimizing an expected loss over a dataset
 \begin{align}
-    \min_\theta F(\theta) := \inv{n} \sum_{i=1}^n f(\theta, z_i) \; .
+    \min_\theta F(\theta) := \inv{n} \sum_{i=1}^n f(\theta, x_i) \; .
+    \label{eq:finite-sum}
 \end{align}
 For instance, this loss may be the negative log-likelihood  $f(\theta, z_i) = - \log \pmodel(z_i)$. 
 The gradient of this empirical loss is the sum of gradients on each data points
@@ -210,6 +223,7 @@ Computing the exact gradient, a sum with a billion terms, is no longer affordabl
 Instead, it is much more efficient to compute gradients for a few data point at a time, and take a step in their opposite direction in the hope of minimizing the loss
 \begin{align}
     \theta_{t+1} = \theta_t - \lr_t \nabla_\theta f(\theta, x_i)
+    \tag{SGD}
 \end{align}
 where $i$ is sampled uniformly from $\{1, \dots, n\}$.
 This is \emph{stochastic gradient descent}\footnote{
@@ -224,42 +238,64 @@ It was first devised by \citet{robbins1951stochastic} to find the zeros of a sto
 A special case happens when we sample each data point only once.
 Then  SGD minimizes the true population risk 
 \begin{align}
-    \min_\theta \ g(\theta) := \expect[x\sim \ptrue]{f(\theta, x)} \; .
+    \min_\theta \ F(\theta) := \expect[x\sim \ptrue]{f(\theta, x)} \; .
+    \label{eq:population-risk}
 \end{align}
 In our second contribution, we use this fact by interpreting convergence rates of SGD as a bound on the sample complexity of the model. 
 
-
-Perhaps the most classic set of assumptions to prove the convergence of SGD is that 
+\paragraph{Convergence Analysis.}
+Let us review a simplification of the modern convergence analysis from \citet{gower2019sgd}.
+Assume that
 \begin{itemize}
-    \item $g$ is lower bounded by $g^*$,
-    \item $\nabla g$ is $L$-Lipschitz continuous,
-    \item $\expect[x]{\|\nabla_\theta f(\theta, x)\|^2} < \sigma^2, \forall \theta$ -- e.g. the stochastic gradients of $g$ have a bounded second moment.
+    \item $\forall x, f(\cdot, x)$ is $L$-smooth,
+    \item$F$ is strongly convex, minimized by $\theta^*$,
+    \item the gradient noise at the optimum 	is finite, e.g. $\sigma^2 := \expect[x\sim \ptrue]{\norm{\nabla f(\theta^*, x)}^2} < \infty$.
 \end{itemize}
-Note that we do not need to assume that $g$ is convex.
-Then if we run SGD with constant step-size step size $\lr_t = \lr$, we can guarantee that
-\begin{align}
-    \min_{t\in \{0, \dots, T\} } \expect{\|\nabla g(\theta_t)\|^2} 
-    \leq \frac{g(\theta_0) - g^*}{\lr T} + \frac{L \sigma^2}{2} \lr 
-\end{align}
-where the expectation is taken over the sampling of data points $x_1, \dots, x_T$. 
-This rate is particular: we are bounding the minimal expected gradient norm. We are bounding the gradient norm because without convexity assumptions, all we can hope for is to find a critical point of the loss, e.g. a zero of the gradient. 
-The upper bound involves two terms. The first is the difference between the loss function at the initialization and the optimum, divided by $T$. The second term 
-is  the product of the smoothness, the variance of the gradients and the step-size. This term is commonly known as the variance term. The interpretation of this bound is that SGD with constant step-size is going to converge at speed $O(\inv{T \lr})$ to a variance ball of size $O(\lr)$ around a critical point.
+Then iterates of SGD with constant step-size step size $\lr_t = \lr \in (0, \inv{2L}] $ verify \citep[theorem 3.1]{gower2019sgd}
+\alignn{
+	\expect{F(\theta_t)} - F(\theta^*)
+	\leq \frac{L}{2} (1 - \lr \mu)^t \norm{\theta_0 - \theta^*}^2 
+	+ \lr \sigma^2 \frac{L}{\mu}
+}
+where the expectation is taken over the stochastic procedure.
+In other words, SGD with constant step-size converges at a linear rate to a variance ball around the optimum, and the size of this variance ball is proportional to the step-size $\lr$, the gradient noise at the optimum $\sigma^2$ and the condition number $\frac{L}{\mu}$. 
+To overcome this variance ball issue, we may progressively decrease the learning rate $\lr_t \in O(\inv{t})$ to obtain a convergence rate $O(\inv{t})$ \citep[theorem 3.2]{gower2019sgd}.
 
-To overcome this variance ball issue, we may progressively decrease the learning rate. For instance, if we take  $\lr_t = \frac{\lr}{\sqrt{t}}$, we can guarantee that
-\begin{align}
-    \min_{t\in \{0, \dots, T\} } \expect{\|\nabla g(\theta_t)\|^2} 
-    \in O \left( \frac{1}{\lr \sqrt{T}} \left ( g(\theta_0) - g^* + L \sigma^2 \lr^2 \log(T) \right ) \right )  \; .
-\end{align}
-This time, SGD is going to converge to a critical point, but at a slower rate $O \left( \frac{\log(T)}{\sqrt{T}} \right )$.
-
+\paragraph{SGD vs GD.}
+Recall that $n$ is the size of the dataset.
+Each iteration of gradient descent has a compute cost of $O(n)$, whereas SGD has a constant cost $O(1)$.
+ We see that even though each iteration of SGD is $n$ times more efficient than an iteration of full batch gradient descent, its overall convergence rate is $O(\inv{t})$, far worse than the linear rate of gradient descent $O(e^{-\frac{t}{\kappa}})$. 
+Finding an algorithm with a cheap $O(1)$ iteration cost and a linear convergence rate seemed impossible until the advent of SAG \citep{roux2012stochastic} and variance reduction techniques. 
 
 \subsection{Variance Reduction}
 \label{ssec:variance-reduction}
-Publication of SAG and discovery that we can optimize finite sums at a linear rate, if we use some memory. Then SVRG : we dont even need memory. Oh and SDCA is also variance reduced. This is wonderful.
+Compared to the expected population risk \cref{eq:population-risk}, the empirical risk \cref{eq:finite-sum} has a special finite sum structure which is not exploited by SGD.
+Tapping into this structure, the breakthrough work of \citet{roux2012stochastic} designed and analyzed a stochastic algorithm with a  cheap $O(1)$ iteration cost and a linear convergence rate. 
+This algorithm is called stochastic averaged gradient or SAG. 
+Similar to SGD, at each step it sample a datapoint $x_i$ computes its gradient $\nabla f(\theta_{t}, x_i)$.
+The difference is that it estimates the true gradient thanks to past gradients of each individual data points $\nabla f(\theta_{t_i}, x_i)$ where $t_i$ is the last time that we sampled $x_i$.
+Finally the update of SAG writes
+\alignn{
+	\theta_{t+1} = \theta_t - \frac{\lr_t}{n} \sum_i \nabla f(\theta_{t_i}, x_i) \;.
+	\tag{SAG}
+}
+Following this path, \citet{defazio2014saga} introduced SAGA a very similar algorithm with an unbiased gradient estimate  allowing for a simpler analysis.
+Concurrently \citet{shalev-shwartz_stochastic_2013} analyzed SDCA, an algorithm maximizing the dual formulation (see \S\ref{ssec:fenchel-duality}), which enjoys the same cheap update cost and linear convergence rate.
+In our first contribution, we improve upon SDCA and apply it to the challenging problem of conditional random fields (see \S\ref{ssec:PGM}).
+
+Unfortunately, the memory footprint of SAG, SAGA or SDCA is $O(n d)$, which can quickly become prohibitive for large datasets or large models. 
+\citet{johnson2013accelerating} introduced stochastic variance reduced gradient (SVRG) to alleviate this issue. 
+Instead of storing all past gradients, SVRG stores one past iterate $\theta_T$ along with its full batch gradient $\nabla F(\theta_T)$, and it applies the update
+\alignn{
+	\theta_{t+1} = \theta_t - \lr_t (\nabla f(\theta_t) - \nabla f(\theta_T) + \nabla F(\theta_T))  \;.
+	\tag{SVRG}
+}
+Thus SVRG only needs $O(d)$ memory, but it needs twice more compute than plain SGD. As such it is the variance reduction technique that is most amenable to the optimization of large models such as neural networks.
 
 \subsection{Fenchel Duality}
 \label{ssec:fenchel-duality}
+As previously mentioned, SDCA operates on the dual problem of 
+
 Given a function f from real numbers to real numbers, its Legendre-Fenchel transformation is defined by the formula
  
 This transformation is a ubiquitous concept throughout Science. It appears in thermodynamics and classical mechanics as the Legendre transform (a special case), in convex optimization and machine learning as the Fenchel conjugate or the convex conjugate. At first sight this definition seems arbitrary, but it admits geometrical interpretations along with many properties that make it a useful tool. Among others, it offers a generalization of Lagrangian duality.
