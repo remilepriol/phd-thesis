@@ -144,22 +144,57 @@ Convex optimization the field of mathematics interested in solving problems of t
 \alignn{
 	\min_{\theta \in \Theta} f(\theta)
 }
-where $f$ is a convex real valued function $f:\Theta \rightarrow \real$ called the \emph{objective function}, and $\Theta$ is a convex set called the \emph{constraint set}.
-In the following, we will assume that the problem is unconstrained, e.g. $\Theta = \real^d$, 
-but with an objective function taking possibly infinite values, e.g. $f : \real^d \rightarrow \real U \{+\infty\}$. %TODO
+where $f$ is a convex real valued function $f:\Theta \rightarrow \real$ called the loss or the \emph{objective function}, and $\Theta$ is a convex set called the \emph{constraint set}.
+In this work, we always assume that the problem is unconstrained, e.g. $\Theta = \real^d$, 
+but with an objective function taking possibly infinite values, e.g. $f : \real^d \rightarrow \real \cup \{+\infty\}$. 
 The objective is thus implicitly defining a constraint set via its domain $\dom f = \bracket{ \theta \cond f(\theta) < +\infty }$.
-If we further assume that $f$ is continuous, the $\dom f$ is open. 
+For instance, we may encounter $\dom f = \cS_n^+$, the set of symmetric positive definite matrices of order $n$. Note that this set is open, and consequently we cannot project onto it.
+We also assume that $f$ is differentiable.
 
-If we are able to compute the derivative of $f$, the most well-known algorithm to solve this problem is gradient descent. 
-Start from a random point $\theta_0$ and iteratively nudge the parameters in the direction opposite to the gradient of the loss
+\paragraph{Gradient Descent.}
+When $\Theta = \real^d$ and we are able to compute  derivatives of $f$, the most well-known algorithm to solve this problem is gradient descent. 
+Starting from a random point $\theta_0$, iteratively nudge the parameters in the direction opposite to the gradient of the loss
 \alignn{
 	\theta_{t+1}  = \theta_t - \lr_t \nabla f(\theta_t)
 }
-where the hyper parameter $\lr_t$ is known as the \emph{step-size} or the learning rate. The step-size may be constant, follow a predefined schedule, be found via a line-search, or adapt to the past trajectory.
-If the loss  $f$ is convex and Lipschitz, or convex with Lipschitz gradient, then this procedure will converge to the minimizer $\theta^*$, assuming some conditions on the step-size. When $f$ has some structure, it is possible to design more efficient algorithms.
+where the hyper parameter $\lr_t$ is known as the \emph{step-size} or the learning rate. 
+The step-size may be constant, follow a predefined schedule, be found via a line-search, or adapt to the past trajectory.
+
+\paragraph{Smoothness.}
+Gradients descent does not converge all the time. 
+We need assumptions on the objective function.
+Perhaps the most common assumption is smoothness.
+\begin{definition}[smoothness]
+	A function $f:\Theta \rightarrow\real$ is said to be $L$-smooth if its gradient is $L$-Lipschitz, e.g.
+	\alignn{
+		\forall \theta, \nu \in \Theta,
+		\norm{\nabla f(\theta) - \nabla f(\nu)} 
+		\leq L \norm{\theta- \nu}
+	}
+\end{definition}
+If the loss  $f$ is convex and smooth then gradient descent converges to a minimum $\theta^*$, assuming some conditions on the step-size. 
+
+\paragraph{Self-concordance.}
+In contributions 2 and 3, we will face the log-likelihood of a multivariate normal variable. 
+This objective includes a term $g(|Lambda) = -\log \det \Lambda$ where $\Lambda\in \S_n^+$ is the positive definite precision matrix. 
+The objective $g$ shoots up to $+\infty$ when $\Lambda$ gets eigenvalues close from zero. 
+This means that its gradient is not Lipschitz.
+This kind of log-barrier objectives often came up in interior point methods for solving constrained convex problems.
+To analyze Newton's method applied on these objectives, a new assumption upper bounding the third derivative with the second derivative was introduced \citep{nemirovski1983problem}. 
+\begin{definition}[self-concordance]
+	\citep[definition 4.1.1]{nesterov2004Intro}
+	A convex function $f:\Theta \rightarrow\real$ is said to be self-concordant if
+	\alignn{
+		\forall \theta \in \Theta, \forall u, 
+		\nabla^3 f(\theta)[u,u,u] \leq 2 \nabla^2f(*\theta) [u,u]^{\frac{3}{2}}
+	}
+	where we evaluated the third order tensor $\nabla^3 f(\theta)$in $u,u,u$.
+\end{definition}
+
 
 \subsection{Stochastic Gradient Descent}
 \label{ssec:SGD}
+When $f$ has some structure, it is possible to design more efficient algorithms than gradient descent.
 As seen in \cref{eq:supervised-MLE,eq:unsupervised-MLE}, machine learning is generally interested in minimizing an expected loss over a dataset
 \begin{align}
     \min_\theta F(\theta) := \inv{n} \sum_{i=1}^n f(\theta, z_i) \; .
@@ -189,10 +224,12 @@ It was first devised by \citet{robbins1951stochastic} to find the zeros of a sto
 A special case happens when we sample each data point only once.
 Then  SGD minimizes the true population risk 
 \begin{align}
-    \min_\theta \expect[x\sim \ptrue]{f(\theta, x)} \; .
+    \min_\theta \ g(\theta) := \expect[x\sim \ptrue]{f(\theta, x)} \; .
 \end{align}
-In this work, we will use this fact by interpreting convergence rates  of SGD as a bound on the sample complexity of a model. 
-Let $g(\theta) = \expect[x\sim \ptrue]{f(\theta, x)}$. Perhaps the most classic set of assumptions to prove the convergence of SGD is that 
+In our second contribution, we use this fact by interpreting convergence rates of SGD as a bound on the sample complexity of the model. 
+
+
+Perhaps the most classic set of assumptions to prove the convergence of SGD is that 
 \begin{itemize}
     \item $g$ is lower bounded by $g^*$,
     \item $\nabla g$ is $L$-Lipschitz continuous,
