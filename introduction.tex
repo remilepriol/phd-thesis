@@ -340,15 +340,57 @@ It is well defined for generalized linear models, e.g. models defined with the e
 
 \section{Probabilistic Models}
 \subsection{Exponential Families}
+\newcommand{\nat}{\theta}
 \label{ssec:exponential-families}
-Exponential family are the linear model of probabilities. 
-Most everyday distributions belong to this family.
-They are the foundation of GLM.
-They have many nice properties, such as convex log-likelihood, and closed form MLE.
-We use them a lot in graphical models. 
+Exponential families are among the simplest parametric models of distributions.
+To define an exponential family, take a variable $x$ in $\cX$ equipped with the base measure $\nu$. 
+Then extract a sufficient statistic $T(x) \in \real^d$.  
+Then take the inner product between some parameter $\nat$ and $T(x)$. 
+This inner product may be negative, so to ensure it is positive, take its exponential $e^{ \lin{\E[T(x)] , \nat} }$.
+The mass (for discrete random variables) or the density (for continuous random variables) with respect to $\nu$ is then defined to be proportional to this exponential
+\alignn{
+	\pmodel(x) \propto e^{ \lin{\E[T(x)] , \nat} } \nu(x) \; .
+}
+The logarithm of the normalization constant is known as the log-partition function
+\alignn{
+    A(\nat) := \log \int e^{\langle \nat, T(x) \rangle} \nu(dx) \;.
+}
+The equation for the negative log-likelihood finally writes
+\alignn{
+f(\nat) := \E[-\log p_\nat(X)] = A(\nat) - \lin{\E[T(X)] , \nat} \; .
+}
+Remark that $f$ is convex, and it can simply be seen as a linear modification of the log-partition function $A$ which contains all the complexity.
+We provide more properties of these families in our third contribution.
+
+We can always define $z=T(x)$, with $\mu$ the proper push forward modification of $\nu$, in which case we say that $Z$ belongs to the \emph{natural exponential family} on $\mu$.
+
+Most common parametric distributions are exponential families :
+Categorical, Gaussians, Gamma, Wishart, Dirichlet, etc...
+A remarkable exception is the non-central Laplace $p(x) \propto e^{\abs{x-\mu}}$ which cannot be expressed in this form.
+
+
+\paragraph{GLM.}
+Generalized linear models (GLM) are a powerful tool in supervised learning. 
+Taking features $x$ and labels $y$, a GLM models the conditional distribution $\ptrue(y \cond x)$ with an exponential family whose parameter is a linear function of $x$. 
+For simplicity, we consider the natural exponential family $T(y) = y$.
+The model writes
+\alignn{
+	\pmodel ( y \cond x) = \exp( y^\top \vtheta x - A(\vtheta x) )
+}
+where $\vtheta$ is a matrix of size $\dim(y) \times \dim(x)$.
+
+In our first contribution, we study an algorithm for training a GLM for categorical distributions, e.g. logistic regression, with a number of categories growing exponentially with the input size.
+For this purpose we use independence assumptions that are formalized by probabilistic graphical models. 
 
 \subsection{Probabilistic Graphical Models}
 \label{ssec:PGM}
+A graphical model is a specification of independence relationships between variables. 
+
+
+\subsubsection{Undirected Graphs, a.k.a. Markov Random Fields}
+
+
+
 \subsubsection{directed} 
 Besides adversarial and self-supervised learning, most unsupervised learning algorithms build a probabilistic model of the data $\pmodel(x)$.
 One the most useful properties we can model about the natural distribution $\ptrue(x)$ is the notion of (conditional) independence between variables. For instance, in a simple video game, two stacks of frames are often independent given the stack of frames in between them. This kind of independence statements is formalized in the language of probabilistic graphical models -- see \citet{pearl1988probabilistic} for an historical reference, or  \citet{koller2009probabilistic} for a more recent review. The simplest such models are directed probabilistic graphical models, also known as Bayesian Networks since \citet{pearl1985bayesian} coined this term.
@@ -370,10 +412,6 @@ In unsupervised learning, either we posit that the data factorizes along a graph
 \end{enumerate}
 
 These graphs have proven useful in many modeling areas. However they alone are not able to predict what will happen if one of the variables is affected by some external stimuli. This is the topic of causal inference that we are going to discuss in the next Section.
-
-
-\subsubsection{undirected}
-
 
 \subsection{Structural Causal Models}
 \label{ssec:SCM}
