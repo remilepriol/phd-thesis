@@ -384,70 +384,117 @@ For this purpose we use independence assumptions that are formalized by probabil
 
 \subsection{Probabilistic Graphical Models}
 \label{ssec:PGM}
-A graphical model is a specification of independence relationships between variables. 
+
+One the most useful properties we can model about the natural distribution $\ptrue(x)$ is the notion of (conditional) independence between variables. For instance, in a simple video game, two stacks of frames are often independent given the stack of frames in between them. This kind of independence statements can be specified with graphs thanks to probabilistic graphical models -- see \citet{pearl1988probabilistic} for an historical reference, or \citet{wainwright2008graphical} or  \citet{koller2009PGM} for a more recent review.
+
+We start by presenting undirected graphical models.
+GLMs associated to undirected graphical models are known as conditional random field (CRF), and they are at the core of our first contribution.
+Then we introduce directed graphical models, which are necessary to understand structural causal models and our second contribution. 
+
+\subsubsection{Undirected Graphical Models, a.k.a. Markov Random Fields}
+Let $\cG$ be an undirected graph defined by 
+its vertices $\cV = \bracket{1,\dots,d}$ 
+and its edges $(i, j) \in \cE$.
+\begin{definition}[clique]
+	The set $C = \bracket{v_1, \dots, v_k}$ is said to be 
+	a clique of $\cG$ if and only if it forms 
+	a complete graph, e.g. 
+	$\forall i \neq j, (v_i, v_j) \in \cE$.
+\end{definition}
+\begin{definition}[maximal clique]
+	A clique $C$ is maximal if it is not contained in any clique, e.g.
+	$\forall C', (C\subset C' \implies C'$ is not a clique$)$.
+\end{definition}
+We name $\cC$ the set of maximal cliques of $\cG$.
+We are now ready to define the independence statement.
+\begin{definition}
+	A distribution $\ptrue$ is said to factor along $\cG$ if and only if its density verifies
+\alignn{
+	\ptrue(x) = \prod_{C\in \cC} \psi_C (x_C)
+}
+where $x_C$ is a vector containing the rows of $x$ indexed by $i \in C$, and $\psi_C : \real^{\abs{C}} \rightarrow \real$ are real-valued functions of $\abs{C}$ elements.
+We refer to $\psi_C$ as the potential of the clique $C$.
+\end{definition}
 
 
-\subsubsection{Undirected Graphs, a.k.a. Markov Random Fields}
+\paragraph{Exponential Graphical Model.}
+If $\pmodel$ belongs to the exponential family, then a sufficient condition for $\pmodel$  to factor along $\cG$ is for its sufficient statistic to decompose along the cliques of $\cG$, e.g.
+\alignn{
+	T(x) &= \sum_{C\in\cC} T_C(x_C) \\
+	\implies 
+	\pmodel(x) &\propto \prod_{C\in \cC} e^{\lin{T_C(x_C) , \nat}} \; .
+}
+We exploit this fact in our first contribution.
 
 
+\subsubsection{Directed Graphical Models, a.k.a. Bayesian Networks} 
+Directed probabilistic graphical models are also known as Bayesian Networks since \citet{pearl1985bayesian} coined this term.
+They are perhaps simpler to understand than undirected graphical models, but they are not easier to deal with.
 
-\subsubsection{directed} 
-Besides adversarial and self-supervised learning, most unsupervised learning algorithms build a probabilistic model of the data $\pmodel(x)$.
-One the most useful properties we can model about the natural distribution $\ptrue(x)$ is the notion of (conditional) independence between variables. For instance, in a simple video game, two stacks of frames are often independent given the stack of frames in between them. This kind of independence statements is formalized in the language of probabilistic graphical models -- see \citet{pearl1988probabilistic} for an historical reference, or  \citet{koller2009probabilistic} for a more recent review. The simplest such models are directed probabilistic graphical models, also known as Bayesian Networks since \citet{pearl1985bayesian} coined this term.
-
-Suppose you observe a random variable $X=(X_1, \dots, X_d) \in \real^d$ with probability law $\ptrue(X)$. Suppose you are also given a Directed Acyclic Graph (DAG) $G$ with vertex $V=\{1, \dots, d \}$ and edges $E$ . We denote $\parents(i)$ the parents of node $i$. This is the empty set if $i$ has no parents. We will say that $\ptrue$ factorizes with $G$ if
+Suppose we observe a random variable $X=(X_1, \dots, X_d) \in \real^d$ with probability law $\ptrue(X)$. 
+We are also given a Directed Acyclic Graph (DAG) $\cG$ with vertex $\cV=\{1, \dots, d \}$ and edges $\cE$ . 
+We denote $\parents(i)$ the parents of node $i$. 
+This is the empty set if $i$ has no parents. 
+\begin{definition}
+We say that $\ptrue$ factorizes along $\cG$ iff
 \begin{align}
     \ptrue(X) = \prod_{i=1}^d \ptrue(X_i | X_{\parents(i)}) \; .
 \end{align}
+\end{definition}
 In words, the only conditional dependencies of $\ptrue$ are indicated by the edges of the graph $G$. The less edges in $G$, the more we know about $X$. In fact if we know nothing about $\ptrue$, we still know that we can write it as 
 \begin{align}
-    \ptrue(X) = \prod_{i=1}^d \ptrue(X_i | X_{<i} )\textbf{}
+    \ptrue(X) = \prod_{i=1}^d \ptrue(X_i | X_{<i} )
 \end{align}
 by definition of conditional probability -- modulo some positivity constraints. Consequently, a useful graph should have only a few edges, or equivalently a low degree.
 
+\paragraph{Structure Learning.}
 In unsupervised learning, either we posit that the data factorizes along a graph and exploit this information to learn a density model $\pmodel$ with less data. Either we set the goal of discovering these conditional independence structures. This goal is known as structure learning. Current solutions to this problem fall into two categories
 \begin{enumerate}
     \item Explicitly find out conditional independences with statistical testing, and build the graph from there.
     \item Use a scoring function to explore all possible graphs and keep the one with the highest score. The scoring function is often designed as the posterior probability of the structure given the data.
 \end{enumerate}
 
-These graphs have proven useful in many modeling areas. However they alone are not able to predict what will happen if one of the variables is affected by some external stimuli. This is the topic of causal inference that we are going to discuss in the next Section.
+Directed grahical models have proven useful in many modeling areas. However they alone are not able to predict what will happen if one of the variables is affected by some external stimuli. This is the topic of causal inference.
 
-\subsection{Structural Causal Models}
+\subsection{Causal Inference}
 \label{ssec:SCM}
-
-{Causal Inference and Discovery}
 
 Causal inference use directed graphical models to predict the effect of interventions in the world. We are now going to introduce 2 key elements of this theory: do-calculus and structural causal models.
 
 \subsubsection{Do-calculus}
-Assume you have data for kidney stone treatments performed in one hospital. For each patient, you know the treatment they received $X$, the outcome $Y$ -- did they successfully heal? -- and the size of the stones they found during the surgery $Z$. A new patient arrive. You have to recommend the treatment that will maximize their chance of recovery.  How do you process the data to take this decision ?
+Assume we have data for kidney stone treatments performed in one hospital. 
+For each patient, we know the treatment they received $X$, the outcome $Y$ -- did they successfully heal? -- and the size of the stones they found during the surgery $Z$. 
+A new patient arrive. We have to recommend the treatment that will maximize their chance of recovery.  
+How should we process the data to take this decision ?
 
-By now you may have recognised this classic story that is an instance of Simpson's paradox. In this example, the straightforward solution would be to recommend the treatment with the highest success rate. But it so happens that the treatment received by past patients was picked based on their symptoms, which were themselves a function of the stone sizes. In this example, the stone size is a \textit{confounder} that affects both the treatment and the outcome. One should first partition based on $Z$ the data before aggregating the success rates. But why is that and how to formalize that ? The answer lies in the work of Judea Pearl \citep{pearl2009causality} and other statisticians. It can be formalized with the help of graphical models such as Figure \ref{fig:simpsons_paradox}.
+By now you may have recognized this classic story that is an instance of Simpson's paradox. 
+In this example, the straightforward solution would be to recommend the treatment with the highest success rate. 
+But it so happens that the treatment received by past patients was picked based on their symptoms, which were themselves a function of the stone sizes. 
+In this example, the stone size is a \textit{confounder} that affects both the treatment and the outcome. 
+One should first partition based on $Z$ the data before aggregating the success rates. But why is that and how to formalize that ? The answer lies in the work of Judea Pearl \citep{pearl2009causality} and other statisticians. It can be formalized with the help of graphical models such as Figure \ref{fig:simpsons_paradox}.
 
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+    \begin{scope}[every node/.style={circle,thick,draw}]
+        \node (X) at (-2,0) {$X$};
+        \node (Y) at (2,0) {$Y$};
+        \node (Z) at (0,3) {$Z$};
+    \end{scope}
+    
+    \begin{scope}[>={Stealth[black]},
+                  every edge/.style={draw=black,very thick}]
+        \path [->] (X) edge (Y);
+        \path [->] (Z) edge (Y);
+        \path [->] (Z) edge (X);
+    \end{scope}
+    \end{tikzpicture}
+    \caption{The graph of causal relationships between treatments $X$, outcome $Y$ and stone size $Z$. $Z$ is a cause of both $X$ and $Y$, which makes it a confounder.}
+    \label{fig:simpsons_paradox}
+\end{figure}
 
-%\begin{figure}
-%    \centering
-%    \begin{tikzpicture}
-%    \begin{scope}[every node/.style={circle,thick,draw}]
-%        \node (X) at (-2,0) {X};
-%        \node (Y) at (2,0) {Y};
-%        \node (Z) at (0,3) {Z};
-%    \end{scope}
-%    
-%    \begin{scope}[>={Stealth[black]},
-%                  every edge/.style={draw=black,very thick}]
-%        \path [->] (X) edge (Y);
-%        \path [->] (Z) edge (Y);
-%        \path [->] (Z) edge (X);
-%    \end{scope}
-%    \end{tikzpicture}
-%    \caption{The graph of causal relationships between treatments X, outcome Y and stone size Z.}
-%    \label{fig:simpsons_paradox}
-%\end{figure}
-
-The question you have to answer is an \textit{interventional question}: what will happen \textit{if you assign $X=x$?} This action effectively removes the observed statistical dependency between $X$ and $Z$. The outcome distribution of this action should not be computed as the simple conditional probability $P(Y|X=x)$, but as another quantity that we will denote $P(Y| \Do(x))$. The gold standard to estimate this quantity would be to perform a \textit{randomized control trial}, where we blindly and randomly assign treatments to incoming patient, then observe and report success rate. But we want to exploit the data we already observed to estimate this quantity. That is where the \textit{do-calculus} comes into play. It is a set of rules based on graphs that transforms do-statements such as $P(Y| \Do(x))$ into an equation written in terms of observed probabilities. 
-In the kidney stone example, we can estimate $P(Y| \Do(x))$ from observational data with the \textit{backdoor adjustment formula}
+The question we asked is an \textit{interventional question}: what will happen \textit{if we assign $X=x$?} This action effectively removes the observed statistical dependency between $X$ and $Z$. The outcome distribution of this action should not be computed as the simple conditional probability $P(Y|X=x)$, but as another quantity that we will denote $P(Y| \Do(x))$. The gold standard to estimate this quantity would be to perform a \textit{randomized control trial}, where we blindly and randomly assign treatments to incoming patient, then observe and report success rate. But we want to exploit the data we already observed to estimate this quantity. That is where the \textit{do-calculus} comes into play. It is a set of rules based on graphs that transforms do-statements such as $P(Y| \Do(x))$ into an equation written in terms of observed probabilities. 
+In the kidney stone example, we can estimate $P(Y| \Do(x))$ from observational data thanks to the \textit{backdoor adjustment formula}
 \begin{align}
     P(Y|\Do(x)) = \sum_z P(Y | x, z) P(z) 
     \neq \sum_z P(Y | x, z) P(z|x) = P(Y | x) \; .
@@ -466,15 +513,21 @@ Thanks to the rules of do-calculus, knowing the causal graph can be very useful.
     X_i = f_i(X_{\parents(i)}, U_i), \forall i \;.
     \label{eq:scm}
 \end{align}
-Given a DAG $G$, these functions, and distributions for the exogenous noise, one can sample a vector $X$ by sampling the noises and applying these functions in a topological order of $G$.
+Given a DAG $\cG$, these functions, and distributions for the exogenous noise, one can sample a vector $X$ by sampling the noises and applying these functions in a topological order of $\cG$.
 
 Among other things, SCMs are useful to answer \textit{counterfactual questions}: what would have happened if I had given the other treatment to this patient ?  Counterfactuals are a major topic in the causality community, but they not relevant to this thesis so we will not cover this theory.
 
 While the formalism of \eqref{eq:scm} may seem trivial at first, it becomes useful when one starts thinking about causal structure discovery. 
-If we assume a parametric form for the functions, then the graphical structure can become identifiable, meaning that only one graph could have generated the observed data. One such example is linear $f_i$ and non-Gaussian noise. 
-However the interest of these identifiability results is limited by the fact that, in general, we have no guarantee on the shape of the function that generated the data. 
+If we assume a parametric form for the functions, then the graphical structure can become identifiable, meaning that only one graph could have generated the observed data. One such example is if we assume $f_i$ are linear and noises are non-Gaussian. 
+However the interest of these identifiability results is limited because in general, we have no guarantee on the shape of the function that generated the data. 
 
-The SCM formalism enables us think about a much deeper hypothesis: \textbf{Independent Causal Mechanisms}. This hypothesis postulates that knowing something about one mechanism does not provide any information about the others. This can be formalized by various means. One of them is Algorithmic Information Theory: the Kolmogorov Complexity of the set $\{ f_1, \dots, f_d \}$
+The SCM formalism enables us to think about a much deeper hypothesis: \textbf{Independent Causal Mechanisms}. This hypothesis postulates that knowing something about one mechanism does not provide any information about the others. This can be formalized by various means. One of them is Algorithmic Information Theory: the Kolmogorov Complexity of the set $\{ f_1, \dots, f_d \}$
 \footnote{We are not including the exogenous noise distributions for simplicity.}
 is on the same order of magnitude as the sum of the Kolmogorov Complexity of each function taken independently. 
-Using this independence insight, one can devise algorithms that aims at finding the causal structure of the data. See \citet{peters2017elements} for a book on this topic and \citet{scholkopf2019causality} for a very recent review of the progress in this field. 
+Using this independence insight, one can devise algorithms that aims at finding the causal structure of the data. See \citet{peters2017elements} for a book on this topic.
+
+Our second contribution addresses an idea to discover causal structure from interventional data, e.g. data coming from (possibly unknown) interventions. 
+We have now provided all the key elements to understand this thesis. 
+Let us emphasize that causal inference and causal discovery are taking more and more space in machine learning. 
+We refer the reader to \citep{scholkopf2019causality} for a modern review of the literature.
+
