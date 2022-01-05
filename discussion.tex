@@ -1,12 +1,14 @@
 \chapter{Conclusion}
 \label{chap:discussion}
 
-
-We have seen three papers dealing with three interweaved topics : optimization, causality and statistics. 
-Here is a summary of these three papers.
-1. Variance reduction allows fast training of CRF, a special class of conditional undirected graphical models that were previously hard to optimize.
-Thanks to duality, non-uniform sampling can be elegantly formalized and improves upon strong methods.
-2. In simple models, the speed of adaptation can identify the causal direction. However this does not always work. We may need more sophisticated models to verify this intuition that seems to hold for humans. After all, that may be why we make up new rules so quickly.
+This thesis is made  of three papers dealing with interweaved topics : optimization, causality and statistics. 
+These three contributions can be summarized as 
+\begin{enumerate}
+	\item Variance reduction allows fast training of CRF, a special class of conditional undirected graphical models that were previously hard to optimize. Thanks to duality, non-uniform sampling can be elegantly formalized and improves upon strong methods.
+	\item For categorical and normal cause-effect models, the causal model adapts faster to interventions than the anticausal model only when the intervention is on the cause 
+	\item 
+	 the speed of adaptation can only identify the causal direction when the intervention is on the cause. This is a strong limitation to the assumption that causal models are faster to . We may need more sophisticated models to verify the intuition that seems to hold for humans. After all, that may be why we make up new rules so quickly.
+\end{enumerate}
 3. In exponential families, MLE and MAP are instances of SMD. And the KL between the true model and the learnt model is simply a Bregman divergence. Yet we do not know any upper bound, whether from optimization or from statistics. Finding one may help non-Euclidean optimization reach new grounds.
 
 
