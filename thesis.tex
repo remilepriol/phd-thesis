@@ -6,7 +6,7 @@
 \selectlanguage{english}
 
 % Speed up compilation by focusing on one part at a time
-\includeonly{introduction,discussion}
+%\includeonly{introduction,discussion}
 %force-texpad-dependency: discussion.tex
 %force-texpad-dependency: introduction.tex
 %force-texpad-dependency: contrib1.tex
@@ -122,8 +122,8 @@
 	filecolor=blue,
 	urlcolor=blue,
 	pdfview=FitH,
-	draft,
-%	final,
+%	draft,
+	final,
 }
 \usepackage{hypcap}   % Corrige la position du lien pour les images
 \usepackage{bookmark} % Remédie à des petits de <hyperref> 
@@ -149,6 +149,14 @@
 %% makeindex pour creer les indexs.  Après une nouvelle compilation,
 %% vous aurez votre index.
 %%\makeindex
+ % some custom math commands
+ 
+\newcommand*{\ptrue}{\ensuremath{\bm{p}}}
+\newcommand{\nat}{\theta}
+\newcommand*{\pmodel}{\ensuremath{\bm{p}_{\theta}}}
+\newcommand*{\lr}{\gamma}
+\newcommand*{\loss}{\ell}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
