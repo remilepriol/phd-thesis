@@ -1,23 +1,26 @@
 \chapter{Conclusion}
 \label{chap:discussion}
 
-This thesis is made  of three papers dealing with interweaved topics : optimization, causality and statistics. 
+The three contributions of this thesis are dealing with  the interweaved topics of optimization and statistics. 
 These three contributions can be summarized as 
 \begin{enumerate}
-	\item Variance reduction allows fast training of CRF, a special class of conditional undirected graphical models that were previously hard to optimize. Thanks to duality, non-uniform sampling can be elegantly formalized and improves upon strong methods.
-	\item For categorical and normal cause-effect models, the causal model adapts faster to interventions than the anticausal model only when the intervention is on the cause 
-	\item 
-	 the speed of adaptation can only identify the causal direction when the intervention is on the cause. This is a strong limitation to the assumption that causal models are faster to . We may need more sophisticated models to verify the intuition that seems to hold for humans. After all, that may be why we make up new rules so quickly.
+	\item Variance reduction allows fast training of CRF, a special class of conditional undirected graphical models that were previously hard to optimize. Thanks to duality, non-uniform sampling can be elegantly formalized and bring improvement compared to strong methods.
+	\item For some simple classes of model, the causal model is faster to adapt to interventions than the anticausal one only when the intervention bears on the cause. 
+	Yet our intuitions dictate that causal models should have some real-world advantages compared to non-causal ones. 
+	That may be why humans learn new rules so quickly.
+	We may need more sophisticated models to instantiate this intuition in the world of machine learning.
+	 \item The maximum likelihood estimate of an exponential family can also be seen as the output of stochastic mirror descent. Furthermore, the KL divergence between the true model and the learnt model is simply a Bregman divergence. Yet neither optimization nor statistics communities have found upper bounds on this quantity that are applicable to any sample size and families such a gaussians. 
+	 Finding such an upper bound may help non-Euclidean optimization reach new grounds.
 \end{enumerate}
-3. In exponential families, MLE and MAP are instances of SMD. And the KL between the true model and the learnt model is simply a Bregman divergence. Yet we do not know any upper bound, whether from optimization or from statistics. Finding one may help non-Euclidean optimization reach new grounds.
-
-
-From these 3 examples, we deduce these 2 key messages : 
-1. The exponential family is at the core of most machine learning techniques. Yet much remains to be proved.
-2. Fields need each other to make progress. Thanks to optimization tool, we enhance the power of our statistical models. Thanks to statistical models, we are able to probe into the abilities of optimization methods.
+This last contribution reveals that while exponential families are at the core of most machine learning techniques, some of their properties are yet to be understood.
+Throughout this thesis, we alternated between perspectives from optimization and from statistics, displaying the synergy between these two fields. Thanks to optimization tool, statistical models are becoming more powerful. Thanks to statistical models, we are able to probe into the abilities of optimization methods.
 
 
 \section{Future Work}
-Based on our last contribution, two research directions arise, that could partially address the open problems we raise.
-The first one is finding high probability bounds for exponential family MAP thanks to the entropy being a self-concordant barrier, as proved by \citep{bubeck2015entropic}.
-The second one is finding a high-probability convergence rate for stochastic mirror descent on self-concordant (barrier) losses. This might be possible thanks to the quadratic sandwich property of such functions. 
+Based on our last contribution, we identify two promising research direction.
+\begin{enumerate}
+	\item finding high probability bounds for exponential family MAP thanks to the entropy being a self-concordant barrier, as proved by \citep{bubeck2015entropic}.
+	This would provide a general large sample result. A low sample result remains to be found.
+	\item Analyzing the convergence properties of  stochastic mirror descent on self-concordant (barrier) losses. This might be possible thanks to the quadratic sandwich property of such functions, and it might be possible to find high probability convergence rate. 
+\end{enumerate}
+These research directions may help us improve our understanding of fundamentals statistical models, and design better optimization methods  for barrier objectives.
