@@ -1,9 +1,39 @@
 \setcounter{theorem}{0}
 
+\chapter{Introduction}
+
+\paragraph{Context: optimization and statistics are intertwined}
+wth a chronological perspective.
+
+Statistics for policies and for scientific experiments.
+
+in parallel optimization in mathematics (cf gradient descent, cauchy)
+
+Then computers and artificial intelligence thanks to expert systems. 
+
+Then all three came together in machine learning, for the optimization of statistical models, cf perceptron.
+
+\paragraph{challenges of this field}
+we want to train models faster. 
+we want to learn causal features.
+we want to quantify the learning speed for a wide variety of models.
+
+\paragraph{Thesis Outline}
+
+
+
+
+A primary goal of artificial intelligence is to enable computers to interact with the world based on data they may receive: images, sound, text or any arbitrary tabular data. 
+The most straightforward approach to give them this capability is to code explicit rules : if you receive this input, then you should do this. 
+Unfortunately, this approach, known as expert systems or good-old-fashioned-artificial-intelligence, does not scale with the complexity or the quantity of data:
+imagine coding rules to identify a dog in an image given the raw string of one million pixels. 
+Almost as early as the first computer was created \citep{rosenblatt1957perceptron}, computer scientists have engaged in another route to solve this problem : learning these rules from data, e.g. learning to recognize dogs from thousands or millions of dog and non-dog pictures. 
+This is the vast field of \textit{Machine Learning}. 
+Now let us first review the most common machine learning setting : supervised learning.
+
 
 \chapter{Background}
 
-This thesis contributes to the field of machine learning.
 In this section, we are going to review elementary building blocks that are pre-requisites to understand all three contributions.
 First we are going to review some fundamental principles of machine learning : empirical risk minimization and maximum likelihood estimation, for supervised learning \S\ref{ssec:supervised-learning} or for density estimation \S\ref{ssec:density-estimation}.
 How can one minimize the empirical risk ?  
@@ -15,14 +45,6 @@ Finally, we will describe some useful probabilistic models : exponential familie
 
 
 \section{Learning from Data}
-A primary goal of artificial intelligence is to enable computers to interact with the world based on data they may receive: images, sound, text or any arbitrary tabular data. 
-The most straightforward approach to give them this capability is to code explicit rules : if you receive this input, then you should do this. 
-Unfortunately, this approach, known as expert systems or good-old-fashioned-artificial-intelligence, does not scale with the complexity or the quantity of data:
-imagine coding rules to identify a dog in an image given the raw string of one million pixels. 
-Almost as early as the first computer was created \citep{rosenblatt1957perceptron}, computer scientists have engaged in another route to solve this problem : learning these rules from data, e.g. learning to recognize dogs from thousands or millions of dog and non-dog pictures. 
-This is the vast field of \textit{Machine Learning}. 
-Now let us first review the most common machine learning setting : supervised learning.
-
 
 \subsection{Supervised Learning}
 \label{ssec:supervised-learning}
