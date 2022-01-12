@@ -87,7 +87,8 @@ A CRF models the conditional probability of a structured output $y \in \cY$ (e.g
 
 
 \begin{figure}
-	\centering \includegraphics[width=.5\textwidth]{crf}
+	\centering 
+	\includegraphics[width=.5\textwidth]{crf}
 	\caption[Example of graphical model for the optical character recognition (OCR) task]{
 		Example of graphical model for the optical character recognition (OCR) task.
 		We want to exploit the structure of the word to predict that $y_{i,5}$ is an "e" and not a "c".
@@ -123,14 +124,28 @@ The dual objective to maximize over the choice of $\balpha = (\alpha_1, \ldots, 
 	\cD(\balpha) := -\frac{\lambda}{2} \| \frac{1}{n \lambda} \sum_i A_i \alpha_i \|^2
 	+ \frac{1}{n} \sum_{i=1}^n H(\alpha_i) \, ,
 \end{equation}
-where $H(\alpha_i) := - \sum_{y \in \cY_i} \alpha_i(y) \log(\alpha_i(y))$ is the entropy of the probability distribution $\alpha_i$. The negative entropy appears as the convex conjugate of the softmax: $-H = \phi^*$.
+where $H(\alpha_i) := - \sum_{y \in \cY_i} \alpha_i(y) \log(\alpha_i(y))$ is the entropy of the probability distribution $\alpha_i$. The negative entropy appears as the convex conjugate of the softmax: $-H = \phi^*$. 
+An illustration of primal and dual parameters is provided in Figure~\ref{fig:sdca}
+
+\begin{figure}[t]
+	\centering 
+	\includegraphics[width=\textwidth]{parameter_space.pdf}
+	\caption[
+		Illustration of SDCA
+	]{
+		\textbf{Left:} primal parameters  $\bw$ and $\bw^*$ are a convex combination of corrected features $\psi_i$. In fact they are the average of $n$  barycenters os smaller polygons with $K$ vertices as per \eqref{eq:conjugate-weight}.
+		\textbf{Right:} dual parameters live in $n$ $K$-simplex. SDCA updates one simplex at a time with a relaxed fixed point iteration~\eqref{eq:dual_fixed_pt_update}.
+	}
+	\label{fig:sdca}
+\end{figure}
 
 \subsection{Optimality Conditions}
 We define the \emph{conjugate weight} function $\hat{w}$ as follows:
 \alignn{
 		\hat{w}(\balpha)
 		&:= \frac{1}{n \lambda} \sum_i A_i \alpha_i
-		= \frac{1}{\lambda n} \sum_{i=1}^n \mathbb{E}_{y \sim \alpha_i} [\psi_i(y)] \\
+		= \frac{1}{\lambda n} \sum_{i=1}^n \mathbb{E}_{y \sim \alpha_i} [\psi_i(y)] 
+		\label{eq:conjugate-weight}\\
 		&= \frac{1}{\lambda } \left( \frac{1}{ n} \sum_{i=1}^n F(x_i, y_i)
 		-  \frac{1}{n} \sum_{i=1}^n \mathbb{E}_{y \sim \alpha_i} [F(x_i, y)] \right) \, .
 }
@@ -224,9 +239,9 @@ Our focus in this paper is the application of SDCA to CRF models and thus we foc
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Proximal Stochastic Dual Coordinate Ascent} \label{sec:SDCA}
+\section{Stochastic Dual Coordinate Ascent} \label{sec:SDCA}
 
-We first describe the SDCA in its general setting, and then describe the necessary modifications for training a CRF.
+We first describe SDCA in its general setting, and then describe the necessary modifications for training a CRF.
 
 \subsection{General Setting}
 The stochastic dual coordinate ascent algorithm (SDCA) updates one dual coordinate at a time so as to maximize the dual objective.
@@ -235,7 +250,11 @@ In this case, it is possible to do exact coordinate maximization of the dual obj
 
 In the multi-class setting however, there is no simple way to maximize the dual objective over the block $\alpha_i \in \Delta_K$.
 The algorithm with the surprising name of Proximal-SDCA\footnote{We simply call it SDCA in the rest of this paper}, option II~\citep{shalev2016accelerated} proposes a solution to this problem.
-It updates $\alpha_i$  in a clever direction derived from the primal-dual relationship, which amounts to a relaxed fixed point update. See Algorithm~\ref{sdca general}.
+It updates $\alpha_i$  in a clever direction derived from the primal-dual relationship, which amounts to a relaxed fixed point update. 
+See Figure~\ref{fig:sdca} for an intuition 
+and Algorithm~\ref{sdca general} for the details.
+
+
 
 \begin{algorithm}[t]
     \caption{Prox-SDCA (option II) called SDCA here}%
