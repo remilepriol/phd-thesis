@@ -247,28 +247,28 @@ Apprentissage automatique, famille exponentielle, divergence de Bregman, statist
 
 Exponential families are a ubiquitous class of models in statistics. 
 On the one hand, they can model any data type.
-Actually most common distributions are exponential families: Gaussians, categorical, Poisson, Gamma, Wishart, or Dirichlet. 
+Actually, the most common distributions are exponential families: Gaussians, categorical, Poisson, Gamma, Wishart, or Dirichlet. 
 On the other hand, they sit at the core of generalized linear models (GLM), a foundational class of models in machine learning. 
 They are also supported by beautiful mathematics thanks to their connection with convex duality and the Laplace transform.
-This beauty is definitely responsible of the existence of this thesis.
-In this thesis, we make three contributions at the intersection of optimization and statistics, all revolving around exponential families. 
+This beauty is definitely responsible for the existence of this thesis.
+In this manuscript, we make three contributions at the intersection of optimization and statistics, all revolving around exponential families. 
 
-The first contribution adapts and improves a variance reduction optimization algorithm called stochastic dual coordinate ascent (SDCA) to train a particular class of GLM called conditional random fields (CRF). CRF are one of the cornerstones of structured prediction. CRF were notoriously hard to train until the advent of variance reduction techniques, and our improved version of SDCA performs favorably compared to previous state-of-the-art.  
+The first contribution adapts and improves a variance reduction optimization algorithm called stochastic dual coordinate ascent (SDCA) to train a particular class of GLM called conditional random fields (CRF). CRF are one of the cornerstones of structured prediction. CRF were notoriously hard to train until the advent of variance reduction techniques, and our improved version of SDCA performs favorably compared to the previous state-of-the-art.  
 
 The second contribution focuses on causal discovery. 
-Exponential families are widely used in graphical models, and in particular causal graphical models. 
-This contribution investigates a specific conjecture that gained some traction in previous work : causal models adapt faster to perturbations of the environment. `
+Exponential families are widely used in graphical models, and in particular in causal graphical models. 
+This contribution investigates a specific conjecture that gained some traction in previous work: causal models adapt faster to perturbations of the environment.
 Using results from optimization, we find strong support for this assumption when the perturbation is coming from an intervention on a cause, and support against this assumption when perturbation is coming from an intervention on an effect.
- These pieces of evidence are calling for a refinement of  the conjecture.
+These pieces of evidence are calling for a refinement of the conjecture.
 
 The third contribution addresses a fundamental property of exponential families. 
-One of the most appealing properties of exponential families is its closed form maximum likelihood estimate (MLE) and maximum a posteriori (MAP) for a natural choice of conjugate prior. These two estimators are used almost everywhere, often unknowingly
--- how often are mean and variance computed for bell shaped data without thinking about the Gaussian model they underly ?
-Yet literature to date is lacking results on the finite sample convergence property of the information (Kulback-Leibler) divergence  between these estimators and the true distribution. 
+One of the most appealing properties of exponential families is its closed-form maximum likelihood estimate (MLE) and maximum a posteriori (MAP) for a natural choice of conjugate prior. These two estimators are used almost everywhere, often unknowingly
+-- how often are mean and variance computed for bell-shaped data without thinking about the Gaussian model they underly?
+Nevertheless, literature to date lacks results on the finite sample convergence property of the information (Kulback-Leibler) divergence between these estimators and the true distribution. 
 Drawing on a parallel with optimization, we take some steps towards such a result, and we highlight directions for progress both in statistics and optimization. 
 
-These three contributions are all using tools from optimization at the service of statistics in exponential families : improving upon an algorithm to learn GLM, characterizing the adaptation speed of causal models, estimating the learning speed of ubiquitous models.
-By tying together optimization and statistics, this thesis is taking a step towards a better understanding of fundamentals of machine learning.
+These three contributions are all using tools from optimization at the service of statistics in exponential families: improving upon an algorithm to learn GLM, characterizing the adaptation speed of causal models, and estimating the learning speed of ubiquitous models.
+By tying together optimization and statistics, this thesis is taking a step towards a better understanding of the fundamentals of machine learning.
 
 \subsection*{Keywords}
 Machine learning, exponential family, Bregman divergence, non-asymptotic statistics, sample complexity, duality, stochastic optimization, variance reduction, structured prediction, causality.
