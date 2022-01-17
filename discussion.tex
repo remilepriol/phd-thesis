@@ -1,26 +1,26 @@
 \chapter{Conclusion}
 \label{chap:discussion}
 
-The three contributions of this thesis are dealing with  the interweaved topics of optimization and statistics. 
+The three contributions of this thesis deal with the interweaved topics of optimization and statistics. 
 These three contributions can be summarized as 
 \begin{enumerate}
-	\item Variance reduction allows fast training of CRF, a special class of conditional undirected graphical models that were previously hard to optimize. Thanks to duality, non-uniform sampling can be elegantly formalized and bring improvement compared to strong methods.
+	\item Variance reduction allows fast training of CRF, a particular class of conditional undirected graphical models that were previously hard to optimize. Thanks to duality, non-uniform sampling can be elegantly formalized and improved other strong methods.
 	\item For some simple classes of model, the causal model is faster to adapt to interventions than the anticausal one only when the intervention bears on the cause. 
-	Yet our intuitions dictate that causal models should have some real-world advantages compared to non-causal ones. 
+	However, our intuitions dictate that causal models should have some real-world advantages compared to non-causal ones. 
 	That may be why humans learn new rules so quickly.
-	We may need more sophisticated models to instantiate this intuition in the world of machine learning.
-	 \item The maximum likelihood estimate of an exponential family can also be seen as the output of stochastic mirror descent. Furthermore, the KL divergence between the true model and the learnt model is simply a Bregman divergence. Yet neither optimization nor statistics communities have found upper bounds on this quantity that are applicable to any sample size and families such a gaussians. 
-	 Finding such an upper bound may help non-Euclidean optimization reach new grounds.
+	We may need more sophisticated models to instantiate this intuition in machine learning.
+	\item The maximum likelihood estimate of an exponential family can also be seen as the output of stochastic mirror descent. Furthermore, the KL divergence between the true and learned models is simply a Bregman divergence. Nevertheless, neither optimization nor statistics communities have found upper bounds on this quantity that apply to any sample size and families such a Gaussians. 
+	Finding such an upper bound may help non-Euclidean optimization reach new grounds.
 \end{enumerate}
 This last contribution reveals that while exponential families are at the core of most machine learning techniques, some of their properties are yet to be understood.
-Throughout this thesis, we alternated between perspectives from optimization and from statistics, displaying the synergy between these two fields. Thanks to optimization tool, statistical models are becoming more powerful. Thanks to statistical models, we are able to probe into the abilities of optimization methods.
+Throughout this thesis, we alternated between optimization and statistics perspectives, displaying the synergy between these two fields. Thanks to optimization tools, statistical models are becoming more powerful. Thanks to statistical models, we can probe into the abilities of optimization methods.
 
 
 \section{Future Work}
-Based on our last contribution, we identify two promising research direction.
+Based on our last contribution, we identify two promising research directions.
 \begin{enumerate}
 	\item finding high probability bounds for exponential family MAP thanks to the entropy being a self-concordant barrier, as proved by \citep{bubeck2015entropic}.
-	This would provide a general large sample result. A low sample result remains to be found.
-	\item Analyzing the convergence properties of  stochastic mirror descent on self-concordant (barrier) losses. This might be possible thanks to the quadratic sandwich property of such functions, and it might be possible to find high probability convergence rate. 
+	That would provide a general large sample result. A low sample result remains to be found.
+	\item Analyzing the convergence properties of stochastic mirror descent on self-concordant (barrier) losses. This might be possible thanks to the quadratic sandwich property of such functions, and it might be possible to find high probability convergence rate. 
 \end{enumerate}
-These research directions may help us improve our understanding of fundamentals statistical models, and design better optimization methods  for barrier objectives.
+These research directions may help us understand fundamentals statistical models and design better optimization methods for barrier objectives.

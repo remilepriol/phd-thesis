@@ -28,7 +28,7 @@
 \usepackage{style/coverpage}
 
 \usepackage[round]{natbib} % option sectionbib for biblio in each chapter
-%\usepackage{chapterbib}  
+%\usepackage{chapterbib}
 
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
@@ -37,7 +37,7 @@
 \graphicspath{
 	{figs/causal-optimization/}
 	{figs/MAP-convergence/}
-	{figs/sdca4crf/}	
+	{figs/sdca4crf/}
 }
 \usepackage{wrapfig}
 %\usepackage{subfigure}
@@ -126,7 +126,7 @@
 	final,
 }
 \usepackage{hypcap}   % Corrige la position du lien pour les images
-\usepackage{bookmark} % Remédie à des petits de <hyperref> 
+\usepackage{bookmark} % Remédie à des petits de <hyperref>
 			%(important qu'il apparaisse APRÈS <hyperref>)
 
 \usepackage[capitalise]{cleveref}
@@ -150,7 +150,7 @@
 %% vous aurez votre index.
 %%\makeindex
  % some custom math commands
- 
+
 \newcommand*{\ptrue}{\ensuremath{\bm{p}}}
 \newcommand{\nat}{\theta}
 \newcommand*{\pmodel}{\ensuremath{\bm{p}_{\theta}}}
@@ -180,8 +180,8 @@
 \Directeur{}{Simon}{Lacoste-Julien}{}
 \CoDirecteur{}{Yoshua}{Bengio}{}         % s'il y a lieu
 %%\codirecteurs{Nom du 2e codirecteur}         % s'il y a lieu
-\Membres{1}{}{Guillaume}{Rabusseau}{}  
-\Membres{2}{}{Nicolas}{Flammarion}{}  
+\Membres{1}{}{Guillaume}{Rabusseau}{}
+\Membres{2}{}{Nicolas}{Flammarion}{}
 
 %titre: 15 mots, max. 175 caracteres
 \PhD{Optimization Tools for Non-Asymptotic Statistics in Exponential Families}
@@ -196,43 +196,43 @@
 %%------------------------------------------------- %
 %%              pages iii                           %
 %%------------------------------------------------- %
- \begin{flushright} 
+ \begin{flushright}
  \emph{Les théorèmes sont démontrés par ceux qui y croient.}\\~\\
  \emph{Theorems are proved by those who believe in them.}  \\~\\
-André Weil 
+André Weil
  \end{flushright}
- 
+
 % \vspace{4cm}
- 
+
 % \emph{Le débutant a l'impression que les autres savent tout. Il ne comprend pas comment avec les mêmes matériaux, avec les mêmes outils, il trouverait quelque chose que les autres ne savent pas faire.}\\~\\
 %  \emph{The beginner is under the impression that others know everything. He does not understand how, with the same material, with the same tools, he could find something that others cannot do.}\\ ~\\
 % François Loeser
 
 \chapter*{Résumé}
 Les familles exponentielles est une classe de modèles omniprésente en statistique.
-D'une part, elle  peut modéliser n'importe quel type de données. 
-En fait la plupart des distributions communes en font partie : Gaussiennes, variables catégoriques, Poisson, Gamma, Wishart, Dirichlet. 
-D'autre part elle est à la base des modèles linéaires généralisés (GLM), une classe de modèles fondamentale en machine learning. 
+D'une part, elle  peut modéliser n'importe quel type de données.
+En fait la plupart des distributions communes en font partie : Gaussiennes, variables catégoriques, Poisson, Gamma, Wishart, Dirichlet.
+D'autre part elle est à la base des modèles linéaires généralisés (GLM), une classe de modèles fondamentale en machine learning.
 Enfin les mathématiques qui les sous-tendent sont souvent magnifiques, grâce à leur lien avec la dualité convexe et la transformée de Laplace.
 L'auteur de cette thèse a fréquemment été motivé par cette beauté.
-Dans cette thèse, nous faisons trois contributions à l'intersection de l'optimisation et des statistiques, qui tournent toutes autour de la famille exponentielle. 
+Dans cette thèse, nous faisons trois contributions à l'intersection de l'optimisation et des statistiques, qui tournent toutes autour de la famille exponentielle.
 
-La première contribution adapte et améliore un algorithme d'optimisation à variance réduite appelé ascension des coordonnées duales stochastique (SDCA), pour entraîner une classe particulière de GLM appelée champ aléatoire conditionnel (CRF). Les CRF sont un des piliers de la prédiction structurée. Les CRF étaient connus pour être difficiles à entraîner jusqu'à la découverte des technique d'optimisation à variance réduite. Notre version améliorée de SDCA  obtient des performances favorables comparées à l'état de l'art antérieur et actuel. 
+La première contribution adapte et améliore un algorithme d'optimisation à variance réduite appelé ascension des coordonnées duales stochastique (SDCA), pour entraîner une classe particulière de GLM appelée champ aléatoire conditionnel (CRF). Les CRF sont un des piliers de la prédiction structurée. Les CRF étaient connus pour être difficiles à entraîner jusqu'à la découverte des technique d'optimisation à variance réduite. Notre version améliorée de SDCA  obtient des performances favorables comparées à l'état de l'art antérieur et actuel.
 
-La deuxième contribution s'intéresse à la découverte causale. 
-Les familles exponentielles sont fréquemment utilisées dans les modèles graphiques, et en particulier dans les modèles graphique causaux. 
-Cette contribution mène l'enquête sur une conjecture spécifique qui a attiré l'attention dans de précédents travaux : les modèles causaux s'adaptent plus rapidement aux perturbations de l'environnement. 
+La deuxième contribution s'intéresse à la découverte causale.
+Les familles exponentielles sont fréquemment utilisées dans les modèles graphiques, et en particulier dans les modèles graphique causaux.
+Cette contribution mène l'enquête sur une conjecture spécifique qui a attiré l'attention dans de précédents travaux : les modèles causaux s'adaptent plus rapidement aux perturbations de l'environnement.
 Nos résultats, obtenus à partir de théorèmes d'optimisation, soutiennent cette hypothèse sous certaines conditions. Mais sous d'autre conditions, nos résultats contredisent cette hypothèse . Cela appelle à une précision de cette hypothèse, ou à une sophistication de notre notion de modèle causal.
 
-La troisième contribution s'intéresse à une propriété fondamentale des familles exponentielles. 
-L'une des propriétés les plus séduisantes des familles exponentielles est la forme close de l'estimateur du maximum de vraisemblance (MLE), ou maximum a posteriori (MAP) pour un choix naturel de prior conjugué. 
-Ces deux estimateurs sont utilisés presque partout, souvent sans même y penser. 
+La troisième contribution s'intéresse à une propriété fondamentale des familles exponentielles.
+L'une des propriétés les plus séduisantes des familles exponentielles est la forme close de l'estimateur du maximum de vraisemblance (MLE), ou maximum a posteriori (MAP) pour un choix naturel de prior conjugué.
+Ces deux estimateurs sont utilisés presque partout, souvent sans même y penser.
 (Combien de fois calcule-t-on une moyenne et une variance pour des données en cloche sans penser au modèle Gaussien sous-jacent ?)
-Pourtant la littérature actuelle manque de résultats sur la convergence de ces modèles pour des tailles d'échantillons finis, lorsque l'on mesure la qualité de ces modèles avec la divergence  de Kullback-Leibler (KL). 
+Pourtant la littérature actuelle manque de résultats sur la convergence de ces modèles pour des tailles d'échantillons finis, lorsque l'on mesure la qualité de ces modèles avec la divergence  de Kullback-Leibler (KL).
 Pourtant cette divergence est la mesure de différence standard en théorie de l'information.
 En établissant un parallèle avec l'optimisation, nous faisons quelques pas vers un tel résultat, et nous relevons quelques directions pouvant mener à des progrès, tant en statistiques qu'en optimisation.
 
-Ces trois contributions mettent des outil d'optimisation au service des statistiques dans les familles exponentielles : améliorer la vitesse d'apprentissage de GLM de prédiction structurée, caractériser la vitesse d'adaptation de modèles causaux, estimer la vitesse d'apprentissage de modèles omniprésents. 
+Ces trois contributions mettent des outil d'optimisation au service des statistiques dans les familles exponentielles : améliorer la vitesse d'apprentissage de GLM de prédiction structurée, caractériser la vitesse d'adaptation de modèles causaux, estimer la vitesse d'apprentissage de modèles omniprésents.
 En traçant des ponts entre statistiques et optimisation, cette thèse fait progresser notre maîtrise de méthodes fondamentales d'apprentissage automatique.
 
 \subsection*{Mots-clés}
@@ -245,30 +245,30 @@ Apprentissage automatique, famille exponentielle, divergence de Bregman, statist
 % \anglais
 \chapter*{Abstract}
 
-Exponential families are a ubiquitous class of models in statistics. 
+Exponential families are a ubiquitous class of models in statistics.
 On the one hand, they can model any data type.
-Actually most common distributions are exponential families: Gaussians, categorical, Poisson, Gamma, Wishart, or Dirichlet. 
-On the other hand, they sit at the core of generalized linear models (GLM), a foundational class of models in machine learning. 
+Actually, the most common distributions are exponential families: Gaussians, categorical, Poisson, Gamma, Wishart, or Dirichlet.
+On the other hand, they sit at the core of generalized linear models (GLM), a foundational class of models in machine learning.
 They are also supported by beautiful mathematics thanks to their connection with convex duality and the Laplace transform.
-This beauty is definitely responsible of the existence of this thesis.
-In this thesis, we make three contributions at the intersection of optimization and statistics, all revolving around exponential families. 
+This beauty is definitely responsible for the existence of this thesis.
+In this manuscript, we make three contributions at the intersection of optimization and statistics, all revolving around exponential families.
 
-The first contribution adapts and improves a variance reduction optimization algorithm called stochastic dual coordinate ascent (SDCA) to train a particular class of GLM called conditional random fields (CRF). CRF are one of the cornerstones of structured prediction. CRF were notoriously hard to train until the advent of variance reduction techniques, and our improved version of SDCA performs favorably compared to previous state-of-the-art.  
+The first contribution adapts and improves a variance reduction optimization algorithm called stochastic dual coordinate ascent (SDCA) to train a particular class of GLM called conditional random fields (CRF). CRF are one of the cornerstones of structured prediction. CRF were notoriously hard to train until the advent of variance reduction techniques, and our improved version of SDCA performs favorably compared to the previous state-of-the-art.
 
-The second contribution focuses on causal discovery. 
-Exponential families are widely used in graphical models, and in particular causal graphical models. 
-This contribution investigates a specific conjecture that gained some traction in previous work : causal models adapt faster to perturbations of the environment. `
+The second contribution focuses on causal discovery.
+Exponential families are widely used in graphical models, and in particular in causal graphical models.
+This contribution investigates a specific conjecture that gained some traction in previous work: causal models adapt faster to perturbations of the environment.
 Using results from optimization, we find strong support for this assumption when the perturbation is coming from an intervention on a cause, and support against this assumption when perturbation is coming from an intervention on an effect.
- These pieces of evidence are calling for a refinement of  the conjecture.
+These pieces of evidence are calling for a refinement of the conjecture.
 
-The third contribution addresses a fundamental property of exponential families. 
+The third contribution addresses a fundamental property of exponential families.
 One of the most appealing properties of exponential families is its closed-form maximum likelihood estimate (MLE) and maximum a posteriori (MAP) for a natural choice of conjugate prior. These two estimators are used almost everywhere, often unknowingly
--- how often are mean and variance computed for bell-shaped data without thinking about the Gaussian model they underly ?
-Nevertheless, literature to date lacks results on the finite sample convergence property of the information (Kulback-Leibler) divergence  between these estimators and the true distribution. 
-Drawing on a parallel with optimization, we take some steps towards such a result, and we highlight directions for progress both in statistics and optimization. 
+-- how often are mean and variance computed for bell-shaped data without thinking about the Gaussian model they underly?
+Nevertheless, literature to date lacks results on the finite sample convergence property of the information (Kulback-Leibler) divergence between these estimators and the true distribution.
+Drawing on a parallel with optimization, we take some steps towards such a result, and we highlight directions for progress both in statistics and optimization.
 
-These three contributions are all using tools from optimization at the service of statistics in exponential families : improving upon an algorithm to learn GLM, characterizing the adaptation speed of causal models, estimating the learning speed of ubiquitous models.
-By tying together optimization and statistics, this thesis is taking a step towards a better understanding of fundamentals of machine learning.
+These three contributions are all using tools from optimization at the service of statistics in exponential families: improving upon an algorithm to learn GLM, characterizing the adaptation speed of causal models, and estimating the learning speed of ubiquitous models.
+By tying together optimization and statistics, this thesis is taking a step towards a better understanding of the fundamentals of machine learning.
 
 \subsection*{Keywords}
 Machine learning, exponential family, Bregman divergence, non-asymptotic statistics, sample complexity, duality, stochastic optimization, variance reduction, structured prediction, causality.
@@ -329,7 +329,7 @@ Machine learning, exponential family, Bregman divergence, non-asymptotic statist
   SAG & Stochastic Average Gradient \\
   SCM & Structural Causal Model \\
   SDCA & Stochastic Dual Coordinate Ascent \\
-  SGD & Stochastic Gradient Descent \\  
+  SGD & Stochastic Gradient Descent \\
   SMD & Stochastic Mirror Descent\\
   SVRG & Stochastic Variance Reduced Gradient \\
   SVM & Support Vector Machine\\
@@ -379,7 +379,7 @@ Et surtout merci à Aurélie de m'aider à écrire ces pages et à écrire ma vi
 %  Scalars are lower-case letters \dotfill & $\lambda$       \\
 %  Vectors are lower-case bold letters  \dotfill & $\vtheta$\\
 %  Matrices are upper-case bold letters\dotfill &  $\mA$ \\
-% \end{tabular} 
+% \end{tabular}
 
 %$\simplex_K$ to denote the K-simplex
 %the indicator function $\ones\{ b\}$
