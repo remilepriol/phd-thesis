@@ -2,14 +2,14 @@
 
 \chapter{Introduction}
 
-Let us start with a brief historical walkthrough.
-Statistics emerged more than a millenium ago, as frequency counting could be used to decipher encrypted messages.
+% Let us start with a brief historical walkthrough.
+Statistics emerged more than a millennium ago, as frequency counting could be used to decipher encrypted messages.
 Mathematical optimization started being formalized a few centuries ago, as
 Newton and Gauss designed the first iterative methods to find an optimum, followed by \citet{cauchy1847methode}  who invented gradient descent.
 
-Seventy years ago, scientists like Turing created  digital computers and started dreaming of artificial intelligence : creating machines that could act and learn as humans do, or better.
-A step towards this goal is enabling computers to interact with the world based on data: images, sound, text or any arbitrary tabular data.
-The most straightforward approach to give them this capability is to code explicit rules : if you receive this input, then you should do this.
+Seventy years ago, scientists like Turing created digital computers and started dreaming of artificial intelligence: creating machines that could act and learn as humans do, or better.
+A step towards this goal is enabling computers to interact with the world based on data: images, sound, text, or any arbitrary tabular data.
+The most straightforward approach to give them this capability is to code explicit rules: if you receive this input, then you should do this.
 Unfortunately, this approach, known as expert systems or symbolic artificial intelligence, does not scale with the complexity or the quantity of data:
 imagine coding rules to identify a dog in an image given the raw string of one million pixels.
 Almost as early as the first computer,  \citet{turing1950computing} formulated the idea of a program learning new rules from examples \citep{muggleton2014alan}.
@@ -17,50 +17,49 @@ Several years later, \citet{rosenblatt1957perceptron} introduced the perceptron,
 This is the realm of machine learning where our story takes place.
 
 
-Modern machine learning  fits models to data points.
-It is essentially a new field at the intersection of statistics and optimization
-but some of its core ideas are not new.
+Modern machine learning fits models to data points.
+It is essentially a new field at the intersection of statistics and optimization, but some of its core ideas are not new.
 They even predate the emergence of computers.
 Legendre and Gauss already applied linear regression to predict planetary movements around 1800.
-The long history of maximum likelihood can be summarized by the name of Fisher who applied this principle to logistic regression in the 1930s \citep{stigler2007epic}.
-Stochastic gradient descent \citep{robbins1951stochastic}, the workhorse of modern machine learning, was introduced as a root finding algorithm.
+The long history of maximum likelihood can be summarized by the name of Fisher, who applied this principle to logistic regression in the 1930s \citep{stigler2007epic}.
+Stochastic gradient descent \citep{robbins1951stochastic}, the workhorse of modern machine learning, was introduced as a root-finding algorithm.
 
 The long history of statistics and optimization have intertwined to form machine learning as we know it today.
-This thesis is covering some of the interactions between these two fields.
-Abstracting away, our contributions are  addressing 3 challenges
+This thesis covers some of the interactions between these two fields.
+Abstracting away, our contributions are  addressing three challenges
 \begin{enumerate}
 	\item training models faster
 	\item learning causal features that generalize better
 	\item characterizing the learning speed for a wide variety of models.
 \end{enumerate}
-By tapping into the connection between statistics and optimization, this thesis is attempting to further progress on these three challenges.
+By tapping into the connection between statistics and optimization, this thesis attempts to further progress on these three challenges.
 
 \paragraph{Thesis Outline}
-This thesis is made of contributions spanning diverse parts of machine learning.
+This thesis presents contributions spanning diverse parts of machine learning.
 We provide \cref{ch:background} as a reference for readers that are unfamiliar with any of these parts.
-In particular we review the two learning setups that we are making use of : supervised learning and density estimation via maximum likelihood.
-We then cover some fundamentals of convex optimization : SGD, variance reduction and convex duality.
-Finally we introduce exponential families, graphical models, and we give a brief introduction to causal inference for the newcomers.
+In particular, we review the two learning setups that we are using: supervised learning and density estimation via maximum likelihood.
+We then cover some fundamentals of convex optimization: SGD, variance reduction, and convex duality.
+Finally, we introduce exponential families, graphical models and briefly introduce causal inference for the newcomers.
 
 \cref{ch:sdca} is about training faster.
 The goal is to train conditional random fields (CRF) as fast as possible.
 CRF are probabilistic models for structured prediction that have long been notoriously hard to train.
-For this purpose, we adapt a well known optimization algorithm SDCA.
-On the way, we introduce a new sampling scheme for SDCA and we prove an improved convergence rate.
+For this purpose, we adapt SDCA, a well-known optimization algorithm.
+On the way, we introduce a new sampling scheme for SDCA, and we prove an improved convergence rate.
 Empirically, SDCA performs on par or better than other variance reduction algorithms.
 
 \cref{ch:causal} is about optimization and causality.
-It questions a specific assumption : we expect causal models to adapt faster to perturbations of the world. Is this true ?
-We answer this question for bivariate categorical data, and multivariate normal data, by modeling  perturbations as interventions in a ground truth causal model, and by modeling adaptation as optimization.
+It questions a specific assumption: we expect causal models to adapt faster to perturbations of the world. Is this true?
+We answer this question for bivariate categorical and multivariate normal data by modeling perturbations as interventions in a ground truth causal model and modeling adaptation as optimization.
 
 \cref{ch:map} is about optimization and elementary statistics.
-While maximum likelihood is used everywhere, it is especially used with exponential families where the solution has a closed form.
-A typical frequentist approach would estimate the average risk of this estimator, and a typical measure of risk would be the KL divergence between this estimator and the ground truth.
-Yet we are not aware of any general results upper bounding this expected KL.
-Surprisingly, this statistical problem has a connection with the optimization of non-smooth losses.
+While the maximum likelihood is used everywhere, it is primarily used with exponential families where the solution has a closed-form.
+A typical frequentist approach would estimate the average risk of this estimator, and a standard measure of risk would be the KL divergence between this estimator and the ground truth.
+Nevertheless, we are not aware of any general results upper bounding this expected KL.
+Surprisingly, this statistical problem is connected with the optimization of non-smooth losses.
 We review the importance of this problem and showcase recent attempts at solving it.
 
-Finally, the last chapter concludes the thesis by summarizing the contributions and out-lining some future research directions in the context of this thesis.
+Finally, the last chapter concludes the thesis by summarizing the contributions and outlining some future research directions in the context of this thesis.
 
 
 
