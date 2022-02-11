@@ -85,13 +85,21 @@ We want to learn some rules to map newly observed features $x$ to their unobserv
 The most common approach as of today is to define:
 \begin{enumerate}
 	\item a model $f_\theta: \cX \rightarrow \cY$ parametrized by some vector $\theta \in \real^d$. This model will implicitly contain all the rules that we are unable to explicitly write down. For $x$ and $y$ real vectors, the simplest instance of functions are linear models: $f_\theta(x) = \theta^T x$.
-	\item a loss $\loss: \cY\times \cY \rightarrow \real$ that will tell use how well or how poorly we are doing. The lingua from statistical decision theory calls it \emph{risk function.} The simplest instance may be $\loss(y_1, y_2) = \norm{y_1 - y_2}^2$.
+	\item a prediction loss function $\loss: \cY\times \cY \rightarrow \real$ that will tell use how well or how poorly we are doing. The simplest instance may be $\loss(y_1, y_2) = \norm{y_1 - y_2}^2$.
 \end{enumerate}
 Then we may learn the mapping by solving the following problem:
 \alignn{
 	\min_\theta  \sum_{i=1}^n \loss(y_i , f_\theta(x_i)) \; .
+	\label{eq:ERM}
 }
-This problem simply minimizes the sum of the risk on all data points, hence the name: \emph{empirical risk minimization} or ERM to keep it short.
+This problem simply minimizes the sum of the loss on all data points.
+This sum is a proxy for the expectation of the loss on the "true" distribution $\ptrue$ from which we sampled $cD$
+\alignn{
+	\expect[(x, y)\sim\ptrue]{\loss(y, f_\theta(x))} \; .
+	\label{eq:risk-function}
+} 
+In learning theory, the expectation~\eqref{eq:risk-function} is called either \emph{generalization error}, either \emph{risk function}.
+That is why problem~\eqref{eq:ERM} bears the name \emph{empirical risk minimization}, or ERM to keep it short.
 
 In this thesis, we are going to focus on a variant of ERM: \emph{maximum likelihood estimation}.
 This special case happens when we assume that all data points were sampled independently and identically from some distribution $\ptrue(x, y)$ defined on $\cX\times \cY$.
@@ -110,7 +118,7 @@ Then, if $\theta^*$ solves the problem
 	&= \argmin_\theta  \sum_{i=1}^n - \log \pmodel(y_i \cond x_i) \; ,
 	\label{eq:supervised-MLE}
 }
-we will call it \emph{maximum likelihood estimate} or MLE for short.
+we will call it \emph{maximum (conditional) likelihood estimate} or MLE for short.
 Prior to supervised learning, statisticians have also studied this framework for density estimation.
 
 \subsection{Density Estimation}
@@ -126,14 +134,14 @@ In this case as well, $\theta^*$ is the \emph{maximum likelihood estimate} (MLE)
 %Finally, to assess the quality of $\vp_{\theta^*}$, one can estimate the likelihood of a held-out test set.
 
 \paragraph{Example 1: Isotropic Gaussian.}
-If the data is made of floats $z\in\real^d$,
+If the data is made of real vectors $z\in\real^d$,
 then we may chose to fit an isotropic Gaussian $\pmodel = \cN(\mu, \sigma^2 \mI)$.
-The MLE simply estimates the noise and the variance of the data
-\begin{align}
+In this case, MLE has a closed form solution with the empirical mean and the empirical variance as estimate for the mean $\mu$ and variance $\sigma^2$ parameters
+\alignn{
     \hat \mu = \inv{n} \sum_{i=1}^n x_i
     \quad \text{and} \quad
     \hat \sigma^2 = \inv{n} \sum_{i=1}^n \norm{x_i - \mu}^2 \; .
-\end{align}
+}
 
 \paragraph{Example 2: Categorical.}
 If the data is made of categories, e.g.,  $z \in \{1, \dots, K\}$, then the simplest model is the Categorical distribution $\pmodel = (p_1, \dots, p_K) \in \simplex_K$, which assigns a probability $p_k$ to each label $k$. We use $\simplex_K$ to denote the K-simplex, e.g., the set of real positive vectors of dimension $K$ that sum to 1:
@@ -177,8 +185,10 @@ In our third contribution \S\ref{sec:background} we will cover in detail a gener
 
 \paragraph{Other models.}
 Both Gaussians and categorical models belong to the general class of exponential families, which we will introduce in \S\ref{ssec:exponential-families}.
-These families have a limited capacity: they cannot fit any distributions.
-There exist much more powerful algorithms such as \emph{normalizing flows} \citep{rezende2015variational}, based on neural networks, which can model almost any smooth density by directly maximizing the likelihood of a dataset.
+These families have a limited capacity: there are some set of distributions that cannot be fit by an exponential family, such as mixture models.
+There exist much more powerful models such as \emph{normalizing flows} \citep{rezende2015variational} which are based on neural networks.
+Normalizing flows also rely on maximizing the likelihood of a dataset.
+They can model almost any smooth low dimensional density, but their capacity is limited in higher dimensions \citep{kong2020expressive}.
 
 \paragraph{Beyond MLE.}
 To learn from unlabeled data, there exist many competing approaches to MLE.
@@ -188,7 +198,7 @@ Finally, for training large models, self-supervised learning has recently emerge
 
 
 \section{Convex Optimization}
-Convex optimization the field of mathematics interested in solving problems of the form
+Convex optimization is the field of mathematics interested in solving problems of the form
 \alignn{
 	\min_{\theta \in \Theta} f(\theta)
 }
@@ -213,34 +223,35 @@ The step-size may be constant, follow a predefined schedule, be found via a line
 Gradient descent does not converge all the time.
 We need assumptions on the objective function.
 Perhaps the most common assumption is smoothness.
-\begin{definition}[smoothness]
-	A function $f:\Theta \rightarrow\real$ is said to be $L$-smooth if its gradient is $L$-Lipschitz, i.e.,
+\begin{proposition}[smoothness]
+	A  function $f:\Theta \rightarrow\real$ is said to be $L$-smooth if it is differentiable and its gradient is $L$-Lipschitz, i.e.,
 	\alignn{
 		\forall \theta, \nu \in \Theta,
 		\norm{\nabla f(\theta) - \nabla f(\nu)}
 		\leq L \norm{\theta- \nu} \; .
 	}
-\end{definition}
+\end{proposition}
 If the loss  $f$ is convex and $L$-smooth then gradient descent with constant step-size $\lr_t = \inv{L}$ converges to a minimum $\theta^*$ at a rate $O(\inv{t})$ \citep[corollary 2.1.2]{nesterov2004Intro}.
 Smoothness has a sibling assumption: strong-convexity.
 \begin{definition}[strong-convexity]
-	A function $f:\Theta \rightarrow\real$ is said to be $\mu$-strongly convex if its gradient verifies
-	% \alignn{
-	% 	\forall \theta, \nu \in \Theta,
-	% 	\mu  \norm{\theta- \nu}
-	% 	\leq \norm{\nabla f(\theta) - \nabla f(\nu)} \; .
-	% }
-	\alignn{
-		\forall \theta, \nu \in \Theta,
-		\mu  \norm{\theta- \nu}^2
-		\leq \langle \nabla f(\theta) - \nabla f(\nu), \, \theta- \nu \rangle \; .
-	}
+	A function $f:\Theta \rightarrow\real$ is said to be$\mu$-strongly convex if $\theta\mapsto f(\theta) - \half[L]\norm{\theta}^2$ is convex.
 \end{definition}
 If $f$ is both $\mu$-smooth and $L$-strongly convex, then gradient descent with constant step-size $\lr_t = \frac{2}{\mu + L}$ converges at a \emph{linear rate} $O(e^{-\frac{t}{\kappa}})$ where $\kappa= \frac{L}{\mu} \geq 1$ is known as the condition number of the problem \citep[theorem 2.1.15]{nesterov2004Intro}.
 
+%
+%Note that for differentiable functions, strong convexity can be equivalently expressed with the gradient.
+%\begin{proposition}[strong convexity]
+%	A differentiable function $f:\Theta \rightarrow\real$ is $\mu$-strongly convex if and only if its gradient verifies
+%	\alignn{
+%		\forall \theta, \nu \in \Theta,
+%		\mu  \norm{\theta- \nu}^2
+%		\leq \langle \nabla f(\theta) - \nabla f(\nu), \, \theta- \nu \rangle \; .
+%	}
+%\end{proposition}
+
 \paragraph{Self-concordance.}
 In contributions 2 and 3, we will face the log-likelihood of a multivariate normal variable.
-This objective includes a term $g(\Lambda) = -\log \det \Lambda$ where $\Lambda\in \S_n^+$ is the positive definite precision matrix.
+This objective includes a term $g(\Lambda) = -\log \det \Lambda$ where $\Lambda\in \cS_n^+$ is the positive definite precision matrix.
 The objective $g$ shoots up to $+\infty$ when $\Lambda$ gets eigenvalues close from zero.
 This means that its gradient is not a Lipschitz function.
 In fact  $g$ is neither smooth nor strongly convex.
@@ -251,11 +262,18 @@ To analyze Newton's method applied on these objectives, a new assumption upper b
 	A convex function $f:\Theta \rightarrow\real$ is said to be self-concordant if
 	\alignn{
 		\forall \theta \in \Theta, \forall u,
-		\nabla^3 f(\theta)[u,u,u] \leq 2 \nabla^2f(*\theta) [u,u]^{\frac{3}{2}}
+		\nabla^3 f(\theta)[u,u,u] \leq 2 \nabla^2f(\theta) [u,u]^{\frac{3}{2}}
 	}
 	where we evaluated the third-order tensor $\nabla^3 f(\theta)$in $u,u,u$.
 \end{definition}
-Under the self-concordance assumption, the analysis of Newton's method became lean and elegant. A fundamental consequence of self-concordance is that the objective can be sandwiched between quadratics in a clear neighborhood around its optimum. Additionally, many exponential families have self-concordant log-likelihood. We explore this fact in our third contribution.
+Self-concordance was popularized by making the analysis Newton's method affine invariant.
+Indeed Newton's method is affine invariant, meaning that any affine re-parametrization of the problem does not modify the algorithm.
+And yet all analysis were stuck with Lispchitz constants which are \emph{not} affine invariant.
+Self-concordance overcame this fundamental limitation.
+It was then popularized in machine learning by \citet{bach2010self} who showed its usefulness on logistic regression.
+It used a fundamental consequence of self-concordance: the objective can be sandwiched between quadratics in a clear neighborhood around its optimum. 
+In this thesis, we are interested in self-concordance because many exponential families have self-concordant log-likelihood. 
+We explore this fact in our third contribution.
 
 \subsection{Stochastic Gradient Descent}
 \label{ssec:SGD}
@@ -324,7 +342,12 @@ Finding an algorithm with a cheap $O(1)$ iteration cost and a linear convergence
 \subsection{Variance Reduction}
 \label{ssec:variance-reduction}
 Compared to the expected population risk in \cref{eq:population-risk}, the empirical risk \cref{eq:finite-sum} has a particular finite sum structure that SGD does not exploit.
-Tapping into this structure, the breakthrough work of \citet{roux2012stochastic} designed and analyzed a stochastic algorithm with a  cheap $O(1)$ iteration cost and a linear convergence rate.
+This fact is exploited -- in the specific context of logistic regression -- by the online exponentiated gradient  (OEG) algorithm \citep{collins2008exponentiated}.
+OEG treats one sample at a time, so it has a constant iteration cost, independent of the dataset size.
+And yet, it enjoys a linear convergence rate.
+
+OEG enjoyed a significant success on many problems, but it is not until the breakthrough work of \citet{roux2012stochastic} that the true power of the finite sum structure was revealed.
+\citet{roux2012stochastic} designed and analyzed a generic  stochastic gradient-based algorithm with a  cheap $O(1)$ iteration cost and a linear convergence rate.
 This algorithm is called stochastic averaged gradient or SAG.
 Similar to SGD, at each step it sample a datapoint $x_i$ and computes its gradient $\nabla f(\theta_{t}, x_i)$.
 The difference is that it estimates the true gradient thanks to past gradients of each individual data points $\nabla f(\theta_{t_i}, x_i)$ where $t_i$ is the last time that we sampled $x_i$.
@@ -334,7 +357,8 @@ Finally the update of SAG writes
 	\tag{SAG}
 }
 Following this path, \citet{defazio2014saga} introduced SAGA, a very similar algorithm with an unbiased gradient estimate allowing for more straightforward analysis.
-Concurrently \citet{shalev-shwartz_stochastic_2013} analyzed SDCA, an algorithm maximizing the dual formulation (see \S\ref{ssec:fenchel-duality}), which enjoys the same cheap update cost and linear convergence rate.
+Concurrently \citet{shalev-shwartz_stochastic_2013} analyzed SDCA, an algorithm maximizing a dual formulation for convex regularized problems (see \S\ref{ssec:fenchel-duality}).
+SDCA  is a close cousin of OEG, and it enjoys the same constant iteration cost and linear convergence rate.
 In our first contribution, we improve upon SDCA and apply it to the challenging problem of conditional random fields (see \S\ref{ssec:PGM}).
 
 Unfortunately, the memory footprint of SAG, SAGA or SDCA is $O(n d)$ in general (it can be reduced to $O(n)$ in many scenarios), which can quickly become prohibitive for large datasets or large models.
@@ -387,7 +411,7 @@ Under mild assumptions, this problem can be equivalently expressed with the conv
 This last line is known as the Fenchel dual of problem~\eqref{eq:composite-minimization}.
 We inverted min and max between the first and second line to reach it.
 Fenchel's duality theorem states sufficient conditions for this inequality to be an equality, in which case we say that strong duality holds.
-Fenchel duality is equivalent to Lagrange duality, but Fenchel's is more convenient for unconstrained problems or problems where the constraints are implicitly defined in the objective, whereas Lagrange's is more convenient for explicitly defined constraints.
+Fenchel duality is equivalent to Lagrange duality \citep{magnanti1974fenchel}, but Fenchel's is more convenient for unconstrained problems or problems where the constraints are implicitly defined in the objective, whereas Lagrange's is more convenient for explicitly defined constraint.
 
 SDCA and many other optimization algorithms directly store and update the dual variable $y$.
 It is well defined for generalized linear models, e.g., models defined with the exponential family.
@@ -415,7 +439,7 @@ The equation for the negative log-likelihood finally reads
 Remark that $f$ is convex, and it can be seen as a linear modification of the log-partition function $A$, which contains all the complexity.
 We provide more properties of these families in our third contribution.
 
-We can always define $z=T(x)$, with $\mu$ the proper push forward modification of $\nu$, in which case we say that $Z$ belongs to the \emph{natural exponential family} on $\mu$.
+We can always define $z=T(x)$, with $\mu$ the proper push forward modification of $\nu$, in which case we say that $Z$ belongs to the \emph{natural exponential family} on $\mu$ \citep{morris1982natural}.
 
 The most common parametric distributions are exponential families:
 Categorical, Gaussians, Gamma, Wishart, Dirichlet, \textit{etc.}
