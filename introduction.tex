@@ -93,7 +93,7 @@ Then we may learn the mapping by solving the following problem:
 	\label{eq:ERM}
 }
 This problem simply minimizes the sum of the loss on all data points.
-This sum is a proxy for the expectation of the loss on the "true" distribution $\ptrue$ from which we sampled $cD$
+This sum is a proxy for the expectation of the loss on the "true" distribution $\ptrue$ from which we sampled $\cD$
 \alignn{
 	\expect[(x, y)\sim\ptrue]{\loss(y, f_\theta(x))} \; .
 	\label{eq:risk-function}
@@ -216,7 +216,7 @@ Starting from a random point $\theta_0$, iteratively nudge the parameters in the
 	\theta_{t+1}  = \theta_t - \lr_t \nabla f(\theta_t),
 	\tag{GD}
 }
-where the hyper parameter $\lr_t$ is known as the \emph{step-size} or the learning rate.
+where the hyper-parameter $\lr_t$ is known as the \emph{step-size} or the learning rate.
 The step-size may be constant, follow a predefined schedule, be found via a line-search, or be adaptive w.r.t. to the past trajectory.
 
 \paragraph{Convergence Analysis.}
@@ -234,9 +234,9 @@ Perhaps the most common assumption is smoothness.
 If the loss  $f$ is convex and $L$-smooth then gradient descent with constant step-size $\lr_t = \inv{L}$ converges to a minimum $\theta^*$ at a rate $O(\inv{t})$ \citep[corollary 2.1.2]{nesterov2004Intro}.
 Smoothness has a sibling assumption: strong-convexity.
 \begin{definition}[strong-convexity]
-	A function $f:\Theta \rightarrow\real$ is said to be$\mu$-strongly convex if $\theta\mapsto f(\theta) - \half[L]\norm{\theta}^2$ is convex.
+	A function $f:\Theta \rightarrow\real$ is said to be $\mu$-strongly convex if $\theta\mapsto f(\theta) - \half[\mu]\norm{\theta}^2$ is convex.
 \end{definition}
-If $f$ is both $\mu$-smooth and $L$-strongly convex, then gradient descent with constant step-size $\lr_t = \frac{2}{\mu + L}$ converges at a \emph{linear rate} $O(e^{-\frac{t}{\kappa}})$ where $\kappa= \frac{L}{\mu} \geq 1$ is known as the condition number of the problem \citep[theorem 2.1.15]{nesterov2004Intro}.
+If $f$ is both $L$-smooth and $\mu$-strongly convex, then gradient descent with constant step-size $\lr_t = \frac{2}{\mu + L}$ converges at a \emph{linear rate} $O(e^{-\frac{t}{\kappa}})$ where $\kappa= \frac{L}{\mu} \geq 1$ is known as the condition number of the problem \citep[theorem 2.1.15]{nesterov2004Intro}.
 
 %
 %Note that for differentiable functions, strong convexity can be equivalently expressed with the gradient.
@@ -266,12 +266,12 @@ To analyze Newton's method applied on these objectives, a new assumption upper b
 	}
 	where we evaluated the third-order tensor $\nabla^3 f(\theta)$in $u,u,u$.
 \end{definition}
-Self-concordance was popularized by making the analysis Newton's method affine invariant.
+Self-concordance was popularized by making the analysis of Newton's method affine invariant.
 Indeed Newton's method is affine invariant, meaning that any affine re-parametrization of the problem does not modify the algorithm.
 And yet all analysis were stuck with Lispchitz constants which are \emph{not} affine invariant.
 Self-concordance overcame this fundamental limitation.
 It was then popularized in machine learning by \citet{bach2010self} who showed its usefulness on logistic regression.
-It used a fundamental consequence of self-concordance: the objective can be sandwiched between quadratics in a clear neighborhood around its optimum. 
+He relied on a fundamental consequence of self-concordance: the objective can be sandwiched between quadratics in a clear neighborhood around its optimum.
 In this thesis, we are interested in self-concordance because many exponential families have self-concordant log-likelihood. 
 We explore this fact in our third contribution.
 
