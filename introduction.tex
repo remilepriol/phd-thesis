@@ -159,7 +159,7 @@ In some situations, we may take a Bayesian stance and assume the true parameter 
 Combining this prior with our model, we obtain a joint distribution on data and parameters
 \alignn{
 	\ptrue (z, \theta)
-	:= \ptrue (z \cond \theta) \ptrue(z)
+	:= \ptrue (z \cond \theta) \ptrue(\theta)
 	:= \pmodel(z) \ptrue(\theta) \; .
 }
 By Bayes rule, we also obtain a posterior distribution on parameters
@@ -206,7 +206,7 @@ where $f$ is a convex real valued function $f:\Theta \rightarrow \real$ called t
 In this work, we always assume that the problem is unconstrained, i.e., $\Theta = \real^d$,
 but with an objective function taking possibly infinite values, i.e., $f: \real^d \rightarrow \real \cup \{+\infty\}$.
 The objective is thus implicitly defining a constraint set via its domain $\dom f = \bracket{ \theta \cond f(\theta) < +\infty }$.
-For instance, we may encounter $\dom f = \cS_d^+$, the set of symmetric positive definite matrices of order $d$. Note that this set is open, and consequently, we cannot project onto it.
+For instance, we may encounter $\dom f = \cS_d^+$, the set of symmetric positive definite matrices of order $d$. Note that this set is open within the set of real square matrices of order $d$ $\real^{d\times d}$. Yet projection is only well-defined onto closed sets. Consequently, one cannot project onto $\cS_d^+$. 
 We also assume that $f$ is differentiable.
 
 \paragraph{Gradient Descent.}
@@ -252,7 +252,7 @@ If $f$ is both $L$-smooth and $\mu$-strongly convex, then gradient descent with 
 \paragraph{Self-concordance.}
 In contributions 2 and 3, we will face the log-likelihood of a multivariate normal variable.
 This objective includes a term $g(\Lambda) = -\log \det \Lambda$ where $\Lambda\in \cS_n^+$ is the positive definite precision matrix.
-The objective $g$ shoots up to $+\infty$ when $\Lambda$ gets eigenvalues close from zero.
+The objective $g$ shoots up to $+\infty$ when $\Lambda$ gets eigenvalues close to zero.
 This means that its gradient is not a Lipschitz function.
 In fact  $g$ is neither smooth nor strongly convex.
 This kind of log-barrier objectives often comes up in interior point methods for solving constrained convex problems.
@@ -376,7 +376,7 @@ As previously mentioned, and fully explained in our first contribution, SDCA ope
 \alignn{
 	\min_\theta \inv{n} \sum_i f(y_i, \theta^\top x_i) + \frac{\lambda}{2} \norm{\theta}^2 \;.
 }
-However, what is this a dual formulation?
+In the following, we introduce the fundamentals of convex duality that are necessary to obtain this formulation. 
 
 \paragraph{Convex Conjugates.}
 To explain Fenchel duality properly, we need to introduce the convex conjugate of a function.
@@ -489,7 +489,7 @@ We are now ready to define the independence statement.
 	\alignn{
 		\ptrue(x) = \prod_{C\in \cC} \psi_C (x_C)
 	}
-	where $x_C$ is a vector containing the rows of $x$ indexed by $i \in C$, and $\psi_C: \real^{\abs{C}} \rightarrow \real$ are real-valued functions of $\abs{C}$ elements.
+	where $x_C$ is a vector containing the rows of $x$ indexed by $i \in C$, and $\psi_C: \real^{\abs{C}} \rightarrow \real_+$ are positive real-valued functions taking $\abs{C}$ arguments.
 	We refer to $\psi_C$ as the potential of the clique $C$.
 \end{definition}
 
@@ -525,7 +525,7 @@ In other words, the only conditional dependencies of $\ptrue$ are indicated by t
 by definition of conditional probability -- modulo some positivity constraints. Consequently, a useful graph should have only a few edges, or equivalently a low degree.
 
 \paragraph{Structure Learning.}
-In unsupervised learning, either we posit that the data factorizes along with a graph and exploit this information to learn a density model $\pmodel$ with fewer data. Either we set the goal of discovering these conditional independence structures. This goal is known as structure learning. Current solutions to this problem fall into two categories
+In unsupervised learning, either we posit that the data factorizes along a graph and exploit this information to learn a density model $\pmodel$ with fewer data. Or we set the goal of discovering these conditional independence structures. This goal is known as structure learning. Current solutions to this problem fall into two categories
 \begin{enumerate}
 	\item Explicitly find out conditional independences with statistical testing and build the graph from there.
 	\item Use a scoring function to explore all possible graphs and keep the one with the highest score. The scoring function is often designed as the posterior probability of the structure given the data.

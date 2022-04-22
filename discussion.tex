@@ -5,7 +5,7 @@ The three contributions of this thesis deal with the interweaved topics of optim
 These three contributions can be summarized as 
 \begin{enumerate}
 	\item Variance reduction allows fast training of CRF, a particular class of conditional undirected graphical models that were previously hard to optimize. Thanks to duality, non-uniform sampling can be elegantly formalized and improved other strong methods.
-	\item For some simple classes of model, the causal model is faster to adapt to interventions than the anticausal one only when the intervention bears on the cause. 
+	\item For some simple classes of models, the causal model is faster to adapt to interventions than the anticausal one only when the intervention bears on the cause. 
 	However, our intuitions dictate that causal models should have some real-world advantages compared to non-causal ones. 
 	That may be why humans learn new rules so quickly.
 	We may need more sophisticated models to instantiate this intuition in machine learning.
@@ -21,6 +21,6 @@ Based on our last contribution, we identify two promising research directions.
 \begin{enumerate}
 	\item finding high probability bounds for exponential family MAP thanks to the entropy being a self-concordant barrier, as proved by \citep{bubeck2015entropic}.
 	That would provide a general large sample result. A low sample result remains to be found.
-	\item Analyzing the convergence properties of stochastic mirror descent on self-concordant (barrier) losses. This might be possible thanks to the quadratic sandwich property of such functions, and it might be possible to find high probability convergence rate. 
+	\item Analyzing the convergence properties of stochastic mirror descent on self-concordant (barrier) losses. This might be possible thanks to the quadratic sandwich property of such functions, and it might be possible to find a high probability convergence rate. 
 \end{enumerate}
-These research directions may help us understand fundamentals statistical models and design better optimization methods for barrier objectives.
+These research directions may help us understand fundamentals statistical models and design better stochastic optimization methods for objectives that are Legendre functions.
