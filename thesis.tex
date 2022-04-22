@@ -1,12 +1,12 @@
 \documentclass[12pt]{report} % nottoc,numbib
 \usepackage[utf8]{inputenc}
-%\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{lmodern}
 \usepackage[french,english]{babel}
 \selectlanguage{english}
 
 % Speed up compilation by focusing on one part at a time
-%\includeonly{introduction}
+%\includeonly{contrib1}
 %force-texpad-dependency: discussion.tex
 %force-texpad-dependency: introduction.tex
 %force-texpad-dependency: contrib1.tex
@@ -35,9 +35,9 @@
 \usepackage{microtype}       % set of techniques to improve general appearance
 \usepackage{graphicx}
 \graphicspath{
-	{figs/causal-optimization/}
-	{figs/MAP-convergence/}
-	{figs/sdca4crf/}
+	{jpgfigs/causal-optimization/}
+	{jpgfigs/MAP-convergence/}
+	{jpgfigs/sdca4crf/}
 }
 \usepackage{wrapfig}
 %\usepackage{subfigure}
@@ -176,20 +176,22 @@
 
 
 \Auteur{Rémi}{Le Priol}
-\President{}{Ioannis}{Mitliagkas}{}
-\Directeur{}{Simon}{Lacoste-Julien}{}
-\CoDirecteur{}{Yoshua}{Bengio}{}         % s'il y a lieu
+\President{Prof.}{Ioannis}{Mitliagkas}{}
+\Directeur{Prof.}{Simon}{Lacoste-Julien}{}
+\CoDirecteur{Prof.}{Yoshua}{Bengio}{}         % s'il y a lieu
 %%\codirecteurs{Nom du 2e codirecteur}         % s'il y a lieu
-\Membres{1}{}{Guillaume}{Rabusseau}{}
-\Membres{2}{}{Nicolas}{Flammarion}{}
+\Membres{1}{Prof.}{Guillaume}{Rabusseau}{}
+\Membres{2}{Prof.}{Nicolas}{Flammarion}{}
 
 %titre: 15 mots, max. 175 caracteres
 \PhD{Optimization Tools for Non-Asymptotic Statistics in Exponential Families}
     {}
     {d'informatique et de recherche op\'{e}rationnelle}
     {informatique}
-    {Décembre}
+    {avril}
     {2021}
+    
+  \dateaccept{19 avril 2022}
 
 \PagesCouverture
 \newpage
@@ -236,7 +238,7 @@ Ces trois contributions mettent des outil d'optimisation au service des statisti
 En traçant des ponts entre statistiques et optimisation, cette thèse fait progresser notre maîtrise de méthodes fondamentales d'apprentissage automatique.
 
 \subsection*{Mots-clés}
-Apprentissage automatique, famille exponentielle, divergence de Bregman, statistiques non-asymptotiques, taux de convergence, dualité, optimisation stochastique, réduction de variance, prédiction structurée, causalité.
+Apprentissage automatique, famille exponentielle, divergence de Bregman, statistiques non-asymptotiques, taux de convergence, dualité convexe, optimisation stochastique, réduction de variance, prédiction structurée, causalité.
 
 %%------------------------------------------------- %
 %%              pages iv                            %
@@ -271,7 +273,7 @@ These three contributions are all using tools from optimization at the service o
 By tying together optimization and statistics, this thesis is taking a step towards a better understanding of the fundamentals of machine learning.
 
 \subsection*{Keywords}
-Machine learning, exponential family, Bregman divergence, non-asymptotic statistics, sample complexity, duality, stochastic optimization, variance reduction, structured prediction, causality.
+Machine learning, exponential families, Bregman divergence, non-asymptotic statistics, sample complexity, convex duality, stochastic optimization, variance reduction, structured prediction, causality.
 
 
 %%------------------------------------------------- %

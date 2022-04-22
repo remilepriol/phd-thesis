@@ -49,7 +49,7 @@ We believe solving this very fundamental problem may bring progress to both the 
 
 \begin{figure}[t]
 	\centering
-\includegraphics[width=.61\textwidth]{gammaMAPrate.pdf}
+\includegraphics[width=.61\textwidth]{gammaMAPrate}
 	\caption[KL divergence for Gaussian variance MLE and MAP]
 	{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
 		Solid curve  are average over $10^5$ trials.
@@ -396,7 +396,7 @@ This generalization encompasses exponential distribution when $\alpha=1$, as ano
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth]{2d/thales_n=3.pdf}
+	\includegraphics[width=\textwidth]{2d/thales_n=3}
 	\caption[Primal and dual representations of a Gaussian MLE and MAP.]
 	{
 	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MLE (blue) and MAP (orange) (\S\ref{ssec:gaussian} with $n=3$).
@@ -571,7 +571,7 @@ These observations hint towards a general $O(1/n^2)$ upper bound for the bias, w
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=.6\textwidth]{gaussians_bias_variance.pdf}
+	\includegraphics[width=.6\textwidth]{gaussians_bias_variance}
 	\caption[Bias-Variance Decomposition for a Gaussian.]{
 	Bias-Variance Decomposition for a Gaussian $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. The asymptote is $\frac{1}{n}$.
 	}
@@ -812,7 +812,7 @@ This means that the primal and dual Bregman divergences have the same form as we
 \end{align}
 \begin{wrapfigure}[12]{l}{0.3\textwidth}
 	\centering
-	\includegraphics[width=.28\textwidth]{phi.pdf}
+	\includegraphics[width=.28\textwidth]{phi}
 	\caption[Illustration of $\phi(z)$ and its upper bound.]{
 	Illustration of $\phi(z)$ (orange) and its upper bound $\phi(z) + \phi\paren{z^{-1}}$ (grey).
 	They both are barriers near $0$.
@@ -1267,7 +1267,7 @@ Indeed, the upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\f
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=\textwidth]{optimal_n0.pdf}
+	\includegraphics[width=\textwidth]{optimal_n0}
 	\caption[On the optimal priors $(n_0, \mu_0)$.]{
 	\textbf{On the optimal priors $(n_0, \mu_0)$.}
 	Contours of $\expect{\KL(\nat^*, \hat \nat_n)}$  for the Gaussian variance with $n\in\{1,5,10\}$, $\mu^*=1$ and $n_0, \mu_0$ spanning $[10^{-2}, 10^2]$. The expectation was estimated with $10^4$ draws for each value of $n_0, \mu_0$ We observe that the line $\frac{\mu_0}{\mu^*} = 1 + \inv{n_0}$ coincides with the bottom valley of this landscape.
@@ -1297,8 +1297,8 @@ We provide definitions of self-concordance in \cref{app:self-concordant}.
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=.45\textwidth]{2d/logpart.pdf}
-	\includegraphics[width=.45\textwidth]{2d/entropy.pdf}
+	\includegraphics[width=.45\textwidth]{2d/logpart}
+	\includegraphics[width=.45\textwidth]{2d/entropy}
 	\caption[Contours of the Gaussian log-partition function and entropy.]{
 	(left) Contours of the log-partition function~\eqref{eq:app-logpart}.
 	(right) Contours of the entropy~\eqref{eq:app-entropy}.
@@ -1308,7 +1308,7 @@ We provide definitions of self-concordance in \cref{app:self-concordant}.
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=.9\textwidth]{2d/mirrormap.pdf}
+	\includegraphics[width=.9\textwidth]{2d/mirrormap}
 	\caption[Visualizations of the Gaussian mirror-map.]{
 	\textbf{Visualizations of the Gaussian mirror-map.}
 	(top) Grid deformation produce by $\nabla \logpart(\nat)$.
@@ -1319,7 +1319,7 @@ We provide definitions of self-concordance in \cref{app:self-concordant}.
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=.9\textwidth]{2d/gaussian_paths.pdf}
+	\includegraphics[width=.9\textwidth]{2d/gaussian_paths}
 	\caption[MLE and MAP sample trajectories for a Gaussian.]{
 		Paths taken by MLE (blue) and MAP (orange) on top of contours for $\KL(\nat^* || \nat)$. 
 		We set $\mu^*=(0, 1), \mu_0 = (1, 2)$, and $n_0=4$, and $n$ varies from $1$ to $20$.
@@ -1423,8 +1423,8 @@ Note that $\omega^*(t)$ is positive, convex and monotonically increasing for $t\
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.4\textwidth]{self_concordance/omega.pdf}
-	\includegraphics[width=0.4\textwidth]{self_concordance/omega_star.pdf}
+	\includegraphics[width=0.4\textwidth]{self_concordance/omega}
+	\includegraphics[width=0.4\textwidth]{self_concordance/omega_star}
 	\caption[Self-concordance proof functions.]{(left) Graph of the distance function $\omega$ and its dual $\omega^*$. (right) Graph of the dual of distance function $\omega^*$ evaluated at $\frac{t}{1-t}$, compared with $t^2$. The two curves cross each other at $t\approx 0.21$.}
 	\label{fig:omega}
 \end{figure}

@@ -73,7 +73,7 @@ In general, SCMs model the distribution of observations with a directed graph wh
 
 \begin{wrapfigure}[6]{l}{.5\textwidth} 
     \centering
-    \includegraphics[width=.48\textwidth]{models.png}
+    \includegraphics[width=.48\textwidth]{models}
     \caption{Two models for data $(X, Y)$ with causal structure $X\rightarrow Y$.}
     \label{fig:cause-effect}
 \end{wrapfigure}
@@ -99,7 +99,7 @@ We theoretically and empirically answer this question for cause-effect SCMs with
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\textwidth]{geometry.png}
+    \includegraphics[width=\textwidth]{geometry}
     \caption[Intuition behind fast adaptation]{
     \textbf{Intuition behind fast adaptation.}
     An intervention on $X$ turns the reference distribution $\ptrue^{(0)}$ into  a transfer distribution $\ptrue^*$.
@@ -254,7 +254,7 @@ We consider different scenarios to generate reference and transfer data and expl
 \subsection{Definitions}
 \begin{wrapfigure}[10]{r}{.5\textwidth} 
     \centering
-    \includegraphics[width=.44\textwidth]{categorical_parameters.png}
+    \includegraphics[width=.44\textwidth]{categorical_parameters}
     \caption{Parametrization of causal (blue) and anticausal (red) categorical models}
     \label{fig:categorical_models}
 \end{wrapfigure}
@@ -302,7 +302,7 @@ When the intervention happens on the cause,
 
 \begin{figure}
     \centering
-    \includegraphics[width=.5\textwidth]{effect_sphere.png}
+    \includegraphics[width=.5\textwidth]{effect_sphere}
     \caption[Illustration of Proposition~\ref{prop:categorical_effect}]{
     \textbf{Illustration of Proposition~\ref{prop:categorical_effect}.}
     $\vc$ is on the line joining $\vs_Y$ and $\vm := \inv{K} \sum_x \vs_{Y|x}$. 
@@ -342,14 +342,14 @@ If $\vs_Y^*$ is far from $\vc$ or if $R$ is small then the anticausal model is l
         \foreach \plot in {scatter, curves}{
             \begin{subfigure}{\hcolw}
                 \centering
-                \includegraphics[width=\textwidth]{categorical/\plot_dense_\intervention_k=20.pdf}
+                \includegraphics[width=\textwidth]{categorical/\plot_dense_\intervention_k=20}
                 \caption{Dense - \intervention.}
                 \label{fig:dense_\intervention_\plot}
             \end{subfigure}
         }
         \begin{subfigure}{\hcolw}
                 \centering
-                \includegraphics[width=\textwidth]{categorical/curves_sparse_\intervention_k=20.pdf}
+                \includegraphics[width=\textwidth]{categorical/curves_sparse_\intervention_k=20}
                 \caption{Sparse - \intervention.}
                 \label{fig:sparse_\intervention_curves}
         \end{subfigure}
@@ -488,7 +488,7 @@ before providing empirical results (Sec.~\ref{ssec:normal_experiments}).
         \foreach \plottype in {distnat, distcho, scatter, curves}{
             \begin{subfigure}{0.2\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{normal/\plottype_\intervention_natural_k=10.pdf}
+            \includegraphics[width=\textwidth]{normal/\plottype_\intervention_natural_k=10}
             \end{subfigure}
         }
     }
@@ -932,7 +932,7 @@ We illustrate the relationship between $\vm$, $\vc$, $\vs_Y$  and $R$ in Figure~
     \centering
     \begin{subfigure}{0.45\textwidth}
     \centering
-    \includegraphics[width=.9\columnwidth]{effect_sphere.png}
+    \includegraphics[width=.9\columnwidth]{effect_sphere}
     \caption{
     $\vm$ is a convex combination of $\vc$ and $\vs_Y$. 
     The blue bubble is the sub-level set 0 of $\Delta$.
@@ -944,7 +944,7 @@ We illustrate the relationship between $\vm$, $\vc$, $\vs_Y$  and $R$ in Figure~
     \quad \quad
     \begin{subfigure}{0.45\textwidth}
     \centering
-    \includegraphics[width=\columnwidth]{categorical_effect_distance.pdf}
+    \includegraphics[width=\columnwidth]{categorical_effect_distance}
     \caption{
     Box plots for the radius $R^2$ and deviations $\|\vs_Y^* - \vc\|^2$ for $K=20$ with the dense prior (left) and the sparse prior (right). 
     The y-axis is logarithmic.
@@ -1138,7 +1138,7 @@ In Figure~\ref{fig:sparse_results}, compared to the main text we show what happe
          \foreach \intervention in {cause,effect,pooled}{
             \begin{subfigure}{0.3\textwidth}
                 \centering
-                \includegraphics[width=\textwidth]{categorical_dense/\plot_\intervention_k=20.pdf}
+                \includegraphics[width=\textwidth]{categorical_dense/\plot_\intervention_k=20}
             \end{subfigure}
         }
     }
@@ -1164,7 +1164,7 @@ In Figure~\ref{fig:sparse_results}, compared to the main text we show what happe
         \foreach \intervention in {cause,effect,pooled}{
             \begin{subfigure}{0.3\textwidth}
                 \centering
-                \includegraphics[width=\textwidth]{categorical_sparse/\plot_\intervention_k=20.pdf}
+                \includegraphics[width=\textwidth]{categorical_sparse/\plot_\intervention_k=20}
             \end{subfigure}
         }
     }
@@ -1199,7 +1199,7 @@ However \eqref{eq:single_mechanism} tells another story: without further assumpt
         \init 
             \begin{subfigure}{.4\textwidth}
                 \centering
-                \includegraphics[width=\textwidth]{categorical_\init/\plot_singlecond_k=20.pdf}
+                \includegraphics[width=\textwidth]{categorical_\init/\plot_singlecond_k=20}
             \end{subfigure}
         }
     }
