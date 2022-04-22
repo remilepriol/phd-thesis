@@ -22,6 +22,17 @@
 \emph{R\'emi Le Priol, Alexandre Pich\'e and Simon Lacoste-Julien.}
 Published at UAI 2018~\citep{lepriol2018adaptive}.
 
+\subsection*{Motivation for this research.}
+\citet{schmidt2015non} is the conclusion of many years of research devoted to the optimization of conditional random fields (CRF). 
+These models resisted the optimization community until the advent of variance reduction method combined with adaptive sampling. 
+Using the insight that SDCA is a variance reduction method with an exact line search, Simon (rightfully) believed it could possibly improve upon \citet{schmidt2015non}. 
+On the way, we also incidentally found another sampling scheme (gap sampling) which greatly enhances SDCA. 
+
+
+\subsection*{Impact since its publication.}
+Let us showcase two articles building upon this contribution. \citet{eboli2020structured}  applies gap sampling to enhance SDCA in the context of image reconstruction. \citet{yaakoubi2021structured} uses SDCA for CRF as a building block of a larger model combining deep networks and graphical models. 
+
+
 \subsection*{Contributions of the Authors}
 Rémi Le Priol wrote most of the code (and most of the bugs) and ran most experiments.
 He also found the proof for acceleration under adaptive sampling.
